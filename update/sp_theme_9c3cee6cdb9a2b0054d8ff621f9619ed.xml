@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_theme">
+    <sp_theme action="INSERT_OR_UPDATE">
+        <css_variables/>
+        <footer display_value="riskmgmt footer">a2bb6a6cdb9a2b0054d8ff621f9619a7</footer>
+        <footer_fixed>true</footer_fixed>
+        <header display_value="riskmgmt header">41fb315cdb5ee70054d8ff621f961954</header>
+        <name>riskmgmt theme</name>
+        <navbar_fixed>true</navbar_fixed>
+        <sys_class_name>sp_theme</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2018-12-07 16:47:53</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>9c3cee6cdb9a2b0054d8ff621f9619ed</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>riskmgmt theme</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sp_theme_9c3cee6cdb9a2b0054d8ff621f9619ed</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2018-12-07 16:47:53</sys_updated_on>
+    </sp_theme>
+</record_update>
