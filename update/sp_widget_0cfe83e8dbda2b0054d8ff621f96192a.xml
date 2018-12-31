@@ -13,15 +13,9 @@
 	else if(s.xpage && s.xpage == 'report'){
 		c.xpage = "report";
 	}
-	else if(s.xpage && s.xpage == 'files'){
-		c.xpage = "files";
-	}
-	else if(s.xpage && s.xpage == 'config'){
-		c.xpage = "config";
-	}
-	else if(s.xpage && s.xpage == 'faq'){
-		c.xpage = "faq";
-	}
+	else if (s.xpage && s.xpage == 'settings') {
+    c.xpage = "settings";
+  }
 	else{
 		c.xpage = "home";
 	}
@@ -54,7 +48,7 @@
         <sys_created_on>2018-12-07 19:18:30</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0cfe83e8dbda2b0054d8ff621f96192a</sys_id>
-        <sys_mod_count>11</sys_mod_count>
+        <sys_mod_count>20</sys_mod_count>
         <sys_name>riskmgmt main</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -62,19 +56,22 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0cfe83e8dbda2b0054d8ff621f96192a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-07 20:20:42</sys_updated_on>
-        <template><![CDATA[<div id="riskmgmt-main" class="container">
-  <div class="left-bar col-md-2">
-    <ul class="left-menu">
-      <li ng-class="c.xpage == 'home'? 'active': ''" ng-click="c.gotoPage('home');">Home</li>
-      <li ng-class="c.xpage == 'management'? 'active': ''" ng-click="c.gotoPage('management');">Risk Management</li>
-      <li ng-class="c.xpage == 'report'? 'active': ''" ng-click="c.gotoPage('report');">Report</li>
-      <li ng-class="c.xpage == 'files'? 'active': ''" ng-click="c.gotoPage('files');">Shared Files</li>
-      <li ng-class="c.xpage == 'config'? 'active': ''" ng-click="c.gotoPage('config');">Config</li>
-      <li ng-class="c.xpage == 'faq'? 'active': ''" ng-click="c.gotoPage('faq');">FAQ</li>
-    </ul>
+        <sys_updated_on>2018-12-31 21:28:58</sys_updated_on>
+        <template><![CDATA[<div id="riskmgmt-main" class="container" ng-if="c.xpage !== 'settings'">
+  <div class="top-menu">
+    <div class="menu-item" ng-class="c.xpage == 'home'? 'active': ''">
+      <a href="#" ng-click="c.gotoPage('home');">Home</a>
+    </div>
+    <div class="menu-item" ng-class="c.xpage == 'management'? 'active': ''">
+      <a href="#" ng-click="c.gotoPage('management');">Risk Management</a>
+    </div>
+    <div class="menu-item" ng-class="c.xpage == 'report'? 'active': ''">
+      <a href="#" ng-click="c.gotoPage('report');">Report</a>
+    </div>
+    <div class="menu-item-last">
+    </div>
   </div>
-  <div class="main-content col-md-10">
+  <div class="main-content">
     <div class="container" ng-if="c.xpage == 'home'">
       <widget id="riskmgmt_home"></widget>
     </div>
@@ -84,16 +81,15 @@
     <div class="container" ng-if="c.xpage == 'report'">
       <widget id="riskmgmt_report"></widget>
     </div>
-    <div class="container" ng-if="c.xpage == 'files'">
-      <widget id="riskmgmt_files"></widget>
-    </div>
-    <div class="container" ng-if="c.xpage == 'config'">
+  </div>
+</div>
+<div id="riskmgmt-settings" class="container" ng-if="c.xpage == 'settings'">
+  <div class="main-content">
+    <div class="container">
       <widget id="riskmgmt_config"></widget>
     </div>
-    <div class="container" ng-if="c.xpage == 'faq'">
-      <widget id="riskmgmt_faq"></widget>
-    </div>
   </div>
-</div>]]></template>
+</div>
+]]></template>
     </sp_widget>
 </record_update>

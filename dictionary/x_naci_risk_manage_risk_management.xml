@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element extends="task" label="Risk Management" max_length="40" name="x_naci_risk_manage_risk_management" type="collection">
+        <element label="Action Plan" max_length="5000" name="action_plan" type="string"/>
+        <element label="Approval Action" max_length="100" name="approval_action" type="string"/>
+        <element label="AU(DOC)" max_length="100" name="doc" type="string"/>
+        <element label="Fiscal Year" max_length="10" name="fiscal_year" type="string"/>
+        <element label="Manager ID" max_length="500" name="manager_id" type="string"/>
+        <element label="Manager Name" max_length="500" name="manager_name" type="string"/>
+        <element label="POC ID" max_length="100" name="poc_id" type="string"/>
+        <element label="POC Name" max_length="100" name="poc_name" type="string"/>
+        <element label="Primary Policies" max_length="5000" name="primary_policies" type="string"/>
+        <element label="Risk Management Activities" max_length="5000" name="risk_management_activities" type="string"/>
+        <element label="Section 1" max_length="5000" name="section_1" type="string"/>
+        <element label="Section 2" max_length="1000" name="section_2" type="string"/>
+        <element label="Section 3" max_length="1000" name="section_3" type="string"/>
+        <element label="Section 4" max_length="1000" name="section_4" type="string"/>
+        <element label="Section 5" max_length="1000" name="section_5" type="string"/>
+        <element label="Section 6" max_length="1000" name="section_6" type="string"/>
+        <element label="Stage" max_length="100" name="stage" type="string"/>
+        <element label="Title" max_length="1000" name="title" type="string"/>
+        <element label="Version" max_length="40" name="version" type="integer"/>
+    </element>
+</database>
