@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>GET</http_method>
+        <name>getPOCById</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    var sys_id = request.queryParams.id;
+	
+	var poc = new GlideRecord('x_naci_risk_manage_pocs');
+	poc.addQuery('sys_id',sys_id);
+	poc.query();
+	poc.next();
+	
+	var result = {sys_id:poc.sys_id.toString(),
+				 doc: poc.getDisplayValue('doc'),
+				 manager: poc.getDisplayValue('manager_name'),
+				 manager_id: poc.getDisplayValue('manager_id'),
+				 poc: poc.getDisplayValue('poc_name'),
+				 poc_id: poc.getDisplayValue('poc_id')};  
+	return result;
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_naci_risk_manage/riskmgmtrestapi/getPOCById</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/getPOCById</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-03 15:40:41</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>4beed995db32af40b86770c08c96190e</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>getPOCById</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_ws_operation_4beed995db32af40b86770c08c96190e</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-03 15:48:26</sys_updated_on>
+        <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
+        <web_service_version/>
+    </sys_ws_operation>
+</record_update>

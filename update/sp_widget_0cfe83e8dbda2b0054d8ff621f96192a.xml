@@ -2,13 +2,27 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, $location) {
+        <client_script><![CDATA[function($scope,$rootScope, $location) {
   var c = this;
   var s = $location.search();
   var redirect = false;
-
-  if (s.xpage && s.xpage == 'management') {
+	
+	c.willgoto = {};
+	
+	if($rootScope.user && $rootScope.user.role.length == 0){
+		c.xpage = "permission";
+	}
+	else if (s.xpage && s.xpage == 'management') {
     c.xpage = "management";
+		if(s.sub && s.sub == 'new'){
+			c.sub = "new";
+		}
+		else if(s.sub && s.sub == 'form'){
+			c.sub = "form";
+		}
+		else{
+			c.sub = "board"
+		}
   }
 	else if(s.xpage && s.xpage == 'report'){
 		c.xpage = "report";
@@ -20,9 +34,32 @@
 		c.xpage = "home";
 	}
 	
-	c.gotoPage = function(page){
+	c.gotoPage = function(page, sub, other){
 		s.xpage = page;
+		s.sub = sub;
+		s.fid = other;
+		s.next = null;
 		$location.search(s).replace();
+	}
+	
+	window.showMessageBox = function(message, willgoto){
+		$('#messageContent').html(message);
+		$('#messageDiv').modal('show');
+		c.willgoto = willgoto;
+	}
+	
+	c.closeMessageBox = function(){
+		$('#messageDiv').modal('hide');
+		if(c.willgoto){
+			$('#messageDiv').on('hidden.bs.modal', function (e) {
+				s.xpage = c.willgoto.xpage;
+				s.sub = c.willgoto.sub;
+				s.fid = c.willgoto.other;
+				s.next = c.willgoto.next;
+				$location.search(s).replace();
+			})
+		}
+		
 	}
 	
 }]]></client_script>
@@ -48,7 +85,7 @@
         <sys_created_on>2018-12-07 19:18:30</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0cfe83e8dbda2b0054d8ff621f96192a</sys_id>
-        <sys_mod_count>20</sys_mod_count>
+        <sys_mod_count>64</sys_mod_count>
         <sys_name>riskmgmt main</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -56,40 +93,74 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0cfe83e8dbda2b0054d8ff621f96192a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-31 21:28:58</sys_updated_on>
-        <template><![CDATA[<div id="riskmgmt-main" class="container" ng-if="c.xpage !== 'settings'">
+        <sys_updated_on>2019-01-14 15:01:28</sys_updated_on>
+        <template><![CDATA[<div class="col-md-1"></div>
+<div id="riskmgmt-main" class="col-md-10" ng-if="c.xpage !== 'permission' && c.xpage !== 'settings'">
   <div class="top-menu">
     <div class="menu-item" ng-class="c.xpage == 'home'? 'active': ''">
       <a href="#" ng-click="c.gotoPage('home');">Home</a>
     </div>
     <div class="menu-item" ng-class="c.xpage == 'management'? 'active': ''">
-      <a href="#" ng-click="c.gotoPage('management');">Risk Management</a>
+      <a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
     </div>
+    <!--
     <div class="menu-item" ng-class="c.xpage == 'report'? 'active': ''">
       <a href="#" ng-click="c.gotoPage('report');">Report</a>
     </div>
+		-->
     <div class="menu-item-last">
     </div>
   </div>
   <div class="main-content">
-    <div class="container" ng-if="c.xpage == 'home'">
+    <div class="" ng-if="c.xpage == 'home'">
       <widget id="riskmgmt_home"></widget>
     </div>
-    <div class="container" ng-if="c.xpage == 'management'">
-      <widget id="riskmgmt_management"></widget>
+    <div class="" ng-if="c.xpage == 'management'">
+      <div ng-if="c.sub == 'board'">
+        <widget id="riskmgmt_management"></widget>
+      </div>
+      <div ng-if="c.sub == 'form'">
+        <widget id="riskmgmt_form"></widget>
+      </div>
+      <div ng-if="c.sub == 'new'">
+        <widget id="riskmgmt_new_risk"></widget>
+      </div>
     </div>
-    <div class="container" ng-if="c.xpage == 'report'">
+    <!--
+    <div class="" ng-if="c.xpage == 'report'">
       <widget id="riskmgmt_report"></widget>
     </div>
+		-->
   </div>
 </div>
-<div id="riskmgmt-settings" class="container" ng-if="c.xpage == 'settings'">
+<div id="riskmgmt-settings" class="col-md-10" ng-if="c.xpage == 'settings'">
   <div class="main-content">
-    <div class="container">
+    <div>
       <widget id="riskmgmt_config"></widget>
     </div>
   </div>
 </div>
-]]></template>
+<div id="riskmgmt-settings" class="col-md-10" ng-if="c.xpage == 'permission'">
+  <div class="main-content">
+    <div>
+      <widget id="riskmgmt_permission"></widget>
+    </div>
+  </div>
+</div>
+<div class="col-md-1"></div>
+<div id="messageDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg" style="width:20%;">
+        <div class="modal-content" style="height:200px; overflow-y:auto; overflow-x: hidden;">
+            <div class="modal-header">
+                 Information Dialog
+            </div>
+            <div class="col-md-12 message-box" id="messageContent" align="center">
+            </div>
+            <div class="col-md-12" align="center">
+              <button class="btn btn-primary" ng-click="c.closeMessageBox();" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>]]></template>
     </sp_widget>
 </record_update>

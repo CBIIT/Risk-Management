@@ -2,7 +2,474 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <client_script><![CDATA[function($scope, $rootScope, $location, RiskMgmtRisk, RiskMgmtComment, RiskMgmtFile) {
+  /* widget controller */
+  var c = this;
+	var cb = null;
+	c.data.rcf = {};
+	c.data.action = "Other";
+	c.data.notifyManager = false;
+	
+	c.data.maxSize = 5;
+	c.data.pageSize = 10;
+	c.data.bigCurrentPage = 1;
+	
+	var s = $location.search();
+	c.data.rcf.sys_id = s.fid;
+	
+	c.data.saving = false;
+	c.data.save_text = 'Save Form';
+	
+	c.data.attachments = {};
+	c.upload_status = "upload";
+	c.file2upload = '';
+	
+	c.data.tab_1 = {
+		isOpen:false
+	};
+	c.data.tab_2 = {
+		isOpen:false
+	};
+	c.data.tab_3 = {
+		isOpen:false
+	};
+	c.data.tab_4 = {
+		isOpen:false
+	};
+	c.data.tab_5 = {
+		isOpen:false
+	};
+	c.data.tab_6 = {
+		isOpen:false
+	};
+	
+	c.updateScore = function(){
+		c.data.rcf.impact_score = parseInt(c.data.rcf.impact) 
+			+ parseFloat(c.data.rcf.pub_impact) 
+			+ parseFloat(c.data.rcf.org_impact) 
+			+ parseFloat(c.data.rcf.financial_impact) 
+			+ parseFloat(c.data.rcf.overall_impact);
+		c.data.rcf.likelihood_score = parseFloat(c.data.rcf.inplace) 
+			+ parseFloat(c.data.rcf.effective) 
+			+ parseFloat(c.data.rcf.include)
+			+ parseFloat(c.data.rcf.aware) 
+			+ parseFloat(c.data.rcf.formal_action)
+			+ parseFloat(c.data.rcf.likelihood);
+		c.data.rcf.total_score = c.data.rcf.impact_score + c.data.rcf.likelihood_score;
+	}
+	
+	c.gotoPage = function(page,sub,other){
+		s.xpage = page;
+		s.sub = sub;
+		s.fid = other;
+		s.next = null;
+		$location.search(s).replace();
+	}
+	
+	c.collapseAll = function(){
+		c.data.tab_1.isOpen = false;
+		c.data.tab_2.isOpen = false;
+		c.data.tab_3.isOpen = false;
+		c.data.tab_4.isOpen = false;
+		c.data.tab_5.isOpen = false;
+		c.data.tab_6.isOpen = false;
+	}
+	
+	c.expandAll = function(){
+		c.data.tab_1.isOpen = true;
+		c.data.tab_2.isOpen = true;
+		c.data.tab_3.isOpen = true;
+		c.data.tab_4.isOpen = true;
+		c.data.tab_5.isOpen = true;
+		c.data.tab_6.isOpen = true;
+	}
+	
+	c.addComment = function(){
+		//post to server
+		RiskMgmtComment.addComment(c.data.rcf.sys_id, c.data.comment, c.data.sessionId).then(function(res){
+			var comments = res.data.result;
+			c.data.comments = comments;
+			c.data.comment = '';
+			$scope.$apply();
+		}, function(error){
+			console.log(error);
+		});
+	};
+	
+	c.deleteComment = function(sys_id){
+		c.data.action = "Other";
+		c.data.confirmMessage = "Are you sure you want to delete this comment?";
+		//post to server
+		cb = function(callback){
+				RiskMgmtComment.deleteComment(sys_id, c.data.sessionId).then(function(res){
+				var comments = res.data.result;
+				c.data.comments = comments;
+				c.data.comment = '';
+				$('#confirmDiv').modal('hide');
+				$scope.$apply();
+			}, function(error){
+				console.log(error);
+			});
+		};
+		$('#confirmDiv').modal('show');
+	};
+	
+	c.goAhead = function(){
+		if(cb){
+			cb();
+		}
+	};
+	
+	c.cancelConfirm = function(){
+		$('#confirmDiv').modal('hide');
+	};
+	
+	var fileInput  = document.getElementById("file2upload");
+
+	fileInput.addEventListener( "change", function( event ) {
+		c.file2upload = this.value;
+		$scope.$apply();
+	});
+	
+	function readFile(file, callback) {
+		var fileReader = new FileReader();
+		fileReader.onload = function() {
+			//var result = fileReader.result.replace('data:application/pdf;base64,', '');
+			var encoded = fileReader.result.replace(/^data:(.*;base64,)?/, '');
+      if ((encoded.length % 4) > 0) {
+        encoded += '='.repeat(4 - (encoded.length % 4));
+      }
+			callback(encoded);
+		}
+		fileReader.readAsDataURL(file); //file must be base64
+	}
+	
+	c.uploadAttachment = function(){
+		c.upload_status = 'uploading...';
+		
+		var input = $('#file2upload')[0];
+		var file = input.files[0];
+		
+		if(file.type !== 'application/pdf' && file.type !== 'application/vnd.ms-powerpoint' 
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+			 && file.type !== 'application/msword'
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+			console.log("please upload a pdf or powerpoint, word file.");
+			c.errorMessage = true;
+			c.upload_status = 'upload';
+		}
+		else if(file.size > 18874368){
+			console.log("File size should not exceed 18 MB.");
+			c.errorMessage = true;
+			c.upload_status = 'upload';
+		}
+		else{
+		  readFile(file, function(base64) {
+				var filename = file.name;
+				var attach = {
+								sys_id: c.data.rcf.sys_id,
+								type: 'attachment',
+								fileName: filename,
+								fileType: file.type,
+								fileContents : base64
+							};
+				RiskMgmtFile.uploadFile(attach, c.data.sessionId).then(function(res){
+					if(res){
+						c.upload_status = 'upload';
+						c.errorMesage = false;
+						c.data.attachments = res.data.result;
+						$scope.$apply();
+					}
+				}, function(error){
+						console.log(error);
+				});
+			});	
+		}
+	};
+	
+	c.submitRisk = function(){
+		c.data.action = 'Submit';
+		c.data.confirmMessage = "Are you ready to submit this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.submitRisk({sys_id:c.data.rcf.sys_id, notify: c.data.notifyManager}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					window.showMessageBox("Risk successfully submitted.",{xpage:'management',sub:'board'});
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	c.RMApproveRisk = function(){
+		c.data.action = 'RMApprove';
+		c.data.confirmMessage = "Are you sure you want to approve this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.RMApproveRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					if(result == 1){
+						window.showMessageBox("Risk has been successfully approved.",{xpage:'management',sub:'board'});
+					}
+					else{
+						window.showMessageBox("This Risk has already been approved or rejected, please check the latest status.",{xpage:'management',sub:'board'});
+					}
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	c.RMRejectRisk = function(){
+		c.data.action = 'RMReject';
+		c.data.confirmMessage = "Are you sure you want to reject this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.RMRejectRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					if(result == 1){
+						window.showMessageBox("Risk has been rejected. An email notification has been sent to Risk POC and RT.",{xpage:'management',sub:'board'});
+					}
+					else{
+						window.showMessageBox("This Risk has already been approved or rejected, please check the latest status.",{xpage:'management',sub:'board'});
+					}
+					
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	c.RCApproveRisk = function(){
+		c.data.action = 'RCApprove';
+		c.data.confirmMessage = "Are you sure you want to approve this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.RCApproveRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					if(result == 1){
+						window.showMessageBox("Risk has been successfully approved.",{xpage:'management',sub:'board'});
+					}
+					else{
+						window.showMessageBox("This Risk has already been approved or rejected, please check the latest status.",{xpage:'management',sub:'board'});
+					}
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	/*
+	c.RCRejectRisk = function(){
+		c.data.action = 'RCReject';
+		c.data.confirmMessage = "Are you sure you want to reject this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.RCRejectRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					window.showMessageBox("Risk has been rejected. An email notification has been sent to RT.",{xpage:'management',sub:'board'});
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	*/
+	
+	c.lockRisk = function(){
+		c.data.action = 'lock';
+		c.data.confirmMessage = "Are you ready to lock this risk?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.lockRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					if(result == 1){
+						window.showMessageBox("Risk has been successfully locked.",{xpage:'management',sub:'board'});
+					}
+					else{
+						window.showMessageBox("Can't lock this risk, please check the latest status.",{xpage:'management',sub:'board'});
+					}
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	c.unlockRisk = function(){
+		c.data.action = 'unlock';
+		c.data.confirmMessage = "Unlock will generate a new version of this risk.<br> Are you ready to unlock?";
+		//post to server
+		cb = function(){
+				RiskMgmtRisk.unlockRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+					var result = res.data.result;
+					$('#confirmDiv').modal('hide');
+					$scope.$apply();
+					if(result == 1){
+						window.showMessageBox("Risk has been successfully unlocked.",{xpage:'management',sub:'board'});
+					}
+					else{
+						window.showMessageBox("Can't unlock this risk, please check the latest status.",{xpage:'management',sub:'board'});
+					}
+				}, function(error){
+					console.log(error);
+				});
+		};
+		$('#confirmDiv').modal('show');
+	}
+	
+	c.updateRisk = function(){
+		var params = {};
+		params.sys_id = c.data.rcf.sys_id;
+		params.poc_name = c.data.rcf.poc.name;
+		params.poc_id = c.data.rcf.poc.id;
+		params.title = c.data.rcf.title;
+		params.section_1 = {};
+		params.section_1.enterprise = c.data.rcf.enterprise;
+		params.section_1.response = c.data.rcf.response;
+		params.section_1.ownership = c.data.rcf.ownership;
+		params.section_1.r_managers = c.data.rcf.r_managers;
+		params.section_1.statement = c.data.rcf.statement;
+		params.section_1.immediacy = c.data.rcf.immediacy;
+		params.section_1.control = c.data.rcf.control;
+		params.section_1.interest = c.data.rcf.interest;
+		params.section_1.interest_other = c.data.rcf.interest_other;
+		params.section_1.category = c.data.rcf.category;
+		params.section_1.subcategory = c.data.rcf.subcategory;
+		params.policies = c.data.rcf.policies;
+		params.activities = c.data.rcf.activities;
+		params.plan = c.data.rcf.plan;
+		params.section_2 = {};
+		params.section_2.impact = c.data.rcf.impact;
+		params.section_2.pub_impact = c.data.rcf.pub_impact;
+		params.section_2.org_impact = c.data.rcf.org_impact;
+		params.section_2.financial_impact = c.data.rcf.financial_impact;
+		params.section_2.overall_impact = c.data.rcf.overall_impact;
+		params.section_3 = {};
+		params.section_3.inplace = c.data.rcf.inplace;
+		params.section_3.effective = c.data.rcf.effective;
+		params.section_3.include = c.data.rcf.include;
+		params.section_3.aware = c.data.rcf.aware;
+		params.section_3.formal_action = c.data.rcf.formal_action;
+		params.section_3.likelihood = c.data.rcf.likelihood;
+		params.section_4 = {};
+		params.section_4.impact_score = c.data.rcf.impact_score;
+		params.section_4.likelihood_score = c.data.rcf.likelihood_score;
+		params.score = c.data.rcf.total_score;
+		params.au_recommend = c.data.rcf.au_recommend;
+		params.ompc_recommend = c.data.rcf.ompc_recommend;
+		params.eo_final_decision = c.data.rcf.eo_final_decision;
+		params.section_6 = {};
+		params.section_6.rationale = c.data.rcf.rationale;
+		params.section_6.form_comments = c.data.rcf.form_comments;
+		c.data.saving = true;
+		c.data.save_text = 'Saving...';
+		console.log(params);
+		RiskMgmtRisk.update(params, c.data.sessionId).then(function(rs){
+			var data = rs.data.result;
+			c.data.saving = false;
+			c.data.save_text = 'Save Form';
+			window.showMessageBox("Risk successfully updated.");
+		}, function(error){
+			console.log(error);
+		});
+	}
+	
+	c.data.role = $rootScope.user.role;
+	
+	var pm = {sys_id: c.data.rcf.sys_id};
+	RiskMgmtRisk.getById(pm,c.data.sessionId).then(function(rs){
+		var result = rs.data.result;
+		c.data.rcf = result.rcf;
+		c.data.rcf.poc = {id:c.data.rcf.poc_id,
+										 name: c.data.rcf.poc_name};
+		var section_1 = JSON.parse(c.data.rcf.section_1);
+		c.data.rcf.enterprise = section_1.enterprise;
+		c.data.rcf.response = section_1.response;
+		c.data.rcf.ownership = section_1.ownership;
+		c.data.rcf.r_managers = section_1.r_managers;
+		c.data.rcf.statement = section_1.statement;
+		c.data.rcf.immediacy = section_1.immediacy;
+		c.data.rcf.control = section_1.control;
+		c.data.rcf.interest = section_1.interest;
+		c.data.rcf.interest_other = section_1.interest_other;
+		c.data.rcf.category = section_1.category;
+		c.data.rcf.subcategory = section_1.subcategory;
+
+		var section_2 = JSON.parse(c.data.rcf.section_2);
+		c.data.rcf.impact = section_2.impact;
+		c.data.rcf.pub_impact = section_2.pub_impact;
+		c.data.rcf.org_impact = section_2.org_impact;
+		c.data.rcf.financial_impact = section_2.financial_impact;
+		c.data.rcf.overall_impact = section_2.overall_impact;
+		var section_3 = JSON.parse(c.data.rcf.section_3);
+		c.data.rcf.inplace = section_3.inplace;
+		c.data.rcf.effective = section_3.effective;
+		c.data.rcf.include = section_3.include;
+		c.data.rcf.aware = section_3.aware;
+		c.data.rcf.formal_action = section_3.formal_action;
+		c.data.rcf.likelihood = section_3.likelihood;
+		var section_4 = JSON.parse(c.data.rcf.section_4);
+		c.data.rcf.impact_score = section_4.impact_score;
+		c.data.rcf.likelihood_score = section_4.likelihood_score;
+		c.data.rcf.total_score = parseFloat(c.data.rcf.impact_score) + parseFloat(c.data.rcf.likelihood_score);
+		
+		var section_6 = JSON.parse(c.data.rcf.section_6);
+		c.data.rcf.rationale = section_6.rationale;
+		c.data.rcf.form_comments = section_6.form_comments;
+		c.data.pocs = [];
+		var arr_name = result.pocs.poc.split(',');
+		var arr_id = result.pocs.poc_id.split(',');
+		for(var i = 0; i< arr_id.length; i++){
+			c.data.pocs.push({id: arr_id[i], name: arr_name[i]});
+		}
+		if(s.next && c.data.rcf.status == "Initial Review" && (s.next == "approve" || s.next == "reject")){
+			if(s.next == "approve"){
+				c.RMApproveRisk();
+			}
+			else if(s.next == "reject"){
+				c.RMRejectRisk();
+			}
+		}
+	},function(error){
+		console.log(error);
+	});
+	
+	RiskMgmtComment.getComments(c.data.rcf.sys_id, c.data.sessionId).then(function(res){
+		var comments = res.data.result;
+		c.data.comments = comments;
+		c.data.comment = '';
+		$scope.$apply();
+	}, function(error){
+		console.log(error);
+	});
+	
+	RiskMgmtFile.getAttachments(c.data.rcf.sys_id, c.data.sessionId).then(function(res){
+		var attachments = res.data.result;
+		c.data.attachments = attachments;
+		$scope.$apply();
+	}, function(error){
+		console.log(error);
+	});
+	
+	
+}]]></client_script>
         <controller_as>c</controller_as>
         <css/>
         <data_table>sp_instance</data_table>
@@ -18,14 +485,19 @@
         <option_schema/>
         <public>false</public>
         <roles/>
-        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.sessionId = gs.getSession().getSessionToken();
+	data.userID = gs.getUserID();
+})();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>227</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -33,7 +505,508 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-14 16:04:24</sys_updated_on>
-        <template><![CDATA[<div><!-- your widget template --></div>]]></template>
+        <sys_updated_on>2019-01-14 18:22:51</sys_updated_on>
+        <template><![CDATA[<div class="risk-detail-content">
+	<div class="risk-detail-nav">
+  	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
+    <span><i class="fa fa-chevron-right" style="margin-left:10px;margin-right:10px;"></i>RCF: {{c.data.rcf.number}}</span>
+  </div>
+  <div class="container risk-detail-block">
+    <div class="col-md-8 risk-section">
+      <div class="risk-form-section">
+        <div class="risk-top-button">
+          <a href="#" ng-click="c.collapseAll();">Collapse All</a>
+          <a href="#" ng-click="c.expandAll();">Expand All</a>
+        </div>
+        <h4 style="text-align:center;font-weight:bold;">
+          Risk Capture Form
+        </h4>
+        <uib-accordion close-others="false">
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_1.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 1: Risk Identification <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_1.isOpen, 'fa fa-plus-square': !c.data.tab_1.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Title</div>
+              <div class="col-md-9">
+                <input type="text" ng-model="c.data.rcf.title" id="title" name="title" value="{{c.data.rcf.title}}" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Is this an Enterprise Risk?</div>
+              <div class="col-md-9" style="line-height:35px;">
+                <input type="radio" ng-model="c.data.rcf.enterprise" value="Yes" name="enterprise"> Yes
+                <input type="radio" ng-model="c.data.rcf.enterprise" value="No" name="enterprise"> No
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Response</div>
+              <div class="col-md-9" style="line-height:35px;">
+                <input type="radio" ng-model="c.data.rcf.response" value="Accept" name="response"> Accept
+                <input type="radio" ng-model="c.data.rcf.response" value="Reduce" name="response"> Reduce
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Functional Ownership</div>
+              <div class="col-md-5">
+                <input type="text" ng-model="c.data.rcf.ownership" id="ownership" name="ownership" value="{{c.data.rcf.ownership}}" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Managers</div>
+              <div class="col-md-9">
+                <input type="text" ng-model="c.data.rcf.r_managers" id="r_managers" name="r_managers" value="{{c.data.rcf.r_managers}}" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Risk Statement</div>
+              <div class="col-md-9">
+                <textarea rows=3 ng-model="c.data.rcf.statement" id="statement" name="statement" value="{{c.data.rcf.statement}}" class="form-control"></textarea>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Immediacy</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.immediacy" id="immediacy" name="immediacy">
+                  <option value="N/P"></option>
+                  <option value="in the past">The risk has occurred in the past.</option>
+                  <option value="uncertain">It is uncertain when the risk may occur.</option>
+                  <option value="one month">The risk may occur within one month.</option>
+                  <option value="six months">The risk may occur within six months.</option>
+                  <option value="one year">The risk may occur within one year.</option>
+                  <option value="more than one year">The risk may occur more than a year from now.</option>
+                  <option value="N/A">N/A</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Span of Control</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.control" id="control" name="control">
+                  <option value="N/P"></option>
+                  <option value="handled by IC/OD">The risk can be handled by the IC/OD Office.</option>
+                  <option value="can be managed by NIH">The risk can be handled by the IC/OD Office, but can be managed by the NIH.</option>
+                  <option value="cannot be directly managed">The risk is external to the NIH and cannot be directly managed.</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Special Interest Risk</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.interest" id="interest" name="interest">
+                  <option value="N/P"></option>
+                  <option value="N/A">N/A</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="text" ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"  ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" value="{{c.data.rcf.interest_other}}" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Category</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.category" id="category" name="category">
+                  <option value="N/P"></option>
+                  <option value="Acquisitions">Acquisitions</option>
+                  <option value="Ethics">Ethics</option>
+                  <option value="Extramural">Extramural</option>
+                  <option value="Facilities">Facilities</option>
+                  <option value="Financial">Financial</option>
+                  <option value="Human Capital">Human Capital</option>
+                  <option value="Information Management">Information Management</option>
+                  <option value="Intramural">Intramural</option>
+                  <option value="Management Initiatives">Management Initiatives</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Subcategory</div>
+              <div class="col-md-9">
+                <input type="text" ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" value="{{c.data.rcf.subcategory}}" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What are the primary policies and procedures in place to manage this risk?</div>
+              <div class="col-md-9">
+                <textarea rows=5 ng-model="c.data.rcf.policies" id="policies" name="policies" value="{{c.data.rcf.policies}}" class="form-control"></textarea>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What are the risk management activities undertaken this fiscal year related to this risk? (FMFIA Support)</div>
+              <div class="col-md-9">
+                <textarea rows=5 ng-model="c.data.rcf.activities" id="activities" name="activities" value="{{c.data.rcf.activities}}" class="form-control"></textarea>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Describe the Action Plan for a REDUCE Risk Response or the Rationale for Choosing an ACCEPT Risk Response</div>
+              <div class="col-md-9">
+                <textarea rows=5 ng-model="c.data.rcf.plan" id="plan" name="plan" value="{{c.data.rcf.plan}}" class="form-control"></textarea>
+              </div>
+            </div>
+          </div>
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_2.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 2: Risk Impact <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_2.isOpen, 'fa fa-plus-square': !c.data.tab_2.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Impact on your IC/OD Office Mission?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.impact" id="impact" name="impact" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="1">Minimal to no Effect</option>
+                  <option value="3">Significant Effect</option>
+                  <option value="5">Severe Effect</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the impact on Public Trust?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.pub_impact" id="pub_impact" name="pub_impact" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="1">Minimal to no Effect</option>
+                  <option value="3">Significant Effect</option>
+                  <option value="5">Severe Effect</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Organizational Impact?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.org_impact" id="org_impact" name="org_impact"  ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="1">Single IC or OD Office</option>
+                  <option value="3">More than one IC and OD office</option>
+                  <option value="5">All of NIH and may extend beyond</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Financial Impact to your IC/OD Office?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.financial_impact" id="financial_impact" name="financial_impact" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="1">Up to $500,000</option>
+                  <option value="3">$500,000 to $5 Million</option>
+                  <option value="5">Greater than $5 Million</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">In your professional judgement, what would be the overall impact on your IC/OD Office if this risk occurred?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.overall_impact" id="overall_impact" name="overall_impact" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="1">Minimal to no Effect</option>
+                  <option value="3">Significant Effect</option>
+                  <option value="5">Severe Effect</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_3.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 3: Risk Likelihood <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_3.isOpen, 'fa fa-plus-square': !c.data.tab_3.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Are written policies, procedures, or controls in place to manage this risk?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.inplace" id="inplace" name="inplace" ng-change="c.updateScore()">
+                  <option value="0">Yes</option>
+                  <option value="5">No</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Are written policies, procedures, and controls effective?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.effective" id="effective" name="effective" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="0.5">Strongly Agree</option>
+                  <option value="1.5">Agree</option>
+                  <option value="4">Disagree</option>
+                  <option value="5">Stringly Disagree</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Are all policies included in formal Federal, HHS, NIH or IC guidance?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.include" id="include" name="include" ng-change="c.updateScore()">
+                  <option value="0">Yes</option>
+                  <option value="5">No</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Individuals within my IC/OD Office are aware of this risk?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.aware" id="aware" name="aware" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="0.5">Strongly Agree</option>
+                  <option value="1.5">Agree</option>
+                  <option value="4">Disagree</option>
+                  <option value="5">Stringly Disagree</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Is IC/OD Office management taking formal actions to mitigate or address this risk?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.formal_action" id="formal_action" name="formal_action" ng-change="c.updateScore()">
+                  <option value="N/P"></option>
+                  <option value="1">Yes</option>
+                  <option value="5">No</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">In your professional judgement, what is the likelihood that the identified risk could occur?</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.likelihood" id="likelihood" name="likelihood" ng-change="c.updateScore()">
+                  <option value="0"></option>
+                  <option value="0.5">Very unlikely</option>
+                  <option value="1.5">Unlikely</option>
+                  <option value="4">Likely</option>
+                  <option value="5">Very Likely</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_4.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 4: Risk Score Information <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_4.isOpen, 'fa fa-plus-square': !c.data.tab_4.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Impact</div>
+              <div class="col-md-5">
+                <input type="text" ng-model="c.data.rcf.impact_score" id="impact_score" name="impact_score" value="{{c.data.rcf.impact_score}}" disabled="true" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Likelihood</div>
+              <div class="col-md-5">
+                <input type="text" ng-model="c.data.rcf.likelihood_score" id="likelihood_score" name="likelihood_score" value="{{c.data.rcf.likelihood_score}}" disabled="true" class="form-control">
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Score</div>
+              <div class="col-md-5" ng-if="c.data.rcf.total_score <= 18.5">
+                <input type="text" style="color:green;" ng-model="c.data.rcf.total_score" id="total_score" name="total_score" value="{{c.data.rcf.total_score}}" disabled="true" class="form-control">
+              </div>
+              <div class="col-md-5" ng-if="c.data.rcf.total_score >= 19 && c.data.rcf.total_score <= 33.5">
+                <input type="text" style="color:yellow;" ng-model="c.data.rcf.total_score" id="total_score" name="total_score" value="{{c.data.rcf.total_score}}" disabled="true" class="form-control">
+              </div>
+              <div class="col-md-5" ng-if="c.data.rcf.total_score >= 34">
+                <input type="text" style="color:red;" ng-model="c.data.rcf.total_score" id="total_score" name="total_score" value="{{c.data.rcf.total_score}}" disabled="true" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_5.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 5: Risk Recommendation <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_5.isOpen, 'fa fa-plus-square': !c.data.tab_5.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">AU Recommend</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend">
+                  <option value="N/P"></option>
+                  <option value="maintain">Maintain the risk</option>
+                  <option value="retire">Retire the risk</option>
+                  <option value="add">Add to inventory</option>
+                  <option value="donot add">Do not add to inventory</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">OMPC Recommend</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.ompc_recommend" id="ompc_recommend" name="ompc_recommend">
+                  <option value="N/P"></option>
+                  <option value="maintain">Maintain the risk</option>
+                  <option value="retire">Retire the risk</option>
+                  <option value="add">Add to inventory</option>
+                  <option value="donot add">Do not add to inventory</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">EO Final Decision</div>
+              <div class="col-md-5">
+                <select class="form-control" ng-model="c.data.rcf.eo_final_decision" id="eo_final_decision" name="eo_final_decision">
+                  <option value="N/P"></option>
+                  <option value="maintain">Maintain the risk</option>
+                  <option value="retire">Retire the risk</option>
+                  <option value="add">Add to inventory</option>
+                  <option value="donot add">Do not add to inventory</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div uib-accordion-group class="panel-default" is-open="c.data.tab_6.isOpen">
+            <uib-accordion-heading>
+              <div>
+                Section 6: Other Information <i class="pull-right" ng-class="{'fa fa-minus-square': c.data.tab_6.isOpen, 'fa fa-plus-square': !c.data.tab_6.isOpen}"></i>
+              </div>
+            </uib-accordion-heading>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Rationale for Red Risk, Changes to Risk Score, Changes to Risk Response, or Risk Retirement</div>
+              <div class="col-md-9">
+                <textarea rows=3 ng-model="c.data.rcf.rationale" id="rationale" name="rationale" value="{{c.data.rcf.rationale}}" class="form-control"></textarea>
+              </div>
+            </div>
+            <div class="form-section" style="display:flex;">
+              <div class="col-md-3" style="padding-left:0px;text-align:right;">Comments</div>
+              <div class="col-md-9">
+                <textarea rows=3 ng-model="c.data.rcf.form_comments" id="form_comments" name="form_comments" value="{{c.data.rcf.form_comments}}" class="form-control"></textarea>
+              </div>
+            </div>
+          </div>
+        </uib-accordion>
+      </div>
+      <div class="risk-button-section">
+        <!-- Waiting for RM approval -->
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMApproveRisk()" ng-show="c.data.rcf.status == 'Initial Review' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Approve
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMRejectRisk()" ng-show="c.data.rcf.status == 'Initial Review' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Reject
+        </button>
+        <!-- Waiting for RC approval -->
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RCApproveRisk()" ng-show="c.data.rcf.status == 'Final Review' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Approve
+        </button>
+        <!--
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RCRejectRisk()" ng-show="c.data.rcf.status == 'Final Review' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Reject
+        </button>
+        -->
+        <!-- lock/unlock -->
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.lockRisk()" ng-show="c.data.rcf.status == 'Complete' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Lock
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.unlockRisk()" ng-show="c.data.rcf.status == 'Closed' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Unlock
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Submit
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          {{c.data.save_text}}
+        </button>
+        <button type="button" class="table-button btn btn-primary" ng-click="c.gotoPage('management','board');">
+          Cancel
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4 related-info-section">
+      <div class="basic-info-header">
+        Information
+      </div>
+      <div class="basic-info-block">
+        <div class="form-section">
+          <div class="col-md-4" style="text-align:right;">Fiscal Year:</div>
+          <div class="col-md-8">
+            {{c.data.rcf.fiscalYear}}
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="col-md-4" style="text-align:right;">Manager:</div>
+          <div class="col-md-8">
+            {{c.data.rcf.manager_name}}
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="col-md-4" style="line-height:35px;text-align:right;">POC:</div>
+          <div class="col-md-8">
+            <select class="form-control" name="pocSelect" id="pocSelect" ng-options="option.name for option in c.data.pocs track by option.id"
+                    ng-model="c.data.rcf.poc" ng-disabled="c.data.role.indexOf('RC') == -1">
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="comment-header">
+        Comment History ({{c.data.comments.length}})
+      </div>
+      <div class="comment-block">      
+        <div class="comment-submit">
+          <div style="width:100%;"><textarea name="comment" placeholder="Add comment here" rows="3" ng-model="c.data.comment" style="width:100%;border-color:#ddd;border-radius:5px;"></textarea></div>
+          <div style="width:100%; text-align:right;"><button type="button" class="table-button btn btn-primary" ng-disabled="c.data.comment == undefined || c.data.comment == ''" ng-click="c.addComment()">Submit</button></div> 
+        </div>
+        <div class="comment-list">
+          <div class="comment-row" ng-show = "c.data.comments.length == 0"> 
+            <p class="break-word kb-comments-list ng-binding" style="white-space: pre-wrap">No comments.</p> 
+          </div>
+          <div class="comment-row" ng-repeat = "row in c.data.comments" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize"> 
+            <p style="font-weight: bold" class="author pad-right kb-comments-list ng-binding"> {{row.userName}} <span class="published pad-right"> - {{row.time}}</span> <a class="btn-link" ng-click="c.deleteComment(row.sys_id)" role="link" ng-show="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || row.userID == c.data.userID">Delete</a></p> 
+            <p class="break-word kb-comments-list ng-binding" style="white-space: pre-wrap">{{row.comment}}</p> 
+          </div>
+        </div>
+        <div class="tab-paging-section" ng-if="(c.data.comments.length / c.data.pageSize) > 1">
+          <ul uib-pagination total-items="c.data.comments.length" items-per-page="c.data.pageSize" ng-model="c.data.bigCurrentPage" max-size="c.data.maxSize" class="pagination-sm" ng-change="c.pageChanged()" direction-links="false" boundary-links="true" force-ellipses="true">
+          </ul>
+      </div>
+      </div>
+      <div class="attachment-header">
+        Attachments
+      </div>
+      <div class="attachment-block">
+        <div>
+          <div class="upload-form">
+            <div style="width:100%;"><input type="file" id="file2upload" class="form-control" style="cursor: pointer;"></div>
+            
+            <div style="width:100%; margin-top: 5px;overflow:auto;">
+              <div class="col-md-9" style="padding:0px;">
+                <h5 ng-if="!c.errorMessage">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
+                <h5 ng-if="c.errorMessage" style="color: red;">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
+              </div>
+              <div class="col-md-3" style="text-align:right;padding-right:0px;">
+                <button type="button" class="table-button btn btn-primary" ng-click="c.uploadAttachment()" ng-disabled="c.upload_status == 'uploading...' || c.file2upload == ''">{{c.upload_status}}</button></div> 
+              </div>
+          </div>
+          <div class="file-list">
+            <div class="file-block" ng-repeat="attach in c.data.attachments">
+              <a ng-if="attach.file_type == 'application/pdf'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <a ng-if="attach.file_type == 'application/vnd.ms-powerpoint' || attach.file_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-powerpoint-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <a ng-if="attach.file_type == 'application/msword' || attach.file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-word-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <span style="float:right;">{{attach.create_time.substring(0,10)}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+<div id="confirmDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
+  <div class="modal-dialog modal-lg" style="width:20%;">
+    <div class="modal-content" style="height:150px; overflow-y:auto; overflow-x: hidden;">
+      <div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage">
+      </div>
+      <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.action == 'Submit'">
+        <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyManager" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyManager">&nbsp;Notify Risk Manager
+      </div>
+      <div class="col-md-12" align="center">
+        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.goAhead();" data-dismiss="modal">Yes</button>
+        <button class="btn btn-primary" ng-click="c.cancelConfirm();" data-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>]]></template>
     </sp_widget>
 </record_update>

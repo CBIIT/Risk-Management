@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sp_angular_provider">
+    <sp_angular_provider action="INSERT_OR_UPDATE">
+        <name>RiskMgmtComment</name>
+        <script><![CDATA[function RiskMgmtComment($http){
+	this.getComments = function(sysId, sessionId){
+		return new Promise(function(resolve, reject){
+			$http({
+				 url: '/api/x_naci_risk_manage/riskmgmtrestapi/getComments',
+				 method : "GET",
+				 beforeSend: function(xhr){ xhr.setRequestHeader('X-UserToken', sessionId); },
+				 headers: {'Content-Type': 'application/json'},
+				 params: {sysId: sysId} 				
+			}).then(resolve, reject);
+		});
+	};
+	this.addComment = function(sysId, comment, sessionId){
+		return new Promise(function(resolve, reject){
+			$http({
+				 url: '/api/x_naci_risk_manage/riskmgmtrestapi/addComment',
+				 method : "POST",
+				 beforeSend: function(xhr){ xhr.setRequestHeader('X-UserToken', sessionId); },
+				 headers: {'Content-Type': 'application/json'},
+				 data: {sysId: sysId, comment: comment} 				
+			}).then(resolve, reject);
+		});
+	};
+	this.deleteComment = function(sysId, sessionId){
+		return new Promise(function(resolve, reject){
+			$http({
+				 url: '/api/x_naci_risk_manage/riskmgmtrestapi/deleteComment',
+				 method : "POST",
+				 beforeSend: function(xhr){ xhr.setRequestHeader('X-UserToken', sessionId); },
+				 headers: {'Content-Type': 'application/json'},
+				 data: {sysId: sysId} 				
+			}).then(resolve, reject);
+		});
+	};
+}]]></script>
+        <sys_class_name>sp_angular_provider</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-10 18:57:43</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>13105a2bdbfa6300b86770c08c961970</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>RiskMgmtComment</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sp_angular_provider_13105a2bdbfa6300b86770c08c961970</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-10 20:50:53</sys_updated_on>
+        <type>service</type>
+    </sp_angular_provider>
+</record_update>

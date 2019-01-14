@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>submitRisk</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    var sys_id = request.body.data.sys_id;
+	var notify = request.body.data.notify;
+	
+	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
+	gr.addQuery('sys_id',sys_id);
+	gr.query();
+	gr.next();
+	gr.comments = 'User:' + gs.getUser().getFirstName() + ' ' + gs.getUser().getLastName() + ' submitted risk.';	
+	gr.approval_action = 'approved';
+	gr.update();
+	
+	if(notify){
+		var manager_name = gr.getDisplayValue('manager_name').replace(",","&");
+		var manager_email = "";
+		var user_item = new GlideRecord('sys_user');
+	    user_item.addQuery('sys_id', 'IN', gr.getDisplayValue('manager_id').split(","));
+		user_item.query();
+		while(user_item.next()){
+			manager_email += user_item.getDisplayValue('email') + ",";
+		}
+		manager_email = manager_email.substring(0,manager_email.length - 1);
+		gs.eventQueue('x_naci_risk_manage.notify_manager',gr, manager_name, manager_email);
+	}
+	
+	return 1;
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_naci_risk_manage/riskmgmtrestapi/submitRisk</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/submitRisk</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-11 17:00:55</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>dfee72b3dbfaa300b86770c08c9619d3</sys_id>
+        <sys_mod_count>9</sys_mod_count>
+        <sys_name>submitRisk</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_ws_operation_dfee72b3dbfaa300b86770c08c9619d3</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-11 22:48:54</sys_updated_on>
+        <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
+        <web_service_version/>
+    </sys_ws_operation>
+</record_update>

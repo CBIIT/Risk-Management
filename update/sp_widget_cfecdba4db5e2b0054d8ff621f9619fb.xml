@@ -2,17 +2,18 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope,$location) {
+        <client_script><![CDATA[function($scope,spUtil,$http,$location,RiskMgmtUser, RiskMgmtPOC) {
   /* widget controller */
   var c = this;
 	var s = $location.search();
 	
-	c.data.pocs = [{
-		sys_id:'1',
-		doc: 'CBIIT',
-		manager_name: 'Jeff Shilling',
-		poc_name: 'Jeff Shilling'
-	}];
+	c.currentConfig = {};
+	c.currentConfig.sys_id = '';
+	c.currentConfig.doc = '';
+	c.currentConfig.manager = [];
+	c.currentConfig.poc = [];
+	c.currentConfig.manager_id = [];
+	c.currentConfig.poc_id = [];
 	
 	$scope.sortKey = 'doc';
 	$scope.reverse = true;
@@ -38,15 +39,123 @@
 		
 	}
 	
-	c.editAU = function(sys_id){
-		
+	c.editPOCs = function(sys_id){
+		var params = {};
+		params.sys_id = sys_id;
+		RiskMgmtPOC.getById(params, c.data.sessionId).then(function(rs){
+			var result = rs.data.result;
+			c.currentConfig.sys_id = sys_id;
+			c.currentConfig.doc = result.doc;
+			c.currentConfig.manager = [];
+			var mn = result.manager.split(',');
+			var mi = result.manager_id.split(',');
+			for(var i = 0; i< mn.length; i++){
+				c.currentConfig.manager.push({id: mi[i], name: mn[i]});
+			}
+			c.currentConfig.poc = [];
+			mn = result.poc.split(',');
+			mi = result.poc_id.split(',');
+			for(i = 0; i< mn.length; i++){
+				c.currentConfig.poc.push({id: mi[i], name: mn[i]});
+			}
+			$scope.$apply();
+			$('#configDiv').modal('show');
+		}, function(error){
+			console.error(error);
+		});
 	}
 	
-	c.gotoPage = function(page){
+	c.saveConfig = function(){
+		var params = {};
+		params.sys_id = c.currentConfig.sys_id;
+		params.manager = '';
+		params.manager_id = '';
+		c.currentConfig.manager.forEach(function(m){
+			params.manager += m.name + ',';
+			params.manager_id += m.id + ',';
+		});
+		params.manager = params.manager.substring(0, params.manager.length -1);
+		params.manager_id = params.manager_id.substring(0, params.manager_id.length -1);
+		params.poc = '';
+		params.poc_id = '';
+		c.currentConfig.poc.forEach(function(p){
+			params.poc += p.name + ',';
+			params.poc_id += p.id + ',';
+		});
+		params.poc = params.poc.substring(0, params.poc.length -1);
+		params.poc_id = params.poc_id.substring(0, params.poc_id.length -1);
+		RiskMgmtPOC.update(params, c.data.sessionId).then(function(rs){
+			//var result = rs.data.result;
+			c.currentConfig = {};
+			$scope.$apply();
+			$('#configDiv').modal('hide');
+		}, function(error){
+			console.error(error);
+		});
+	}
+	
+	c.gotoPage = function(page,sub){
 		s.xpage = page;
+		s.sub = sub;
+		s.fib = null;
+		s.next = null;
 		$location.search(s).replace();
 	}
 	
+	c.cancelConfig = function(){
+		$('#configDiv').modal('hide');
+	}
+	
+	c.tagAdding = function(tag, type){
+		
+	};
+	
+	c.tagRemoving = function(tag, type){
+		
+	};
+	
+	c.loadDictionary = function(query){
+		var name = query.trim();
+		if (name.length < 4) {
+			return [];
+		}
+		var first = '';
+		var last = '';
+		var idx = name.indexOf(',');
+		if (idx >= 0) {
+			last = name.substring(0,idx).trim();
+			first = name.substring(idx+1).trim();
+		}
+		else{
+			idx = name.indexOf(' ');
+			if(idx >= 0){
+				first = name.substring(0,idx).trim();
+				last = name.substring(idx+1).trim();
+			}
+			else{
+				first = name.trim();
+				last = name.trim();
+			}
+		}
+		var params = {};
+		params.first = first;
+		params.last = last;
+		return RiskMgmtUser.searchByName(params, c.data.sessionId).then(function(rs){
+				var tags = [];
+				var result = rs.data.result;
+				result.forEach(function(r){
+					tags.push({text: r.label, id: r.id, name: r.value});
+				});
+				return tags;
+			}, function(error){
+				console.error(error);
+				return [];
+			});
+	};
+	
+	spUtil.recordWatch($scope, "x_naci_risk_manage_pocs", "", function(name, data) {
+			spUtil.update($scope);
+	});
 	
 }]]></client_script>
         <controller_as>c</controller_as>
@@ -64,14 +173,31 @@
         <option_schema/>
         <public>false</public>
         <roles/>
-        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.sessionId = gs.getSession().getSessionToken();
+	data.pocs = [];
+	
+	var userId = gs.getUserID();
+	var pocs_item = new GlideRecord('x_naci_risk_manage_pocs');
+			pocs_item.query();
+	while(pocs_item.next()){
+		var item = {};
+		item.sys_id = pocs_item.sys_id.toString();
+		item.doc = pocs_item.getDisplayValue('doc');
+		item.manager_name = pocs_item.getDisplayValue('manager_name');
+		item.poc_name = pocs_item.getDisplayValue('poc_name');
+		data.pocs.push(item);
+	}
+})();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
         <sys_created_on>2018-12-07 20:19:36</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>cfecdba4db5e2b0054d8ff621f9619fb</sys_id>
-        <sys_mod_count>45</sys_mod_count>
+        <sys_mod_count>142</sys_mod_count>
         <sys_name>riskmgmt config</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -79,10 +205,10 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_cfecdba4db5e2b0054d8ff621f9619fb</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-31 22:41:12</sys_updated_on>
+        <sys_updated_on>2019-01-14 14:59:20</sys_updated_on>
         <template><![CDATA[<div class="settings-content">
 	<div class="settings-nav">
-  	<a href="#" ng-click="c.gotoPage('management');"><i class="fa fa-chevron-left"></i> Back to Risk Management</a>
+  	<a href="#" ng-click="c.gotoPage('management','board');"><i class="fa fa-chevron-left"></i> Back to Risk Management</a>
   </div>
   <div class="settings-block">
     <h4 style="text-align:center;">
@@ -107,12 +233,62 @@
           <td>{{x.manager_name}}</td>
           <td>{{x.poc_name}}</td>
          	<td>
-            <button type="button" class="table-button" ng-click="c.editAU(x.sys_id);">
+            <button type="button" class="table-button btn btn-primary" ng-click="c.editPOCs(x.sys_id);">
               Edit
             </button>
           </td>
         </tr>
       </table>
+    </div>
+  </div>
+</div>
+<div id="configDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
+  <div class="modal-dialog modal-lg" style="width:20%;">
+    <div class="modal-content" style="min-height:330px; overflow-y:hidden; overflow-x: hidden;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="c.cancelConfig()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4  class="modal-title">Config</h4>
+      </div>      
+      <div class="modal-body" style="padding-bottom: 0px;">
+        <div class="form-section">
+          <label for="doc">AU(DOC):</label>
+          <input type="text" ng-model="c.currentConfig.doc" id="doc" name="doc" value="{{c.currentConfig.doc}}" disabled="true" class="form-control">
+        </div>
+        <div class="form-section">
+          <label for="manager"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Manager:</label>
+          <tags-input ng-model="c.currentConfig.manager" placeholder="Add a manager" key-property="id" display-property="name" replace-spaces-with-dashes=false style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'1')" on-tag-removing="c.tagRemoving($tag,'1')">
+            <auto-complete source="c.loadDictionary($query)"
+                           min-length="0"
+                           display-property="text"
+                           load-on-focus="false"
+                           load-on-empty="false"
+                           select-first-match="false"
+                           max-results-to-show="10"></auto-complete>
+          </tags-input>
+        </div>
+        <div class="form-section">
+          <label for="poc"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk POCs:</label>
+          <tags-input ng-model="c.currentConfig.poc" placeholder="Add a POC" key-property="id" display-property="name"  replace-spaces-with-dashes=false style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'2')" on-tag-removing="c.tagRemoving($tag,'2')">
+            <auto-complete source="c.loadDictionary($query)"
+                           min-length="0"
+                           display-property="text"
+                           load-on-focus="false"
+                           load-on-empty="false"
+                           select-first-match="false"
+                           max-results-to-show="10"></auto-complete>
+          </tags-input>
+        </div>
+      </div>
+      <div class="form-section" style="text-align:center; padding-top: 15px;border-top: 1px solid #e5e5e5;">
+          <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.saveConfig()" ng-disabled="c.currentConfig.manager.length == 0 || c.currentConfig.poc.length == 0">
+            Save
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.cancelConfig()">
+            Cancel
+          </button>
+        </div>
     </div>
   </div>
 </div>]]></template>

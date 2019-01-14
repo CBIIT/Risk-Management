@@ -2,7 +2,298 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function() {  /* widget controller */  var c = this;}]]></client_script>
+        <client_script><![CDATA[function($scope,$rootScope,$location, RiskMgmtRisk, RiskMgmtFile) {
+  /* widget controller */
+  var c = this;
+	var s = $location.search();
+	
+	c.data.maxSize = 5;
+	c.data.pageSize = 10;
+	c.data.bigCurrentPage = 1;
+	
+	c.data.searchText = "";
+	c.data.isRC_RT = true;
+	c.data.prev_maxSize = 5;
+	c.data.prev_pageSize = 10;
+	c.data.prev_bigCurrentPage = 1;
+	c.data.loading = false;
+	c.data.load_text = 'Load';
+	
+	c.data.meetingnotes = {};
+	c.upload_status = "upload";
+	c.file2upload = '';
+	
+	$scope.sortKey = 'doc';
+	$scope.reverse = true;
+	$scope.prev_sortKey = 'doc';
+	$scope.prev_reverse = true;
+	
+	$scope.sort = function(keyname) {		
+		$scope.sortKey = keyname;
+		$scope.reverse = !$scope.reverse;
+	};
+	
+	$scope.prev_sort = function(keyname) {		
+		$scope.prev_sortKey = keyname;
+		$scope.prev_reverse = !$scope.prev_reverse;
+	};
+	
+	c.handleKeyPress = function(keyEvent){
+		if (keyEvent.which === 13){
+			c.filterRisks();
+		}
+	}
+	
+	c.searchTextChange = function(){
+		if(c.data.searchText.length > 3){
+			c.filterRisks();
+		}
+	}
+	
+	c.filterRisks = function(){
+		
+	}
+	
+	c.pageChanged = function(){
+		if($scope.sortKey == 'doc'){
+			console.log(c.data.filtered);
+		}
+	}
+	
+	c.removeDuplicate = function(result){
+		c.data.prev_risks = [];
+		result.forEach(function(r){
+			if(c.data.auRisks[r.doc] == undefined || c.data.auRisks[r.doc].indexOf(r.title) < 0){
+				c.data.prev_risks.push(r);
+			}
+		});
+	}
+	
+	c.loadRisks = function(){
+		if($rootScope.user && $rootScope.user.doc.length > 0){
+			RiskMgmtRisk.getByCriteria({year:c.data.prevFiscalYear,doc: $rootScope.user.doc,stage:'Closed'},c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				c.removeDuplicate(result);
+				c.data.selectedRisks = [];
+				$scope.$apply();
+			  $('#loadRiskDiv').modal('show');
+			},function(error){
+				console.log(error);
+			});
+		}
+		else{
+			RiskMgmtRisk.getByCriteria({year:c.data.prevFiscalYear,stage:'Closed'},c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				c.removeDuplicate(result);
+				c.data.selectedRisks = [];
+				$scope.$apply();
+			  $('#loadRiskDiv').modal('show');
+			},function(error){
+				console.log(error);
+			});
+		}
+	}
+	
+	c.selectAll = function(){
+		var selectAll = document.getElementById("selectAllRisks");
+		c.data.selectedRisks = [];
+		if(selectAll.checked){
+			var tmp = [];
+			c.data.prev_risks.map(function(obj){
+				tmp.push(obj.sys_id);
+			});
+			c.data.selectedRisks = tmp;
+		}
+	}
+	
+	c.updateSelected = function(item){
+		if(item.selected){
+			c.data.selectedRisks.push(item.sys_id);
+		}
+		else{
+			var idx = c.data.selectedRisks.indexOf(item.sys_id);
+			if (idx > -1) {
+				c.data.selectedRisks.splice(idx, 1);
+			}
+		}
+	}
+	
+	c.importRisks = function(){
+		var params = {};
+		params.fiscalYear = c.data.fiscalYear;
+		params.ids = c.data.selectedRisks.join(',');
+		c.data.loading = true;
+		c.data.load_text = 'Loading...';
+		RiskMgmtRisk.load(params,c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				c.getThisYearsRisks(function(){
+					c.data.loading = false;
+					c.data.load_text = 'Load';
+					$scope.$apply();
+					$('#loadRiskDiv').modal('hide');
+				});
+			},function(error){
+				console.log(error);
+			});
+	}
+	
+	c.cancelLoadRisk = function(){
+		$('#loadRiskDiv').modal('hide');
+	}
+	
+	var fileInput  = document.getElementById("file2upload");
+
+	fileInput.addEventListener( "change", function( event ) {
+		c.file2upload = this.value;
+		$scope.$apply();
+	});
+	
+	function readFile(file, callback) {
+		var fileReader = new FileReader();
+		fileReader.onload = function() {
+			//var result = fileReader.result.replace('data:application/pdf;base64,', '');
+			var encoded = fileReader.result.replace(/^data:(.*;base64,)?/, '');
+      if ((encoded.length % 4) > 0) {
+        encoded += '='.repeat(4 - (encoded.length % 4));
+      }
+			callback(encoded);
+		}
+		fileReader.readAsDataURL(file); //file must be base64
+	}
+	
+	c.uploadMeetingNote = function(){
+		c.upload_status = 'uploading...';
+		
+		var input = $('#file2upload')[0];
+		var file = input.files[0];
+		
+		if(file.type !== 'application/pdf' && file.type !== 'application/vnd.ms-powerpoint' 
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+			 && file.type !== 'application/msword'
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+			console.log("please upload a pdf or powerpoint, word file.");
+			c.errorMessage = true;
+			c.upload_status = 'upload';
+		}
+		else if(file.size > 18874368){
+			console.log("File size should not exceed 18 MB.");
+			c.errorMessage = true;
+			c.upload_status = 'upload';
+		}
+		else{
+		  readFile(file, function(base64) {
+				var filename = file.name;
+				var attach = {
+								sys_id: c.data.meetingnotes.sys_id,
+								type: 'meetingnotes',
+								fileName: filename,
+								fileType: file.type,
+								fileContents : base64
+							};
+				RiskMgmtFile.uploadFile(attach, c.data.sessionId).then(function(res){
+					if(res){
+						c.upload_status = 'upload';
+						c.errorMesage = false;
+						c.data.meetingnotes.attachments = res.data.result;
+						$scope.$apply();
+					}
+				}, function(error){
+						console.log(error);
+				});
+			});	
+		}
+	};
+	
+	c.cancelMeetingNotes = function(){
+		$('#meetingNotesDiv').modal('hide');
+	}
+	
+	c.gotoNewRisk = function(){
+		//redirect to new risk page
+		s.xpage = 'management';
+		s.sub = 'new';
+		s.fid = null;
+		s.next = null;
+		$location.search(s).replace();
+	}
+	
+	c.viewRCF = function(sys_id){
+		//redirect to new risk page
+		s.xpage = 'management';
+		s.sub = 'form';
+		s.fid = sys_id;
+		s.next = null;
+		$location.search(s).replace();
+	}
+	
+	c.exportPDF = function(sys_id){
+		
+	}
+	
+	c.meetingNotes = function(doc, year){
+		c.data.meetingnotes.doc = doc;
+		c.data.meetingnotes.fiscalYear = year;
+		var params = {};
+		params.doc = doc;
+		params.fiscalYear = year;
+		RiskMgmtFile.getMeetingNotes(params, c.data.sessionId).then(function(rs){
+			var result = rs.data.result;
+			c.data.meetingnotes.sys_id = result.meeting_id;
+			c.data.meetingnotes.attachments = result.list;
+			$scope.$apply();
+			$('#meetingNotesDiv').modal('show');
+		},function(error){
+				console.log(error);
+			});
+		
+	}
+	
+	
+	c.getThisYearsRisks = function(cb){
+		c.data.role = $rootScope.user.role;
+		if($rootScope.user && $rootScope.user.doc.length > 0){
+			RiskMgmtRisk.getByCriteria({year:c.data.fiscalYear,doc: $rootScope.user.doc},c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				c.data.risks = result;
+				c.data.auRisks = {};
+				$rootScope.user.doc.forEach(function(dc){
+					c.data.auRisks[dc] = [];
+				});
+				c.data.risks.forEach(function(risk){
+					c.data.auRisks[risk.doc].push(risk.title);
+				});
+				if(cb){
+					cb();
+				}
+			},function(error){
+				console.log(error);
+			});
+		}
+		else{
+			RiskMgmtRisk.getByCriteria({year:c.data.fiscalYear},c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				c.data.risks = result;
+				c.data.auRisks = {};
+				c.data.risks.forEach(function(risk){
+					if(!(risk.doc in c.data.auRisks)){
+						c.data.auRisks[risk.doc] = [];
+					}
+					c.data.auRisks[risk.doc].push(risk.title);
+				});
+				if(cb){
+					cb();
+				}
+			},function(error){
+				console.log(error);
+			});
+		}
+	}
+	
+	c.getThisYearsRisks();
+	
+	
+	
+}]]></client_script>
         <controller_as>c</controller_as>
         <css/>
         <data_table>sp_instance</data_table>
@@ -18,14 +309,28 @@
         <option_schema/>
         <public>false</public>
         <roles/>
-        <script><![CDATA[(function() {  /* populate the 'data' object */  /* e.g., data.table = $sp.getValue('table'); */})();]]></script>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	//check the fiscal year
+	data.sessionId = gs.getSession().getSessionToken();
+	var today = new Date();
+	if(today.getMonth() > 9){
+		data.fiscalYear = today.getFullYear() + 1;
+		data.prevFiscalYear = today.getFullYear();
+	}
+	else{
+		data.fiscalYear = today.getFullYear();
+		data.prevFiscalYear = today.getFullYear() - 1;
+	}
+})();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>1</sys_mod_count>
+        <sys_mod_count>258</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -33,9 +338,170 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-07 20:21:55</sys_updated_on>
-        <template><![CDATA[<div>
-Risk list
+        <sys_updated_on>2019-01-14 16:58:32</sys_updated_on>
+        <template><![CDATA[<div class="management-content">
+	<div class="management-header">
+  	<div class="management-year">
+      {{c.data.fiscalYear}} Risks
+    </div>
+    <div class="management-buttons">
+      <button type="button" class="table-button btn btn-primary" ng-click="c.loadRisks();">
+        Load Risks
+      </button>
+      <button type="button" class="table-button btn btn-primary" ng-click="c.gotoNewRisk();" >
+        Add new Risk
+      </button>
+    </div>
+    <div class="management-search">
+      <span class="search-button" ng-click="c.filterRisks()" aria-label="search"><i class="fa fa-search" aria-hidden="true"></i></span>	
+      <div class="search-input">
+        <input type="text"  ng-model="c.data.searchText" placeholder="filter by text" ng-keypress="c.handleKeyPress($event)" ng-change="c.searchTextChange()" class="form-control">
+      </div>
+    </div>
+  </div>
+  <div class="table-section">
+    <table width="100%">
+      <tr class="table-header">
+        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:20%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('au_recommend')" style="width:8%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('ompc_recommend')" style="width:8%;text-align:center;">OMPC<br>Recommend <i ng-show="sortKey == 'ompc_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'ompc_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('eo_final_decision')" style="width:8%;text-align:center;">EO<br>Final Decision <i ng-show="sortKey == 'eo_final_decision' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'eo_final_decision' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th style="width:16%;text-align:center;">Action</th>
+      </tr>
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+				<td class="td-right-line">{{x.doc}}</td>
+        <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.manager_name}}</td>
+        <td class="td-right-line">{{x.poc_name}}</td>
+        <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
+        <td class="td-right-line">{{x.ompc_recommend == 'N/P' ? "" : x.ompc_recommend}}</td>
+        <td class="td-right-line">{{x.eo_final_decision == 'N/P' ? "" : x.eo_final_decision}}</td>
+        <td class="td-right-line">{{x.status}}</td>
+        <td style="padding-bottom:5px;">
+          <button type="button" class="table-button btn btn-primary" ng-click="c.viewRCF(x.sys_id);">
+            View RCF
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.exportPDF(x.sys_id);">
+            Export
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.meetingNotes(x.doc, x.fiscal_year);" ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
+            Meeting Notes
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="tab-paging-section">
+      <ul ng-if="(c.data.filtered.length / c.data.pageSize) > 1"  uib-pagination total-items="c.data.filtered.length" items-per-page="c.data.pageSize" ng-model="c.data.bigCurrentPage" max-size="c.data.maxSize" class="pagination-sm" ng-change="c.pageChanged()" direction-links="false" boundary-links="true" force-ellipses="true">
+      </ul>
+      <div class="tab-paging-setting">
+        <label for="risk_pageSize" class="label-hidden">pageSize:</label>
+        <select class="form-control" id="pageSize" ng-model="c.data.pageSize" ng-init="c.data.pageSize = '10'">
+          <option value="1">1</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <div class="tab-paging-label">Items per page:</div>
+  </div>
+</div>
+<div id="loadRiskDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
+  <div class="modal-dialog modal-lg" style="width:600px;">
+    <div class="modal-content" style="min-height:500px; overflow-y:hidden; overflow-x: hidden;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="c.cancelLoadRisk()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4  class="modal-title">{{c.data.prevFiscalYear}} Risks</h4>
+      </div>      
+      <div class="modal-body" style="padding-bottom:0px;">
+        <div class="table-section">
+          <table width="100%">
+            <tr class="table-header">
+              <th class="td-right-line" style="width:10%;text-align:center;"><input type="checkbox" id="selectAllRisks" class="" ng-click="c.selectAll()" ng-checked="c.data.selectedRisks.length != 0  && c.data.selectedRisks.length == c.data.prev_risks.length"></th>
+              <th class="td-right-line" ng-click="prev_sort('doc')" style="width:20%;text-align:center;">AU(DOC) <i ng-show="prev_sortKey == 'doc' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'doc' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+              <th class="td-right-line" ng-click="prev_sort('title')" style="width:50%;text-align:center;">Risk Title <i ng-show="prev_sortKey == 'title' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'title' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+              <th class="td-right-line" ng-click="prev_sort('score')" style="width:20%;text-align:center;">Score <i ng-show="prev_sortKey == 'score' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'score' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+            </tr>
+            <tr class="table-row" ng-repeat="m in c.data.prev_filtered = (c.data.prev_risks | filter:c.data.prev_searchText | orderBy:prev_sortKey:prev_reverse)" ng-show="$index >= (c.data.prev_bigCurrentPage -1) * c.data.prev_pageSize && $index < c.data.prev_bigCurrentPage * c.data.prev_pageSize">
+              <td class="td-right-line">
+              <input type="checkbox" class="" id="risk_{{m.sys_id}}" ng-model="m.selected" ng-click="c.updateSelected(m)" value="{{m.sys_id}}" role="checkbox" aria-invalid="false" ng-checked="true" ng-checked="c.data.selectedRisks.indexOf(m.sys_id) > -1">
+              </td>
+              <td class="td-right-line">{{m.doc}}</td>
+              <td class="td-right-line">{{m.title}}</td>
+              <td class="td-right-line">{{m.score}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="tab-paging-section">
+            <ul ng-if="(c.data.prev_risks.length / c.data.prev_pageSize) > 1"  uib-pagination total-items="c.data.prev_risks.length" items-per-page="c.data.prev_pageSize" ng-model="c.data.prev_bigCurrentPage" max-size="c.data.prev_maxSize" class="pagination-sm" ng-change="c.prev_pageChanged()" direction-links="false" boundary-links="true" force-ellipses="true">
+            </ul>
+            <div class="tab-paging-setting">
+              <label for="risk_pageSize" class="label-hidden">pageSize:</label>
+              <select class="form-control" id="prev_pageSize" ng-model="c.data.prev_pageSize" ng-init="c.data.prev_pageSize = '10'">
+                <option value="1">1</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+              </select>
+            </div>
+            <div class="tab-paging-label">Items per page:</div>
+         </div>
+      </div>
+      <div class="form-section" style="text-align:center; padding-top: 15px;border-top: 1px solid #e5e5e5;">
+          <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.importRisks()" ng-disabled="c.data.selectedRisks.length == 0 || c.data.loading">
+            {{c.data.load_text}}
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.cancelLoadRisk()">
+            Cancel
+          </button>
+        </div>
+    </div>
+  </div>
+</div>
+<div id="meetingNotesDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
+  <div class="modal-dialog modal-lg" style="width:600px;">
+    <div class="modal-content" style="min-height:300px; overflow-y:hidden; overflow-x: hidden;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="c.cancelMeetingNotes()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4  class="modal-title">Meeting Notes ({{c.data.meetingnotes.doc}} - {{c.data.meetingnotes.fiscalYear}})</h4>
+      </div>      
+      <div class="modal-body">
+        <div>
+          <div class="upload-form">
+            <div style="width:100%;"><input type="file" id="file2upload" class="form-control" style="cursor: pointer;"></div>
+            
+            <div style="width:100%; margin-top: 5px;overflow:auto;">
+              <div class="col-md-8" style="padding-left:0px;">
+                <h5 ng-if="!c.errorMessage">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
+                <h5 ng-if="c.errorMessage" style="color: red;">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
+              </div>
+              <div class="col-md-4" style="text-align:right;padding-right:0px;">
+                <button type="button" class="btn btn-primary" ng-click="c.uploadMeetingNote()" ng-disabled="c.upload_status == 'uploading...' || c.file2upload == ''">{{c.upload_status}}</button></div> 
+              </div>
+          </div>
+          <div class="file-list">
+            <div class="file-block" ng-repeat="attach in c.data.meetingnotes.attachments">
+              <a ng-if="attach.file_type == 'application/pdf'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <a ng-if="attach.file_type == 'application/vnd.ms-powerpoint' || attach.file_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-powerpoint-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <a ng-if="attach.file_type == 'application/msword' || attach.file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-word-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <span style="float:right;">{{attach.create_time.substring(0,10)}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>]]></template>
     </sp_widget>
 </record_update>

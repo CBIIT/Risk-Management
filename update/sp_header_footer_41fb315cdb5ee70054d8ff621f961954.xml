@@ -2,7 +2,7 @@
 <record_update table="sp_header_footer">
     <sp_header_footer action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope,$location) {
+        <client_script><![CDATA[function($scope,$rootScope,$location) {
   /* widget controller */
   var c = this;
 	
@@ -17,6 +17,13 @@
 	$scope.logout = function(){
 		window.location.href="/logout.do";
 	}
+	
+	$rootScope.user = {};
+	$rootScope.user.role = c.data.role;
+	$rootScope.user.doc = c.data.doc;
+	$rootScope.user.info = {};
+	$rootScope.user.info.name = c.data.userName;
+	$rootScope.user.info.id =c.data.userId;
 }]]></client_script>
         <controller_as>c</controller_as>
         <css/>
@@ -37,6 +44,40 @@
   /* populate the 'data' object */
   /* e.g., data.table = $sp.getValue('table'); */
 	data.userName = gs.getUserDisplayName();
+	var user_sys_id = gs.getUserID();
+	data.userId = user_sys_id;
+	data.role = [];
+	data.doc = [];
+	//check in RC and RT
+	if(gs.getUser().isMemberOf('Risk Management RC')){
+		data.role.push('RC');
+	}
+	else if(gs.getUser().isMemberOf('Risk Management RT')){
+		data.role.push('RT');
+	}
+	else{
+		//check in manager & poc
+		var gr = new GlideRecord('x_naci_risk_manage_pocs');
+		var tmp = gr.addQuery('manager_id','CONTAINS',user_sys_id);
+		tmp.addOrCondition('poc_id','CONTAINS',user_sys_id);
+		gr.query();
+		if(gr.getRowCount() !== 0){
+			while(gr.next()){
+				data.doc.push(gr.getDisplayValue('doc'));
+				if(gr.getDisplayValue('manager_id').split(',').indexOf(user_sys_id) >= 0 &&         gr.getDisplayValue('poc_id').split(',').indexOf(user_sys_id) >= 0){
+					data.role.push('RM&POC');
+				}
+				else if(gr.getDisplayValue('manager_id').split(',').indexOf(user_sys_id) >= 0){
+					data.role.push('RM');
+				}
+				else if(gr.getDisplayValue('poc_id').split(',').indexOf(user_sys_id) >= 0){
+					data.role.push('POC');
+				}
+			}
+			
+		}
+	}
+	
 })();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_header_footer</sys_class_name>
@@ -44,7 +85,7 @@
         <sys_created_on>2018-12-06 18:37:42</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>41fb315cdb5ee70054d8ff621f961954</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>18</sys_mod_count>
         <sys_name>riskmgmt header</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -52,29 +93,32 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_header_footer_41fb315cdb5ee70054d8ff621f961954</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-31 21:11:43</sys_updated_on>
-        <template><![CDATA[<div id="riskmgmt-header">
-	<div id="riskmgmt-logo">
-    <div class="container logo">
+        <sys_updated_on>2019-01-09 22:17:25</sys_updated_on>
+        <template><![CDATA[<div id="riskmgmt-header" style="min-width:1020px;">
+  <div id="riskmgmt-logo">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 logo">
       <img ng-src="842ca96adbce93c0f59974131f96197f.iix" role="presentation" alt="Portal Logo" class="nci-logo" src="842ca96adbce93c0f59974131f96197f.iix">
     </div>
+    <div class="col-md-1"></div>
   </div>
   <div id="riskmgmt-nav">
-    <div class="container details"> 
+    <div class="col-md-1"></div>
+    <div class="col-md-10 details"> 
       Risk Management Program
       <div class="userInfo-block">
         <div uib-dropdown>
           <span class="userInfo-text" uib-dropdown-toggle>
-            {{c.data.userName}}<i class="fa fa-caret-down" style="font-size:16px;margin-left:10px;"></i>
+            {{c.data.userName}} ({{c.data.role[0]}})<i class="fa fa-caret-down" style="font-size:16px;margin-left:10px;"></i>
           </span>
           <ul class="dropdown-menu-right" uib-dropdown-menu role="menu">
-            <li role="menuitem"><a href="#" ng-click="gotoSettings();">Settings</a></li>
+            <li role="menuitem" ng-if="c.data.role.indexOf('RC') >= 0"><a href="#" ng-click="gotoSettings();">Settings</a></li>
             <li role="menuitem"><a href="#" ng-click="logout();">Sign Out</a></li>
           </ul>
         </div>
       </div>
     </div>
-    
+    <div class="col-md-1"></div>
   </div>
 </div>]]></template>
     </sp_header_footer>

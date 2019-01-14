@@ -2,5 +2,9 @@
 <database>
     <element label="POCs" max_length="40" name="x_naci_risk_manage_pocs" type="collection">
         <element label="DOC" max_length="100" name="doc" type="string"/>
+        <element label="Manager ID" max_length="500" name="manager_id" type="string"/>
+        <element label="Manager Name" max_length="500" name="manager_name" type="string"/>
+        <element label="POC ID" max_length="3000" name="poc_id" type="string"/>
+        <element label="POC Name" max_length="1000" name="poc_name" type="string"/>
     </element>
 </database>

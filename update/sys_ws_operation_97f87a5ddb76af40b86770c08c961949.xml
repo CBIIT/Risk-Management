@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>updateRisk</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+	var sys_id = request.body.data.sys_id;
+	var title = request.body.data.title;
+	var poc_name = request.body.data.poc_name;
+	var poc_id = request.body.data.poc_id;
+	var section_1 = request.body.data.section_1;
+	var policies = request.body.data.policies;
+	var activities = request.body.data.activities;
+	var plan = request.body.data.plan;
+	var section_2 = request.body.data.section_2;
+	var section_3 = request.body.data.section_3;
+	var section_4 = request.body.data.section_4;
+	var score = request.body.data.score;
+	var au_recommend = request.body.data.au_recommend;
+	var ompc_recommend = request.body.data.ompc_recommend;
+	var eo_final_decision = request.body.data.eo_final_decision;
+	var section_6 = request.body.data.section_6;
+
+	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
+	gr.addQuery('sys_id',sys_id);
+	gr.query();
+	gr.next();
+	gr.title = title;
+	gr.poc_name = poc_name;
+	gr.poc_id = poc_id;
+	gr.section_1 =  JSON.stringify(section_1);
+	gr.primary_policies = policies;
+	gr.risk_management_activities = activities;
+	gr.action_plan = plan;
+	gr.section_2 = JSON.stringify(section_2);
+	gr.section_3 = JSON.stringify(section_3);
+	gr.section_4 = JSON.stringify(section_4);
+	gr.score = score;
+	gr.au_recommend = au_recommend;
+	gr.ompc_recommend = ompc_recommend;
+	gr.eo_final_decision = eo_final_decision;
+	gr.section_6 = JSON.stringify(section_6);
+	gr.update();
+	return 1;
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_naci_risk_manage/riskmgmtrestapi/updateRisk</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/updateRisk</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-03 22:11:18</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>97f87a5ddb76af40b86770c08c961949</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>updateRisk</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_ws_operation_97f87a5ddb76af40b86770c08c961949</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-11 16:31:11</sys_updated_on>
+        <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
+        <web_service_version/>
+    </sys_ws_operation>
+</record_update>

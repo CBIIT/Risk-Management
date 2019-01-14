@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <element label="Meeting Notes" max_length="40" name="x_naci_risk_manage_meeting_notes" type="collection"/>
+    <element label="Meeting Notes" max_length="40" name="x_naci_risk_manage_meeting_notes" type="collection">
+        <element label="DOC" max_length="100" name="doc" type="string"/>
+        <element label="Fiscal Year" max_length="100" name="fiscal_year" type="string"/>
+    </element>
 </database>

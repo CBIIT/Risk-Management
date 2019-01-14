@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>POST</http_method>
+        <name>getRisksByCriteria</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+    var year = request.body.data.year;
+	var doc = request.body.data.doc;
+	var stage = request.body.data.stage;
+	
+	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
+	if(year){
+		gr.addQuery('fiscal_year',year)
+	}
+	if(doc){
+		//var t = doc.toString().split(',');
+		gr.addQuery('doc','IN',doc);
+	}
+	if(stage){
+		gr.addQuery('stage',stage);
+	}
+	gr.orderBy('doc');
+	gr.query();
+	var result = [];
+	while(gr.next()){
+		var tmp = {};
+		tmp.sys_id = gr.sys_id.toString();
+		tmp.doc = gr.doc.toString();
+		tmp.title = gr.title.toString();
+		tmp.manager_name = gr.getDisplayValue('manager_name');
+		tmp.poc_name = gr.getDisplayValue('poc_name');
+		tmp.au_recommend = gr.getDisplayValue('au_recommend');
+		tmp.ompc_recommend = gr.getDisplayValue('ompc_recommend');
+		tmp.eo_final_decision = gr.getDisplayValue('eo_final_decision');
+		tmp.fiscal_year = gr.getDisplayValue('fiscal_year');
+		tmp.score = gr.score.toString();
+		tmp.version = gr.version.toString();
+		tmp.status = gr.stage.toString();
+		result.push(tmp);
+	}
+	return result;
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_naci_risk_manage/riskmgmtrestapi/getRisksByCriteria</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/getRisksByCriteria</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-03 22:05:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>97c47e19db76af40b86770c08c961923</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>getRisksByCriteria</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_ws_operation_97c47e19db76af40b86770c08c961923</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-09 23:03:19</sys_updated_on>
+        <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
+        <web_service_version/>
+    </sys_ws_operation>
+</record_update>

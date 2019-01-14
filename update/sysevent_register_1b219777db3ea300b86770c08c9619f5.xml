@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sysevent_register">
+    <sysevent_register action="INSERT_OR_UPDATE">
+        <description>send email to risk manager</description>
+        <event_name>x_naci_risk_manage.notify_manager</event_name>
+        <fired_by>RCF Submission</fired_by>
+        <queue/>
+        <suffix>notify_manager</suffix>
+        <sys_class_name>sysevent_register</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-11 18:26:25</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>1b219777db3ea300b86770c08c9619f5</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>x_naci_risk_manage.notify_manager</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sysevent_register_1b219777db3ea300b86770c08c9619f5</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-11 18:39:49</sys_updated_on>
+        <table/>
+    </sysevent_register>
+</record_update>
