@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="m2m_sp_dependency_js_include">
+    <m2m_sp_dependency_js_include action="INSERT_OR_UPDATE">
+        <order>100</order>
+        <sp_dependency display_value="riskmgmt_export">6edda782db836b00b86770c08c961913</sp_dependency>
+        <sp_js_include display_value="riskmgmt_pdf_generator">052e6b82db836b00b86770c08c96197e</sp_js_include>
+        <sys_class_name>m2m_sp_dependency_js_include</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-01-18 20:21:40</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>e220ffc2db836b00b86770c08c9619e4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>riskmgmt_export.riskmgmt_pdf_generator</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>m2m_sp_dependency_js_include_e220ffc2db836b00b86770c08c9619e4</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-01-18 20:21:40</sys_updated_on>
+    </m2m_sp_dependency_js_include>
+</record_update>

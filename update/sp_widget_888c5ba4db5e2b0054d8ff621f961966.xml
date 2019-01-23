@@ -62,10 +62,16 @@
 	
 	c.removeDuplicate = function(result){
 		c.data.prev_risks = [];
+		c.data.prev_risks_unload = 0;
 		result.forEach(function(r){
 			if(c.data.auRisks[r.doc] == undefined || c.data.auRisks[r.doc].indexOf(r.title) < 0){
-				c.data.prev_risks.push(r);
+				r.loaded = false;
+				c.data.prev_risks_unload ++;
 			}
+			else{
+				r.loaded = true;
+			}
+			c.data.prev_risks.push(r);
 		});
 	}
 	
@@ -100,7 +106,9 @@
 		if(selectAll.checked){
 			var tmp = [];
 			c.data.prev_risks.map(function(obj){
-				tmp.push(obj.sys_id);
+				if(!obj.loaded){
+					tmp.push(obj.sys_id);
+				}
 			});
 			c.data.selectedRisks = tmp;
 		}
@@ -227,7 +235,56 @@
 	}
 	
 	c.exportPDF = function(sys_id){
-		
+		var pm = {sys_id: sys_id};
+		RiskMgmtRisk.getById(pm,c.data.sessionId).then(function(rs){
+				var result = rs.data.result;
+				var rcf = result.rcf;
+				var section_1 = JSON.parse(rcf.section_1);
+				rcf.enterprise = section_1.enterprise;
+				rcf.response = section_1.response;
+				rcf.ownership = section_1.ownership;
+				rcf.r_managers = section_1.r_managers;
+				rcf.statement = section_1.statement;
+				rcf.immediacy = section_1.immediacy;
+				rcf.control = section_1.control;
+				rcf.interest = section_1.interest;
+				rcf.interest_other = section_1.interest_other;
+				rcf.category = section_1.category;
+				rcf.subcategory = section_1.subcategory;
+				var section_2 = JSON.parse(rcf.section_2);
+				rcf.impact = section_2.impact;
+				rcf.pub_impact = section_2.pub_impact;
+				rcf.org_impact = section_2.org_impact;
+				rcf.financial_impact = section_2.financial_impact;
+				rcf.overall_impact = section_2.overall_impact;
+				var section_3 = JSON.parse(rcf.section_3);
+				rcf.inplace = section_3.inplace;
+				rcf.effective = section_3.effective;
+				rcf.include = section_3.include;
+				rcf.aware = section_3.aware;
+				rcf.formal_action = section_3.formal_action;
+				rcf.likelihood = section_3.likelihood;
+				var section_4 = JSON.parse(rcf.section_4);
+				rcf.impact_score = section_4.impact_score;
+				rcf.likelihood_score = section_4.likelihood_score;
+				rcf.total_score = parseFloat(rcf.impact_score) + parseFloat(rcf.likelihood_score);
+
+				var section_6 = JSON.parse(rcf.section_6);
+				rcf.rationale = section_6.rationale;
+				rcf.form_comments = section_6.form_comments;
+			  
+			/*
+			  console.log(rcf.statement);
+			 console.log(rcf.policies);
+			 console.log(rcf.activities);
+			 console.log(rcf.plan);
+			 console.log(rcf.comments);
+			*/
+			  //generate PDF
+			  c.generatePDF(rcf);
+			},function(error){
+				console.log(error);
+			});
 	}
 	
 	c.meetingNotes = function(doc, year){
@@ -247,6 +304,336 @@
 			});
 		
 	}
+	
+	c.generatePDF = function(rcf){
+		  var imgData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwwAAAB4CAYAAABfJHUxAAAmwklEQVR4AezZz4sWWh3H8TN3zLrlvZlUF5NIiZKiCMqgiBYRBKGLqXAjQWS2KCSEZmGEEBkIkUWFtEgXQUZQSERtCi0ookWCxSwMC4t+yoSO1GQO5ukzUBDGPGfyMDDnmdeB1+b8Bd83n7LWe//RD+6Jk3ElbkdlS5iPspa9hz/9gagNf4/rcT7eHdujAAAwnv/5yFH4dHw+VqJuOdyJXROCYTYWov4fFuNjsSMKAADjeDQWXh2/jsqWdraxMhyM+hj+EAejAAAwhv+OhVfFYlS2vPuxrxENV6I+ps/FbBQAADa3/8TCU3EjKvzb1xrB8IaoHS6NEw0AAILhs1EfAQca0XAxaocvR9m8AABYPfyeiXtRHwE/aATD3rgftcPhKJsXAIBgmI+6BjjUiIazUTvciqeibE4AAILh+1HXAAuxbUIwvCDuRO1wOsrmBAAgGBajTgDHGivDfNQOy/GSKJsPAIBgqA3wp3jehGB4dvwmaofzUcYEACAY4FRjZXhv1A4P4jVRxgMAIBjgb/HMhGCYiatRO3wnypgAAAQDfKmxMrw9aqe3RRkPAIBggAexvxEN343a4WcxE2U8AACCAb7VCIbXxj+jdjgSZUwAAIIB3tqIhgtRO9yM7VHGAwAgGOCnMTMhGPbEvagdPhplTAAAggEON1aGT0XtcDt2RhkPAIBggF/F9gnB8HQsRu3wmShjAgAQDPCRxspwPGqHf8TLoowHAEAwwF9i54RgeFbciNrhq1HGBAAgGOBMY2V4T9QOD+P1UcYDACAY4F68dEIwzMRPona4HGVMAACCAb7SWBneErXTO6OMBwBAMMDDeF0jGi5F7fCLeCIKAIwHBAN8rxEMr4wHUTscjTImAADBAO9oRMO5qB1+H09GGQ8AgGCAn8cTE4LhxfHXqB0+HmVMAACCAd7XWBlORe1wN14UZTwAAIIBfhdPTgiG58Yfo3b4YpQxAQAIBjjZWBmORe2wEq+IMh4AAMEAS/HCCcEwGwtRO3wzyjgAAATD12NuHb4ddQMtxFzDhagNN2NuHZajNlyIuYYzUTfQcsytw82o0esLjZXhUNROb44yBgAAwfCJKOuwO+5G3SA/jNJwImrDtSjrsBS14USUhrmoG2gpyjpcixq9VuLljWi4ErXDj6MMCABAMDQcFwxTHwyrvtEIhgNRO70rCgDAdBEMs3FVMEx9MKx6UyMaLkbt8MvYFmUwAACCoeGN8VAwTH0w/KgRDPtiJWqHD0cZEACAYGg4JximPhhWzTWi4WzUDrdiRxQAgOkiGJ4ffxYMUx8M12PbhGDYFUtRO5yOMiAAAMHQcEQwTH0wrPpQY2WYj9phOXZHGRAAgGBouCwYpj4YbsWOCcHwnPht1A7nowAATB/BsD/ujx8MgqHhk/9i717jqygOxo/PSUggXCRFCfeLCELlQYOCKESMUhFF1NZLrVolYr0BmgJPRVqVv1K1ooIgFxXbKPebXLRiqyBVS6UiUq2IooiI9YZQbkZCYP6/z/PhRbufnZ3ZnXOy55zMi+8rMZBkz+7+dmZnNKMMV0NaqEZXiFQ7slHhai/F92iqoeJrjobIQBOx2mMcRNI4lyqOGZEEzRVfewaE42tGTMe84xyDm1GBP2E1XsBC/BZHQURQgtUpOK5XK4gsNw6rPSZCJNEwrPZ4HsJCPMGgcK8LhqwPhv1oERAMOVgPaeG5GgqGrZAKfSAiKIT0UQGRgVZDeiyFsOdozmUiCdqHPjc6G2I45h3nWuyBDNAeIoKLIVNwXEsFkeWWau9b7U1U3ANmTTDUw8dZHAwuGIAZmlGGfpCWSmMOhveQlzXBoH7SPMAFgwuGLNVRccyXJDkY5lmOKLqRQud8SCALg8EFg/rzV2uDATg364PBBUM1umqiYQWkhTeRiC0YgNFZFAyqG8fBLhhcMGSpYvMloq2CYavl592NFDobXTBkazCoP38uGICFLhiyOBiA5zXB0A2HIS38LOZg+A4dIBRcMNhwXDC4YHDB4HSE9HEYK/AYZmAlWrpgcMGQScHQF0KjFfa4YMjiYADO0kTD7yEtbEF+bMEAvFDLg+FSlHsMgnBcMGRpMFxlfMy7YLDnXAXp4zoItfQPBhcMLhhWoofFRdAFQ/YEwzokAoKhFSohLYyINRiAy7M/GBwXDC4YQnPBYM8ZqRhdyHfB4IIh04NhNdYhByJAHbztgiGLgwG4UjPK8FtIC9+iMOZg+AKNXTAkmeOCwQWDCwZnrOpanw3B4ILBBYPEUAiNXjic1cHgguET5AcEw1H4BtLC+FiDAXgspmDIRSHaoBC5GR4MDdESTVEXogbURys0gkiyHBSiNZogrxYFQwJHowXqpuA4aXZEfRcMaRsMeWiKFurfk5W6OBqtcRREmqiP5miGAhcMXla/72ZH1INIgTzPNTWRJcFQiFYoSMdg2I3mEBrTszgYXDAAIzWjDMMhLVSiXQ0Fw8f4VDFEfGoNBENz3Igl+BjVPitUbcJMXB4Qa01R/h/ugfQxB+UerZP4DkN7jMEq7IL02IaFuBYNIQy0RrnHzT4vEj7is8zz93gVt6MJREg/wGDMwyYc9DlOtmCB+ntK62AYhHKP0zyBdDGWY7fna36OeTgvwkW4G+7GX7AD0uNrvIQRaGV4XIyH9PEUyj2ahniH4WbPf9sJ6fF3zc+xP8o9roIwdKbmM3Cd5799BOnxLso9zoTQ6IFJeM/n/LQVT+P8iDdiRRiOZfjU54HjPqzFAyiGqCHNMBwr8JViFPp5DMXRIX93L0J6VCp+N9kYDH3xOD7EIc+5dDOesPzej8UvsUJxba/CO3gC5yPHPhjsP38GwZDAeVjkc87cgWX4GerEHwzAHMML7NdZHQwuGHbiBwHBkIfNkBZm1lAwbMCggOOpToqC4Wg8gSrIELbhOvXT1UhKk/BkshVm41DI42i0wdzd0oDPRi7uRTWkxl4MCfFEcTy+gwxhB0YiN0OCYWnAdeE4vAFp4A0cC6FxMlZChvA9JqCh8rgIrzjEKkn/TsL1tUL3O7F8+rgVMoKJEAqdsALS0DvoC2GgKWbgQITV+o6HSJHGmIxKSEOVGI9Gmt9dWBOzLBiKsQbS0F/RHcJQWyyOMMtlIwZZBoP150/zGW+LVyANbEaP+IMB6Aeh8fMsDgYXDMBDmlGGSyEtHEb3GgoGgWchfYxIQTB0w3ZIC08hkSbBMAC7ICP6O1pHCIZcLIL0svxst8ZGSAvPIT+Dg+EkfAMZwna0hVC4yjSQFd5DCxcMNRIMl2A/ZEiHMMZgdOlfkBHtwdkQSXYKtkFG9DG6umDwdSMOQoZ0wPAhz1nmn1OlO9M0GDrhK8gQ9uOUdAiGDwzmrybwSi0Ihl5YmkKz0zgYvkf7gGBIYA2khZdrMBjaYC+kxz60TWIwFOELyCQYlQbBcAGqIC19hJYhg+Ehi40ITwwYWXgfMgkmZWgwTMZnkBG8AuGjN6ohLb2JvJQGgwuGK3AI0sI9AU/wt0Fa2oOOEEnSA7shLX2Lk1ww/JfhkJaGQSicoIzb8C5Js2DYZ/HwajPyYwoGdYkp/BBVWR4M8YsrGIBZmlGGEkhLA1IfDNpjbGkSg6EiYNOepRiCUvTC+RiBNwJGoAog0BYVANRP3l9HhUeXiMHQBfsDgrICP8VpOBM3e7++x1rUMQyGQ56h57dxG36E3rgayyAV5kL4uAdSYSVuQT/0wgDcgpUBYdIm04LBc94+iKfxU5yOH2GMJij6QHi8GjAd4HYMwGk4Fzdopi3dCoEunuN4OaSPVajwaBsiGKZ6/t99iuCt8Li4BoPhIc/f/aViOmOFx5U+00YqA6aIDMePcAauw58gFS6D8LgrYCrfQ/gxeuMsXInf44BmM1FbTfFFwHl5Ma5Fb/RBGZYHTH35FIUQR1yJCgD+x1uV4neT7GBYj8EWwgZDv4D4fAk34iyU4hasCRi5KjW+RwWqMAtX4wycjkEYg/cgfXwQMRjsPn/mYbnkP47FUgzXPOC6Jh2CoRLHQWj8NouDwQUDcIomGpZAWngHOTUUDLlYr15pxToYjlYMy+5CH82I3W8gfQyMcafn1yF9vK15+vcT7FGPmqiDQf3/KF9cGxUQW7k+q2nsUAyLXwShpryY3pQJwaCwBV3Vx73yvPOA588eExDidSAUboH08WHG7fSc+mBIxiotOYrz337N3jQXKt71+dbnXbe3FDfYzTXvvaie/h8LYWkmpI+t6AmhUBIwtWpKmq6SlCrCRwG2Ko6LcyAUhigeNn/iM7vlpIBo+6FmG4DHIX38MM5VkhS+DXgRPB9/hPSxMP5gAFZAaBTgExcMWR0MKzXB0BnVkBbKaiQYgJ6KJyKfoZFlMFxuscNnAlsgPYbHFAznBtzMNYbQ6KuIpx1oECIY7obQUI3QeG+GT4/8dwB/gfR4MEODYQ86QAToaXQ+V/+5ARAaf4b00cEFQ9KD4QrFk91+EBr9FU/c74cA4P+u08ORNjsDboaw0EXx796hPf6BzoqYqUa7Wh4MIxQPm7tDaFwTPLoI4HZIH2dDaDRUjBZekGbBUI3eEAGaKyJre8zBoBhyVBvogiGLgwEYqImGqZAWtqOgRoIBmAzp4xHLYLhbcTIogDDwouo4jSEYVNN9Sq1ugoAyw2DYhjrhzx3Ki0oZpI/jIAw8qZ6jmnHB8GsIA5shPd73zg/XXvzVeqLcR1sXDBbBYB7W0yCU9N/jt56nwjsjTi0qUhwHZ0BYeMT4IY7arZA+xtXiYMhRPOC6C8KEYrrbZoNj7nMIQ5v054vYg+Epi5/XgXQKhs8NN0da7IIhq4PhXeQEBEMz7IO0MLoGg+EoxVBzNU62CIYCFHo0DrGh29Y0CYb6qFTMFRchHKN4KrLMMBjGQRg4y/BGsi4KfSQgDPw1i4KhBYSBhYqpHN6peNLHPlyJRLw7PbtgQDtIH8fb/vw9I0nrIH2MR32IGrZVMfUlB8JQHcWc9X/W4mDoBelxED+AMDTAYMGCBij0aARhoBG+y4BgKIEw8ACkVzzBoDYBQqMN9rpgyNpg+BsSAcHQHgcgLQytsWAALgtYAjQnfDBYKcIfINMkGEogfVwPEdLzkB7fGAbDIAgDJ6R4B+DGeAAyS4JhG4ShqdpggGY/h034f+iLAhcMsQRDmWIeuAjpS807Lfdq5mlPw8U4GiLFWkH6uA8ipEchfTROs2DYjQ0WTIPhDsWiFiKEuoppq7dBWGqHFyAzIBjyIQyMyoRgqPYUn8pIFwxZGwwlmilJsyAtfIg6NRwMUJ5QhqUoGBqhGJdgNGZgLQ5CplEw3AjpowtESKMhfTQzCIZTLW+iwwZDfXTDRRiJ6XgNlZBZEwz2N7JblU8L9Q5iHabharR2wZD6YFB8/c0YHNLHmilHRdgRYlnIObgVxUhAJNE5Fu/WmD5gOt0mGDJ4WdX5iiWRB4f0LaTHkyF36u+BK3AnnsYGHIZMt2CwPC7K0z8YgL8hx2DY7h9ZFgzHoDSFSjIgGJ7VxMIpkJZ+AhFDMLRXDFnuQUvLYMjBGbgfq3S7o6dZMNyteDkyJ4kXtpMMgqE4xcHQA2PxosVGUy4Y1C8omtqAkWjigiFlwbAIMkXe8hkx3AMZ0ueYgM4QSXCN8Qv1et1U6/rX0mBYC5kiywNWC+qPCXhdf5/ngiGeYABugNDonSXB4HZ6BqpxvCYYVkFaeB0ijmDQPAFfYBEMV0TYHOz7NAqGCfYXPG0M9I0xGAbgzQifhYOQgAsGhXPwHmQEu3CTC4aUBMNKyKRTf58d8BxkBIcwBQ0gLAyD9FEIEVJb9fk2+4OhRu5J1PeLORiKbeGvqS4Y4gqGnSiC0HjSBUPWBMNjmlgYCGmpd8zBkId3IX2cHzIYEpgSYkv897EAI9AqjYLhfkiP/UmeFnBqTMEwJsTUmc1YhjHo5Dm+XDCoJdAfM7AdMqTJLhiSHgwrIFPkDc37RffhXRyGDGEtGkJEdD2kj+YQIR0H6eMqFwxJt8QzqrAU0sB+vINZuAmnuGCIKxjM5203wTcuGDI+GPaiKCAWcvFPSAuLIGINBqBPwMY+LUN8Fm6GVHgNd+AstFHM1409GDRTSxpBhPRzSB+dYwiGCyEV1mMszkV75OpvJF0wGGqPKzABa1AFqXGRC4akBsM8SI91KE6CjhAGmuA8jMUK7LJ6aKV3mX46pLEzIH2cV+uCQb2z+59QbMuzpPKDATt0v4BfogTN1OdKFwzxBAPQF0JjsAuGjA+G32hGF66HtFCFTjEEg8oTkD6mGwWDeum9vbgAQiEdg0F1oT0TIqQJiikH9WIIhrcVIwmDLZZodMEQXj0MxEIcgvTxlywIhn9AGJqU4mB4UL2fRmxy0BMPB1yzD6AxRAQ97Pdg0E5v6lJLg+EZSI+XIJKoKQ5AenyhWBAjDYPBBcNG5BkMSb/qgiFjg+Fz1A+IhQb4F6SFyRBpFAxN8LXFaFsfSIsl4nLSKBg6Qqp3NQ7lQ9X65TUcDG0gjXahVfsM0sMFg51S7FWEXF4GBcMfLH9OS1IcDFcpwr0hRBpojXcgffSHiKAuqjQLedhsMrYfubU0GEYp3kFKQCTJ1ZA+LoQw0MEFQ9zBAIyG0OiKgy4YMjIYhmhGF+6EtLAbTWMLBrWrLYJBNV+2pd1LdTEEA/AJpMeXipBUOVu1t0sMwTDAaFlEtTqo9g0GFwyzsNVjGYSh+yF9FGVEMKh/TlXIM3xY8K8UB4NqauW1IUcEnsFSj9MgcCO2+jjKNB4t/o0qKxWjFq1Dvr9wSLUBZS0Nhu5JiLsCLMJSjy4QuA/SoxK5EAbOTI9gcMHwHdpBaPwuDYPBBYP9rs57IS38GiLWYFBbGTEYyi1X5BiRpGC43jYYNBsw3QthIA/rIX2cEkMwqD7L/wNh4FJILxcMyukJ36MJhIGbDN+ZUQXDZTUQDM9ABLjdYhrfQMgkBMPLECqKeeebUA/CwOWKUYoiCFxjuR9KR/3SpaENgfQxB8LQMkgfl9fiYEgoRo9fRw6EgdsUS5rXCzj37IIwNLmGg2GVCwa15ww3QvrUBUNGBcN5mtGFqZAWtqMgjYPheHwfIRiGWCxH3BP7IH38b8D8TunjgSQFQwtUKm4QdDcAuXgyaMm8GIKhP6SPcYY3Ml9C+phU5oLhVkgf0yAMLIf02B7ihvKOJAfDRsVeRCJAf82a8iqF+ChJwfBxxOvZU8g1mN7xlWZ6T+eAh1D1Ld4TOAEiogJ8AeljBITGnZCKn3V+rQ0GYDikj99BaJyEvZpzxjhIH+dAaAwKeD/q0iQEwypIj0+QcMGgdpHhL84FQ2YEw8uaWOiMakgLZRBpGwzA2AjBcDKkjyr8SjEsX4SxmkCZotrERnFC3I1LUIRCdEJh2GDQ/BwO4SE0VbyYuipgL4MeMQVDEQ6r3s1QfC+NUY7dgQ9OXDC0CFj56OmA6R/HYjakj0cVN9fSx9e4AE1RiC5oaBEMr0H6uB1tUIg2nu/rKBwIWOmnoWLp2Q8iXh8WBjww6IBCtEI7z9+5BtLHq4rPZh6uVMRCNU7ULiwAvBnwompjjFIcQ5tSNhcemIl2imlI8/Sbf9XqYMjHB6pQVoReXdyo2Nhvv+cz9RNIH7vxC8XIWDtMVsYCMCoJwbAgIJY6oBAt0c4FwxH41HBzlaEuGNI+GA6juyYYlkBaeAc5GRAMdfFByGBI4F3NJjJrsRgLsQGHIDWqsBjLvTcdITbIKo0YDHl4VbNXwRrMxbPYBBngVxCxBAPwAqRCNdZhGebj7zgYYrT1WXSslcEAPKw5t2zAYszFCoMb5VYQPj6HNFBsEQxTI15fZ0Eq7MGfMRcv+oxY7Q55fRgbcSfyTprr4xaswBy8hJ2QCndCeJwLGeAT/BGz8BzWK2MT+DFEEszWHJ9vYcER/4AMMB3CBcP/6aUMZeB9PI+5eEWzA/gvfEaHdkAq7MNrWIAl2BhiyfgFmGcRDHeZfv5cMNivnOKCIf2CYaYmFkogLQ2ASPtgAM4OFQxAP0UEmNoHGaBQ/Z6BfTAoNMZaSEsPQMQcDF1RCRnRfv1Naq0Nhnr4K6SlKgyEUJhUA8HQL+L1tR32QIa0JcJN5omRggE4G/shLUwLmH4xDjIJ7odIknwsg7Q0F/kuGP7LhcroMzdOu0R/8q+p/7YIhm4uGKI5iK4uGDI6GCrRNiAWEngD0sLLEBkTDMAzoYIBuA7VET5Dd+GykMFQiM0pDQagAE9ARrAbZRCxBwNwQYSbpcOYjL6QPlwwAA0wBzKiLegNEaAZPktpMACLjK6v9jfjW9AR5RGuD5MjBQNwIjZGjOYRSEAEGIkDFjd5QyGSLBf34CBkSAcwxuf7dsEAlOBTyJB2YXDon6feXtyA0dbBoDbRBUM0ryHhgiFjg+F3mtGFyyAtHEZxBgZDU+wMFQxAN/zZ8GZ6OjpCIBd/NA4GoAkexBfWwaDXC88aXnB3YDyaQ8QZDIo/vxjVBiE9G919NvhzwaB2NpaHuDFbjyHIhzDQDI/i6xQGQx0Mw3sRrq+d8TwOa0ZSpqAQImIwJFCG9TgcKhiAfAwzfOiwB9PRJuRypNOwE9LAZ7gPx0CkUBf8AfsM4+VJHAeh4IIBaIDRhkG/AxNQBGGgr+FI91cYjxYQaIi3UhQMCQzGOhxywRBOmQuGjAyGHSgMiIV8fARpYSZEbXPkpc4bMBlzMRuPYiRKFTdIObgUkzAPU/BL9DCI8pbojlL0xPGoD5FkTXAxxuIpLMJcTMMolCAPIs21xLWYiNmYi8cwGucG/OzOwyOYj+m4HSWoA+EAaIKB+DWmYjYW4CncgyvQGsJCG5yMUvRAJxRAJFFjFOMMnI4T0MTw31aG8f/xOXkcN6EZRBI1wInoc0RXFEEYOgnDMAmzsQCP4070tzyP1EVf3IpJeBrPogLjcR2KIWpYAwzAGDyJBZiPJ3AHzol0LDk5OBW3YQrmYD6m4Q6Uoi5EBN0wDNMwHzPxMG5FL+QqwrgMUzEfj2IouqbR5+//s2eHoFl3ARSH73QMJoYXEbTMJGgTvqawalgXg0UQqwqmhQ+jmgURTGJdEKvYLNrGwDaLoGWGMWEgY9dTVga+F7wI/wtPePqpP85fGzUYduKMYBguGO433oV7UTvsx4UoAAD0i0GDIeLlUMEgGLZjaU4szGInaoenUQAAEAxHrg0TDILhRuNdeBy1w4+YRQEAQDAc2YxFwTD5YPgYC3NiYSX2o3Z4EAUAAMFw3EPBMPlgWG28C6+idtiOpSgAAAiG4/ZiRTBMNhjeNGLhShxG7XAzCgAAguFPNiYZDILhIC41guFd1A6fYiEKAACCYZ61yQWDYHjeiIXrUTutRgEAQDC0fInlyQSDYNiLc3Ni4URsRu3wNgoAAGMEw5OYNXyI2ta/oWE9asNWzFpiN2rDeswabkX9h3Zj1hJbUXvF/4134XbUDgdxOQoAABMLBmj4FqfmxMJyfI3a4UUUAAAEA+O503gX1qN2+BnnowAAIBgYy1acnBMLZ2M3aodHUQAAEAyMZ63xLjyL2uF7nI4CAIBgYCzvG7FwMX5F7XA3CgAAgoGxHMZ/jWDYiNrhcyxGAQBAMDCW141YuBq10+/2zh9kl6MK4/lzuQQ0IZsmYArNVipaLSlTSLYRTGGxaJFSt1EE5cIKIhaxWFADVnGLdELg7Sy0WQgprGQVBBFC2KAgCpEsKUIiF/V1kC1eHvab58x3WO5O3qf43Vt87+zsnDmze56ZObMvHmjw1IHOQZvBA6LG+80Fo/3rHO0g/OP1Y9a2EtpWGsq0x/Rp0g5Oi+WFEBIM4jh8FPg0EQy/dYqFNw82eHpne3IIWnq834w4G1nWthV520EQhos+HHcM2NsHFGSfL7CUmQ/o0yVpB7UzlD+YYBBCgkGInxCx8NXA2clzBxs8o7M9fHb7WG1sMptNPicyBYp87SAI00Uf9vh3J+3FtYcHLIYmw++LwPmAPt2QdjA7VzAR8JAQ4jiCQYj3Ak9GxMKdwFvO4Pr1XLa8QGAyR35X5LCtJ9Pl/Q4Ch3qDLjCDn50cdhD5rDi1+a/EucRQfdCZ+I60g9m5xVUkIcRxBIMQ3yWrC99yioX7gWczGlQjD0DFzpyMgUOxsVJU5d9+QQLkascxX2cghkBQH/LZ2TI757N1UAgJBiHeCdyNiIXHA+86BcMrGc9kdpEApibBRXXxmwL28dYrJSzndyuReniCJNYDAZbvujyhuCD1uPdnk33TPbUDT6htsP2k/hbKFrcs2yb3Z/rvKmgr6xuLvxbGvsbfFbdacUq/v4a063wB2s7TZ34x5JvUKMAOrcOvA7TPFmhHqp2njW1W5YNPhBZCgkGIr5HVhZedYuH9wFMZDaiK5CngC35OfHli8NOtf5u3ZtShngJm3tmsZIdBt/O6SANtvAzo2kCJbWI49mePWJfRDh22AegDRSSgGllSPC1rr7c17HMvoD0N9Nd8Q30z+nqivxbGoLfDNhg5Gfu3Rb/EHJeEQw8GR5/tnfC8ED8rAsMt77Ui7VwCLX922u0cSXju2XNpf4SQYBDid4GHI2LhU4EPnYLhXmYDqoX7Zy/4wSI8IsHtVsDaozBZy0zE1iVP9HVeF2xAaLFNRhqs3zcDDXbAMpyB+glA2l0RkXJTYFwn+uaISbWEBQL9VH+didBGMVO7V5zg/pKCU+73raPP9jz9qSSTGtZ7HZyHDdQ8/8BuZ6h7sT6X9kcICQYhnierC685xcJfA49lNqB6wwzogMFLYvLeAnWs/8MWkY2AFpKtSxJILdsvV/d1m41E4/Ki7ECCL0/wz8sEjHZYIu3H6xU3iUFof7FRtsRgLqFsG1l5sQbkaE9sKwtYrf46knHR7bTihMHxFKgT/GkgfuroMxMz3N9ImCK+WeDqD4jAhoi2eaudKzV5LvREKBM7O55LuyGEBIMQvyJi4QuB/zgFw0uZH904GH5TJ566UiYE04Nha05nqGfxXzcxv4AnIvv3ZxORQewAqyy8n4mPWEXlyMqSwBpneNnKV4lb4wxtLZP9lZ+QU5D7MK84kfsbt7baEKE1kvsifeYXQw7myHPnxOwJ7WkMbeiMKz2N3c6+59J+CCHBIMS/A58lguHXgbODPwQeyfzoxo7/Jvn7B02kDmRODFS6yMt/j+vOnn3Zjv3ZPIeB2wHPe69vkaA6GxPBa1aWBJEWEYMBecm2z5E8ALu/EluT+/CuOLXGbSpYnv/N32dmf3JwYj5A7DGT5HFkiAhW1g9s1XByPJd2QAgJBiFeJWLhhcDZyQsf06Mba2PS5plsB0oNQErLcZDkxeq4Lp0598+48v3ZVpHRGwOMaWO2tienHJna7y1rzn/ZvnYfWQ2qN8F7S/dXFGHzDYHsAj7nXXHqWZBJVpMq4qf+PnN+bwSJCDhIijdfg51m1az1DGSrHQoCu50dz6V9EEKCQYgPAk9HxMIjgd87xcJvMh1M3Q4JzwsL+ACPMCn4Cof7uhMRVN6ZwDZSt7VMY9wmUUYSKxe8b9Z+xFEW7c/situuCud2l477K79vhy8gi2MbDNsq1ZJ78/eZ/3sj5BQ3EE/pPAT5GLMxQZ5PEHA785Uc8lzaByEkGIT4IVldeMkpFv4b+GKOAwmTP/dNeIYAxC9MZp7o67huelA0YCBnpIe6U2egF6MdsL+GGwKl3h0UppetrVt7iE/WmExrpDH7K9+nXgQWFDOuFSeykkeC8jbib80OfUZITuJtjatPk7GvT5jYfYPP9CgK+HOR29n7XNoHISQYhPh74BMRsfBY4C9OwfBaxoNpwkDRmLiHnIwJz3zm0S5MTjzR131dHkCl76W2J5hyYcUTvzlbpzwV+wsG82kzGJiW+E0NbxCb5K98j3vvPDu/MZ5WtRiD8irib+UOfeY4/YnWM7HtOo5xVyauGk7YDm5n/3NpH4SQYBDiG2R14Z5TLHwYeCbTgYQv75YFfcY8iMaYFIrMjpOYsB7/dXnwxZNU/UnnLJicjEm4fWBcqVJOSIL2l4mrQ7wsP02ogvbGZs9L+C1N0E72V9J274wwWXGClTw+rq2JuN4+c5z+5BHU1lW97oLC6idgi4ZvFeJ29j6XED9CSDAI8afAoxGx8FTgfadg+DF32IwTnvmLsQrM+Bu+l9oe5PgTnl3XxZnAk2HLxMnRB3Vk5rvnHx1DO/DAgweKOBPKv4VAEpOx7GQIgs8bTKZAjNdZc3+19yELYH0BMu9HsspSUlv7+8ye8OwX1FxA4W/seU043gqef8Dt7H0upSOEBMM/FRATxFfI6sLPnGLh3cAT+Q0g/vImHzaqV7q13BJ5eY7G7RnNTgnP3uticIAf8NpKIO4cSecjAva/tHPlONq2v+jHFsqNpP0D+gCKJSwLf28u6p3BB0vugzSAauGa2NYZ2kr8lVKYv37sD5AnT8Iz5nhc9EXp7TP/6U/2hGcA+7PFk7A2ypekjeMN/lahjbEd3M6+gxjSEUKCYVRAHEG8QcTCs4H7TsHw7SwGjP+0ko6cHIIvT56Am0PCs90Gk2MmEAMaCwMED1Z7n4wnwVSx2VZih8JmOy6AgDExIB/S7pfYjzObxAyn2jnhueSrIf4+s57+5D7FDZKXCW3KeCCTAWzVjdnZ/1wSQpgFwz0FxRFERQTD606x8FbgTsaDiJ9WwgPGU6BM//IyYp7Z7ZISnv3XRWoIFOa1LAZCRWrSOWFc6+1IEEvtHTlCcoHEz5Syk2E2voGyaMMiUQBYAtXWXie3n+dr6Y4jdtOP4cTcApuYKh195jv9yX+KGybuI6fI1rT+hva1N9iq5tveuJ3x6F7Pc4kjhATD04GPAmchgF8SsfBc4OzkS1c16ODDRloejyTlZnDP5Au3jAr9wF/v8drqyEMpc+p/h/2OSn1Bapky4u9721kIsQP//ycEf68oOBbAvwKfIYLhTadYePk6BpqAfjd/CfmqEOOx+18IISQYHg+8fREsCvFTIhZedIqFVwMPX81gEyeSOwCJ41p5uQKKC/qD978QQkgwrKLhczoxSawsgScjYuFO4M+Orzn/4DoHnLYbAePKQpIqRfbwbwno2EshRAZIMKyi4fOBWQHz1fM9srrwzVuKhbcDz1/tgBMVSU6eA83V2EP06n8hREZIMIBoeCLw88B9Bc5XyTuBuxGx8MnAPxKFwt8C3wncDWjgiTLQBLqVNlBdpS0kILsVrSoIIXJBggGEwzOB7wfeCLynQPpq+DpZXfiRQSB8EPhj4BeBLwce1WATQgghhMiT/wEhI/GE8hiEuwAAAABJRU5ErkJggg=='
+			var doc = new jsPDF();
+		  doc.setFontSize(10);
+			doc.setLineWidth(0.5);
+			doc.line(10, 10, 200, 10);
+			doc.addImage(imgData, 'PNG', 12, 12, 80, 15);
+		  doc.line(10, 30, 200, 30);
+		  doc.setTextColor(32, 85, 138);
+		  var splitTitle = doc.splitTextToSize('The Risk Capture Form (RCF) is a standardized data entry tool for collecting information related to an individual risk. The RCF template may be used to manually assist in collecting risk information. Since the RCF template may be used for multiple purposes, all the fields may not be applicable depending on the IC/OD Office\'s intended reason for using the template. As such, the user should complete only the fields relevant for the intended purpose.', 180);
+		  doc.text(12, 36, splitTitle);
+		  doc.line(10, 52, 200, 52);
+		  doc.setLineWidth(5);
+		  doc.setDrawColor(211, 211, 211);
+		  doc.line(10.3, 54.8, 199.7, 54.8);
+		  doc.setTextColor(46, 61, 84);
+		  doc.text(92, 55.5, 'Risk Identification');
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, 57, 200, 57);
+		  doc.autoTable({
+					startY: 60,
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+				  body: [
+							['Risk Title', rcf.title],
+							['Is this an Enterprise Risk?', rcf.enterprise],
+						  ['Risk Response',rcf.response],
+						  ['Functional Ownership',rcf.ownership],
+						  ['Risk Managers',rcf.r_managers]
+					],
+				  columnStyles: {
+						             0:{fontStyle: 'bold',cellWidth:25,fillColor:[58, 73, 114], textColor: [255,255,255]},
+												 1:{cellWidth:75}
+												}
+			});
+		  var finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Risk Statement']],
+					body: [[rcf.statement]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+				  body: [
+							['Immediacy', rcf.immediacy],
+							['Span of Control', rcf.control],
+						  ['Special Interest Risk',rcf.interest],
+						  ['Risk Category',rcf.category],
+						  ['Risk Subcategory',rcf.subcategory]
+					],
+				  columnStyles: {
+												 0:{fontStyle: 'bold',cellWidth:25,fillColor:[58, 73, 114], textColor: [255,255,255]},
+												 1:{cellWidth:75}
+												}
+			});
+		
+		  finalY = doc.previousAutoTable.finalY;
+		  var tmp = doc.splitTextToSize(rcf.policies, 220);
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What are the primary policies and procedures in place to manage this risk']],
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: 60}
+												},
+				  didDrawCell: function(data) {
+						  console.log(data);
+							if (data.row.section === 'body' && data.column.dataKey == "0" ) {
+								  console.log('test');
+									doc.text(15, finalY + 16, tmp);
+							}
+					}
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What are the risk management activities undertaken this fiscal year related to this risk? (FMFIA Support)']],
+					body: [[rcf.activities]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Describe the Action Plan for a REDUCE Risk Response or the Rationale for Choosing an ACCEPT Risk Response.']],
+					body: [[rcf.plan]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  if(finalY > 260){
+				doc.addPage();
+				finalY = 0;
+			}
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 5, 200, finalY + 5);
+		  doc.setLineWidth(5);
+		  doc.setDrawColor(211, 211, 211);
+		  doc.line(10.3, finalY + 7.8, 199.7, finalY + 7.8);
+		  doc.setTextColor(46, 61, 84);
+		  doc.text(92, finalY + 8.5, 'Risk Impact');
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 10, 200, finalY + 10);
+		  doc.autoTable({
+					startY: finalY + 13,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What is the Impact on your IC/OD Office Mission?']],
+					body: [[rcf.impact]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What is the impact on Public Trust?']],
+					body: [[rcf.pub_impact]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What is the Organizational Impact?']],
+					body: [[rcf.org_impact]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['What is the Financial Impact to your IC/OD Office?']],
+					body: [[rcf.financial_impact]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['In your professional judgement, what would be the overall impact on your IC/OD Office if this risk occurred?']],
+					body: [[rcf.overall_impact]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  if(finalY > 260){
+				doc.addPage();
+				finalY = 0;
+			}
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 5, 200, finalY + 5);
+		  doc.setLineWidth(5);
+		  doc.setDrawColor(211, 211, 211);
+		  doc.line(10.3, finalY + 7.8, 199.7, finalY + 7.8);
+		  doc.setTextColor(46, 61, 84);
+		  doc.text(92, finalY + 8.5, 'Risk Likelihood');
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 10, 200, finalY + 10);
+		  doc.autoTable({
+					startY: finalY + 13,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Are written policies, procedures, or controls in place to manage this risk?']],
+					body: [[rcf.inplace]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Are written policies, procedures, and controls effective?']],
+					body: [[rcf.effective]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Are all policies included in formal Federal, HHS, NIH or IC guidance?']],
+					body: [[rcf.include]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Individuals within my IC/OD Office are aware of this risk.']],
+					body: [[rcf.aware]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Is IC/OD Office management taking formal actions to mitigate or address this risk?']],
+					body: [[rcf.formal_action]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['In yours professional judegement, what is the likelihood that the identified risk could occur?']],
+					body: [[rcf.likelihood]]
+			});
+		
+		  finalY = doc.previousAutoTable.finalY;
+		  if(finalY > 260){
+				doc.addPage();
+				finalY = 0;
+			}
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 5, 200, finalY + 5);
+		  doc.setLineWidth(5);
+		  doc.setDrawColor(211, 211, 211);
+		  doc.line(10.3, finalY + 7.8, 199.7, finalY + 7.8);
+		  doc.setTextColor(46, 61, 84);
+		  doc.text(92, finalY + 8.5, 'Risk Score Information');
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 10, 200, finalY + 10);
+		  doc.autoTable({
+					startY: finalY + 13,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+				  body: [
+							['Risk Impact', rcf.impact_score],
+							['Risk Likelihood', rcf.likelihood_score],
+						  ['Risk Score',rcf.total_score]
+					],
+				  columnStyles: {
+												 0:{fontStyle: 'bold',cellWidth:25,fillColor:[58, 73, 114], textColor: [255,255,255]},
+												 1:{cellWidth:75}
+												}
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  if(finalY > 260){
+				doc.addPage();
+				finalY = 0;
+			}
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 5, 200, finalY + 5);
+		  doc.setLineWidth(5);
+		  doc.setDrawColor(211, 211, 211);
+		  doc.line(10.3, finalY + 7.8, 199.7, finalY + 7.8);
+		  doc.setTextColor(46, 61, 84);
+		  doc.text(92, finalY + 8.5, 'Other Information');
+		  doc.setLineWidth(0.5);  
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, finalY + 10, 200, finalY + 10);
+		  doc.autoTable({
+					startY: finalY + 13,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Rationale for Red Risk, Changes to Risk Score, Changes to Risk Response, or Risk Retirement:']],
+					body: [[rcf.rationale]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  doc.autoTable({
+					startY: finalY + 3,
+				  pageBreak: 'avoid',
+				  theme: 'grid',
+				  styles:{lineColor:[0,0,0],fontSize:8},
+					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
+				  head: [['Comments']],
+					body: [[rcf.form_comments]]
+			});
+		  finalY = doc.previousAutoTable.finalY;
+		  var pages = doc.internal.getNumberOfPages();
+		  //draw last page's side lines and bottom line
+		  doc.setLineWidth(0.5);
+		  doc.setDrawColor(0, 0, 0);
+		  doc.line(10, 10, 10, finalY + 5);
+		  doc.line(200, 10, 200, finalY + 5);
+		  doc.line(10, finalY + 5, 200, finalY + 5);
+		  //draw side lines for previous pages 
+		  for(var i = 1; i< pages; i++){
+				doc.setPage(i);
+				doc.setLineWidth(0.5);
+		    doc.setDrawColor(0, 0, 0);
+				doc.line(10, 10, 10, 280);
+		    doc.line(200, 10, 200,280);
+			}
+			doc.save('Risk Form');
+	};
 	
 	
 	c.getThisYearsRisks = function(cb){
@@ -291,8 +678,6 @@
 	
 	c.getThisYearsRisks();
 	
-	
-	
 }]]></client_script>
         <controller_as>c</controller_as>
         <css/>
@@ -330,7 +715,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>258</sys_mod_count>
+        <sys_mod_count>582</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -338,7 +723,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-14 16:58:32</sys_updated_on>
+        <sys_updated_on>2019-01-23 00:18:45</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
@@ -348,7 +733,7 @@
       <button type="button" class="table-button btn btn-primary" ng-click="c.loadRisks();">
         Load Risks
       </button>
-      <button type="button" class="table-button btn btn-primary" ng-click="c.gotoNewRisk();" >
+      <button type="button" class="table-button btn btn-primary" ng-click="c.gotoNewRisk();">
         Add new Risk
       </button>
     </div>
@@ -359,8 +744,8 @@
       </div>
     </div>
   </div>
-  <div class="table-section">
-    <table width="100%">
+  <div class="table-section" ng-if="c.data.role.indexOf('RC') > -1">
+    <table width="100%" id="export-table">
       <tr class="table-header">
         <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('title')" style="width:20%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
@@ -388,8 +773,71 @@
           <button type="button" class="table-button btn btn-primary" ng-click="c.exportPDF(x.sys_id);">
             Export
           </button>
-          <button type="button" class="table-button btn btn-primary" ng-click="c.meetingNotes(x.doc, x.fiscal_year);" ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
+          <button type="button" class="table-button btn btn-primary" ng-click="c.meetingNotes(x.doc, x.fiscal_year);">
             Meeting Notes
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="table-section" ng-if="c.data.role.indexOf('RT') > -1">
+    <table width="100%">
+      <tr class="table-header">
+        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:20%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('ompc_recommend')" style="width:12%;text-align:center;">OMPC<br>Recommend <i ng-show="sortKey == 'ompc_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'ompc_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th style="width:16%;text-align:center;">Action</th>
+      </tr>
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+				<td class="td-right-line">{{x.doc}}</td>
+        <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.manager_name}}</td>
+        <td class="td-right-line">{{x.poc_name}}</td>
+        <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
+        <td class="td-right-line">{{x.ompc_recommend == 'N/P' ? "" : x.ompc_recommend}}</td>
+        <td class="td-right-line">{{x.status}}</td>
+        <td style="padding-bottom:5px;">
+          <button type="button" class="table-button btn btn-primary" ng-click="c.viewRCF(x.sys_id);">
+            View RCF
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.exportPDF(x.sys_id);">
+            Export
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.meetingNotes(x.doc, x.fiscal_year);">
+            Meeting Notes
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="table-section" ng-if="c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1">
+    <table width="100%">
+      <tr class="table-header">
+        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:32%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th style="width:16%;text-align:center;">Action</th>
+      </tr>
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+				<td class="td-right-line">{{x.doc}}</td>
+        <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.manager_name}}</td>
+        <td class="td-right-line">{{x.poc_name}}</td>
+        <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
+        <td class="td-right-line">{{x.status}}</td>
+        <td style="padding-bottom:5px;">
+          <button type="button" class="table-button btn btn-primary" ng-click="c.viewRCF(x.sys_id);">
+            View RCF
+          </button>
+          <button type="button" class="table-button btn btn-primary" ng-click="c.exportPDF(x.sys_id);">
+            Export
           </button>
         </td>
       </tr>
@@ -423,14 +871,15 @@
         <div class="table-section">
           <table width="100%">
             <tr class="table-header">
-              <th class="td-right-line" style="width:10%;text-align:center;"><input type="checkbox" id="selectAllRisks" class="" ng-click="c.selectAll()" ng-checked="c.data.selectedRisks.length != 0  && c.data.selectedRisks.length == c.data.prev_risks.length"></th>
+              <th class="td-right-line" style="width:10%;text-align:center;"><input type="checkbox" id="selectAllRisks" class="" ng-click="c.selectAll()" ng-checked="c.data.selectedRisks.length != 0  && c.data.selectedRisks.length == c.data.prev_risks_unload"></th>
               <th class="td-right-line" ng-click="prev_sort('doc')" style="width:20%;text-align:center;">AU(DOC) <i ng-show="prev_sortKey == 'doc' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'doc' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
               <th class="td-right-line" ng-click="prev_sort('title')" style="width:50%;text-align:center;">Risk Title <i ng-show="prev_sortKey == 'title' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'title' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
               <th class="td-right-line" ng-click="prev_sort('score')" style="width:20%;text-align:center;">Score <i ng-show="prev_sortKey == 'score' && !prev_reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="prev_sortKey == 'score' && prev_reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
             </tr>
             <tr class="table-row" ng-repeat="m in c.data.prev_filtered = (c.data.prev_risks | filter:c.data.prev_searchText | orderBy:prev_sortKey:prev_reverse)" ng-show="$index >= (c.data.prev_bigCurrentPage -1) * c.data.prev_pageSize && $index < c.data.prev_bigCurrentPage * c.data.prev_pageSize">
               <td class="td-right-line">
-              <input type="checkbox" class="" id="risk_{{m.sys_id}}" ng-model="m.selected" ng-click="c.updateSelected(m)" value="{{m.sys_id}}" role="checkbox" aria-invalid="false" ng-checked="true" ng-checked="c.data.selectedRisks.indexOf(m.sys_id) > -1">
+              	<input type="checkbox" class="" id="risk_{{m.sys_id}}" ng-model="m.selected" ng-click="c.updateSelected(m)" value="{{m.sys_id}}" role="checkbox" aria-invalid="false" ng-checked="true" ng-checked="c.data.selectedRisks.indexOf(m.sys_id) > -1" ng-if="!m.loaded">
+                <span ng-if="m.loaded">Loaded</span>
               </td>
               <td class="td-right-line">{{m.doc}}</td>
               <td class="td-right-line">{{m.title}}</td>

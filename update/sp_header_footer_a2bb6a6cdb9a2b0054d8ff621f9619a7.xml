@@ -32,7 +32,7 @@
         <sys_created_on>2018-12-07 16:45:12</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>a2bb6a6cdb9a2b0054d8ff621f9619a7</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>riskmgmt footer</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -40,8 +40,11 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_header_footer_a2bb6a6cdb9a2b0054d8ff621f9619a7</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-07 16:45:12</sys_updated_on>
+        <sys_updated_on>2019-01-17 20:21:11</sys_updated_on>
         <template><![CDATA[<div id="footer">
+  <div class="footer-claim">
+    For questions, contact <a href="mailto:NCIRiskMgmtWebAdmin@mail.nih.gov ?subject=Risk Management Contact Us" role="link">NCIRiskMgmtWebAdmin@mail.nih.gov</a> .
+  </div>
   <div class="footer-box">
     <ul class="footer-nav">
       <li><a href="http://www.cancer.gov/global/web/policies">Policies</a></li>

@@ -153,13 +153,14 @@
 		if(file.type !== 'application/pdf' && file.type !== 'application/vnd.ms-powerpoint' 
 			 && file.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 			 && file.type !== 'application/msword'
-			 && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
-			console.log("please upload a pdf or powerpoint, word file.");
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+			 && file.type !== 'application/vnd.ms-excel'
+			 && file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
 			c.errorMessage = true;
 			c.upload_status = 'upload';
 		}
 		else if(file.size > 18874368){
-			console.log("File size should not exceed 18 MB.");
+			//console.log("File size should not exceed 18 MB.");
 			c.errorMessage = true;
 			c.upload_status = 'upload';
 		}
@@ -497,7 +498,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>227</sys_mod_count>
+        <sys_mod_count>238</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -505,7 +506,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-14 18:22:51</sys_updated_on>
+        <sys_updated_on>2019-01-17 20:53:28</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -821,36 +822,36 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">AU Recommend</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend">
+                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend" ng-disabled="c.data.role.indexOf('POC') > -1">
                   <option value="N/P"></option>
-                  <option value="maintain">Maintain the risk</option>
-                  <option value="retire">Retire the risk</option>
-                  <option value="add">Add to inventory</option>
-                  <option value="donot add">Do not add to inventory</option>
+                  <option value="Maintain the risk">Maintain the risk</option>
+                  <option value="Retire the risk">Retire the risk</option>
+                  <option value="Add to inventory">Add to inventory</option>
+                  <option value="Do not add to inventory">Do not add to inventory</option>
                 </select>
               </div>
             </div>
-            <div class="form-section" style="display:flex;">
+            <div class="form-section" style="display:flex;" ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">OMPC Recommend</div>
               <div class="col-md-5">
                 <select class="form-control" ng-model="c.data.rcf.ompc_recommend" id="ompc_recommend" name="ompc_recommend">
                   <option value="N/P"></option>
-                  <option value="maintain">Maintain the risk</option>
-                  <option value="retire">Retire the risk</option>
-                  <option value="add">Add to inventory</option>
-                  <option value="donot add">Do not add to inventory</option>
+                  <option value="Maintain the risk">Maintain the risk</option>
+                  <option value="Retire the risk">Retire the risk</option>
+                  <option value="Add to inventory">Add to inventory</option>
+                  <option value="Do not add to inventory">Do not add to inventory</option>
                 </select>
               </div>
             </div>
-            <div class="form-section" style="display:flex;">
+            <div class="form-section" style="display:flex;" ng-if="c.data.role.indexOf('RC') > -1">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">EO Final Decision</div>
               <div class="col-md-5">
                 <select class="form-control" ng-model="c.data.rcf.eo_final_decision" id="eo_final_decision" name="eo_final_decision">
                   <option value="N/P"></option>
-                  <option value="maintain">Maintain the risk</option>
-                  <option value="retire">Retire the risk</option>
-                  <option value="add">Add to inventory</option>
-                  <option value="donot add">Do not add to inventory</option>
+                  <option value="Maintain the risk">Maintain the risk</option>
+                  <option value="Retire the risk">Retire the risk</option>
+                  <option value="Add to inventory">Add to inventory</option>
+                  <option value="Do not add to inventory">Do not add to inventory</option>
                 </select>
               </div>
             </div>
@@ -900,7 +901,7 @@
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.unlockRisk()" ng-show="c.data.rcf.status == 'Closed' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Unlock
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Submit
         </button>
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
@@ -969,8 +970,8 @@
             
             <div style="width:100%; margin-top: 5px;overflow:auto;">
               <div class="col-md-9" style="padding:0px;">
-                <h5 ng-if="!c.errorMessage">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
-                <h5 ng-if="c.errorMessage" style="color: red;">PDF/PPT/Word only, Maximum upload size 18 MB</h5>
+                <h5 ng-if="!c.errorMessage">PDF/PPT/Word/Excel only, Maximum upload size 18 MB</h5>
+                <h5 ng-if="c.errorMessage" style="color: red;">PDF/PPT/Word/Excel only, Maximum upload size 18 MB</h5>
               </div>
               <div class="col-md-3" style="text-align:right;padding-right:0px;">
                 <button type="button" class="table-button btn btn-primary" ng-click="c.uploadAttachment()" ng-disabled="c.upload_status == 'uploading...' || c.file2upload == ''">{{c.upload_status}}</button></div> 
@@ -984,6 +985,8 @@
                 <i class="fa fa-file-powerpoint-o" aria-hidden="true"></i> {{attach.file_name}}</a>
               <a ng-if="attach.file_type == 'application/msword' || attach.file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
                 <i class="fa fa-file-word-o" aria-hidden="true"></i> {{attach.file_name}}</a>
+              <a ng-if="attach.file_type == 'application/vnd.ms-excel' || attach.file_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'" target="_blank" href="sys_attachment.do?view=true&sys_id={{attach.attach_sys_id}}">
+                <i class="fa fa-file-excel-o" aria-hidden="true"></i> {{attach.file_name}}</a>
               <span style="float:right;">{{attach.create_time.substring(0,10)}}</span>
             </div>
           </div>

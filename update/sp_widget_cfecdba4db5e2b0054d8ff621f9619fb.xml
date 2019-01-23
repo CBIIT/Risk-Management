@@ -14,6 +14,8 @@
 	c.currentConfig.poc = [];
 	c.currentConfig.manager_id = [];
 	c.currentConfig.poc_id = [];
+	c.data.manager_input = "";
+	c.data.poc_input = "";
 	
 	$scope.sortKey = 'doc';
 	$scope.reverse = true;
@@ -46,12 +48,14 @@
 			var result = rs.data.result;
 			c.currentConfig.sys_id = sys_id;
 			c.currentConfig.doc = result.doc;
+			c.data.manager_input = "";
 			c.currentConfig.manager = [];
 			var mn = result.manager.split(',');
 			var mi = result.manager_id.split(',');
 			for(var i = 0; i< mn.length; i++){
 				c.currentConfig.manager.push({id: mi[i], name: mn[i]});
 			}
+			c.data.poc_input = "";
 			c.currentConfig.poc = [];
 			mn = result.poc.split(',');
 			mi = result.poc_id.split(',');
@@ -107,7 +111,12 @@
 	}
 	
 	c.tagAdding = function(tag, type){
-		
+		if(tag.id){
+			return true;
+		}
+		else{
+			return false;
+		}
 	};
 	
 	c.tagRemoving = function(tag, type){
@@ -197,7 +206,7 @@
         <sys_created_on>2018-12-07 20:19:36</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>cfecdba4db5e2b0054d8ff621f9619fb</sys_id>
-        <sys_mod_count>142</sys_mod_count>
+        <sys_mod_count>165</sys_mod_count>
         <sys_name>riskmgmt config</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -205,7 +214,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_cfecdba4db5e2b0054d8ff621f9619fb</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-14 14:59:20</sys_updated_on>
+        <sys_updated_on>2019-01-17 16:11:53</sys_updated_on>
         <template><![CDATA[<div class="settings-content">
 	<div class="settings-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');"><i class="fa fa-chevron-left"></i> Back to Risk Management</a>
@@ -258,25 +267,25 @@
         </div>
         <div class="form-section">
           <label for="manager"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Manager:</label>
-          <tags-input ng-model="c.currentConfig.manager" placeholder="Add a manager" key-property="id" display-property="name" replace-spaces-with-dashes=false style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'1')" on-tag-removing="c.tagRemoving($tag,'1')">
+          <tags-input ng-model="c.currentConfig.manager" placeholder="Add a manager" key-property="id" display-property="name" replace-spaces-with-dashes=false text="c.data.manager_input" style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'1')" on-tag-removing="c.tagRemoving($tag,'1')">
             <auto-complete source="c.loadDictionary($query)"
                            min-length="0"
                            display-property="text"
                            load-on-focus="false"
                            load-on-empty="false"
-                           select-first-match="false"
+                           select-first-match="true"
                            max-results-to-show="10"></auto-complete>
           </tags-input>
         </div>
         <div class="form-section">
           <label for="poc"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk POCs:</label>
-          <tags-input ng-model="c.currentConfig.poc" placeholder="Add a POC" key-property="id" display-property="name"  replace-spaces-with-dashes=false style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'2')" on-tag-removing="c.tagRemoving($tag,'2')">
+          <tags-input ng-model="c.currentConfig.poc" placeholder="Add a POC" key-property="id" display-property="name"  replace-spaces-with-dashes=false text="c.data.poc_input" style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'2')" on-tag-removing="c.tagRemoving($tag,'2')">
             <auto-complete source="c.loadDictionary($query)"
                            min-length="0"
                            display-property="text"
                            load-on-focus="false"
                            load-on-empty="false"
-                           select-first-match="false"
+                           select-first-match="true"
                            max-results-to-show="10"></auto-complete>
           </tags-input>
         </div>
