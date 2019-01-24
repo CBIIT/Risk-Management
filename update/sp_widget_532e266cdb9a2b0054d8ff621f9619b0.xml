@@ -25,7 +25,7 @@
         <sys_created_on>2018-12-07 16:55:22</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>532e266cdb9a2b0054d8ff621f9619b0</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>9</sys_mod_count>
         <sys_name>riskmgmt home</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -33,22 +33,21 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_532e266cdb9a2b0054d8ff621f9619b0</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-14 16:51:55</sys_updated_on>
+        <sys_updated_on>2019-01-23 21:31:15</sys_updated_on>
         <template><![CDATA[<div class="home-content">
-  <h3 style="text-align:center;margin-bottom: 20px;">
-    Welcome to Risk Management Program Site !
-  </h3>
-	<p>
-  	This site will be used to track compliance for NCI extramural staff who are required to complete Good Clinical Practice (GCP) training (see Policy on Good Clinical Practice Training for NIH Staff Involved in the Conduct, Management, and Oversight of Clinical Trials).
-  </p>
   <p>
-    This training requirement applies to individuals who participate in the development, implementation, monitoring, and/or evaluation of clinical research activities affiliated with clinical trials and should be commensurate with their role and responsibility. For NCI, this includes program staff, contracting officer's representatives, health specialists, program analysts, nurse consultants, medical monitors, and many others involved in the technical aspects of grants, cooperative agreements or contracts through which clinical trials are conducted, as well as those participants making decisions about the design and conduct of clinical trials.
+  Welcome to the National Cancer Institute’s Office of Management Policy and Compliance (OMPC) Risk Management database. The purpose of the database is to support the NCI Risk Management Program and serves as a centralized repository for NCI’s risks. The NCI Risk Management Program operates with the purpose of:
   </p>
+  <ul>
+    <li>Supporting the research mission and vision of NCI.</li>
+    <li>Improving strategic decision-making.</li>
+		<li>Identifying risks and proactively managing them.</li>
+		<li>Increasing organizational efficiency and effectiveness.</li>
+		<li>Promoting accountability and integrity of the organization's work.</li>
+		<li>Using a common approach to evaluate operational and management risks.</li>
+  </ul>
   <p>
-    NCI Staff Instructions: Once you have completed your GCP training, please go to the Training Certificate Repository (select tab on the top) to upload your completed certificate(s). For best results, please use "Print to PDF" when completing training to output a pdf to upload to this site or you may scan the printed certificate and save as a pdf to upload. Please refer to the Instructions for Uploading GCP documents quick reference document for more detailed information (including pdf document naming requirements).
-  </p>
-  <p>
-    Note: If you have more than one certificate (i.e. the course provides individual certificates for each section of their course), you must combine those into one pdf document prior to uploading. A pdf Adobe Portfolio is not permitted for this upload.
+    Access to this site is limited to NCI staff involved with the annual risk inventory assessment cycle. Additional information on the NCI Risk Management Program can be found here: <a href="https://nciconnect.nci.nih.gov/OMPC/Pages/risk.aspx" target="_blank">https://nciconnect.nci.nih.gov/OMPC/Pages/risk.aspx</a>
   </p>
 </div>]]></template>
     </sp_widget>

@@ -232,7 +232,7 @@
 		c.data.confirmMessage = "Are you sure you want to reject this risk?";
 		//post to server
 		cb = function(){
-				RiskMgmtRisk.RMRejectRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+				RiskMgmtRisk.RMRejectRisk({sys_id:c.data.rcf.sys_id, comment: c.data.reject_comment}, c.data.sessionId).then(function(res){
 					var result = res.data.result;
 					$('#confirmDiv').modal('hide');
 					$scope.$apply();
@@ -440,6 +440,32 @@
 		for(var i = 0; i< arr_id.length; i++){
 			c.data.pocs.push({id: arr_id[i], name: arr_name[i]});
 		}
+		c.data.canEdit = true;
+		if(c.data.rcf.status == 'Closed'){
+			c.data.canEdit = false;
+		}
+		else if(c.data.rcf.status == 'Complete'){
+			if(c.data.role.indexOf('RC') > -1){
+				c.data.canEdit = true;
+			}
+			else{
+				c.data.canEdit = false;
+			}
+		}
+		else if(c.data.rcf.status == 'Final Review'){
+			if(c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1){
+				c.data.canEdit = true;
+			}
+			else{
+				c.data.canEdit = false;
+			}
+		}
+		else if(c.data.rcf.status == 'Initial Review'){
+			c.data.canEdit = true;
+		}
+		else{
+			c.data.canEdit = true;
+		}
 		if(s.next && c.data.rcf.status == "Initial Review" && (s.next == "approve" || s.next == "reject")){
 			if(s.next == "approve"){
 				c.RMApproveRisk();
@@ -498,7 +524,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>238</sys_mod_count>
+        <sys_mod_count>258</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -506,7 +532,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-17 20:53:28</sys_updated_on>
+        <sys_updated_on>2019-01-24 20:55:04</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -532,45 +558,45 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Title</div>
               <div class="col-md-9">
-                <input type="text" ng-model="c.data.rcf.title" id="title" name="title" value="{{c.data.rcf.title}}" class="form-control">
+                <input type="text" ng-model="c.data.rcf.title" id="title" name="title" value="{{c.data.rcf.title}}" class="form-control"  ng-disabled="!c.data.canEdit">
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Is this an Enterprise Risk?</div>
               <div class="col-md-9" style="line-height:35px;">
-                <input type="radio" ng-model="c.data.rcf.enterprise" value="Yes" name="enterprise"> Yes
-                <input type="radio" ng-model="c.data.rcf.enterprise" value="No" name="enterprise"> No
+                <input type="radio" ng-model="c.data.rcf.enterprise" value="Yes" name="enterprise" ng-disabled="!c.data.canEdit"> Yes
+                <input type="radio" ng-model="c.data.rcf.enterprise" value="No" name="enterprise" ng-disabled="!c.data.canEdit"> No
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Response</div>
               <div class="col-md-9" style="line-height:35px;">
-                <input type="radio" ng-model="c.data.rcf.response" value="Accept" name="response"> Accept
-                <input type="radio" ng-model="c.data.rcf.response" value="Reduce" name="response"> Reduce
+                <input type="radio" ng-model="c.data.rcf.response" value="Accept" name="response" ng-disabled="!c.data.canEdit"> Accept
+                <input type="radio" ng-model="c.data.rcf.response" value="Reduce" name="response" ng-disabled="!c.data.canEdit"> Reduce
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Functional Ownership</div>
               <div class="col-md-5">
-                <input type="text" ng-model="c.data.rcf.ownership" id="ownership" name="ownership" value="{{c.data.rcf.ownership}}" class="form-control">
+                <input type="text" ng-model="c.data.rcf.ownership" id="ownership" name="ownership" value="{{c.data.rcf.ownership}}" class="form-control" ng-disabled="!c.data.canEdit">
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Managers</div>
               <div class="col-md-9">
-                <input type="text" ng-model="c.data.rcf.r_managers" id="r_managers" name="r_managers" value="{{c.data.rcf.r_managers}}" class="form-control">
+                <input type="text" ng-model="c.data.rcf.r_managers" id="r_managers" name="r_managers" value="{{c.data.rcf.r_managers}}" class="form-control" ng-disabled="!c.data.canEdit">
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Risk Statement</div>
               <div class="col-md-9">
-                <textarea rows=3 ng-model="c.data.rcf.statement" id="statement" name="statement" value="{{c.data.rcf.statement}}" class="form-control"></textarea>
+                <textarea rows=3 ng-model="c.data.rcf.statement" id="statement" style="resize: vertical;" name="statement" value="{{c.data.rcf.statement}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Immediacy</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.immediacy" id="immediacy" name="immediacy">
+                <select class="form-control" ng-model="c.data.rcf.immediacy" id="immediacy" name="immediacy" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="in the past">The risk has occurred in the past.</option>
                   <option value="uncertain">It is uncertain when the risk may occur.</option>
@@ -585,7 +611,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Span of Control</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.control" id="control" name="control">
+                <select class="form-control" ng-model="c.data.rcf.control" id="control" name="control" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="handled by IC/OD">The risk can be handled by the IC/OD Office.</option>
                   <option value="can be managed by NIH">The risk can be handled by the IC/OD Office, but can be managed by the NIH.</option>
@@ -596,20 +622,20 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Special Interest Risk</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.interest" id="interest" name="interest">
+                <select class="form-control" ng-model="c.data.rcf.interest" id="interest" name="interest" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="N/A">N/A</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
               <div class="col-md-4">
-                <input type="text" ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"  ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" value="{{c.data.rcf.interest_other}}" class="form-control">
+                <input type="text" ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"  ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" value="{{c.data.rcf.interest_other}}" class="form-control" ng-disabled="!c.data.canEdit">
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Category</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.category" id="category" name="category">
+                <select class="form-control" ng-model="c.data.rcf.category" id="category" name="category" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="Acquisitions">Acquisitions</option>
                   <option value="Ethics">Ethics</option>
@@ -627,25 +653,25 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Subcategory</div>
               <div class="col-md-9">
-                <input type="text" ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" value="{{c.data.rcf.subcategory}}" class="form-control">
+                <input type="text" ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" value="{{c.data.rcf.subcategory}}" class="form-control" ng-disabled="!c.data.canEdit">
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What are the primary policies and procedures in place to manage this risk?</div>
               <div class="col-md-9">
-                <textarea rows=5 ng-model="c.data.rcf.policies" id="policies" name="policies" value="{{c.data.rcf.policies}}" class="form-control"></textarea>
+                <textarea rows=5 ng-model="c.data.rcf.policies" id="policies" name="policies" style="resize: vertical;"  value="{{c.data.rcf.policies}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What are the risk management activities undertaken this fiscal year related to this risk? (FMFIA Support)</div>
               <div class="col-md-9">
-                <textarea rows=5 ng-model="c.data.rcf.activities" id="activities" name="activities" value="{{c.data.rcf.activities}}" class="form-control"></textarea>
+                <textarea rows=5 ng-model="c.data.rcf.activities" id="activities" name="activities" style="resize: vertical;"  value="{{c.data.rcf.activities}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Describe the Action Plan for a REDUCE Risk Response or the Rationale for Choosing an ACCEPT Risk Response</div>
               <div class="col-md-9">
-                <textarea rows=5 ng-model="c.data.rcf.plan" id="plan" name="plan" value="{{c.data.rcf.plan}}" class="form-control"></textarea>
+                <textarea rows=5 ng-model="c.data.rcf.plan" id="plan" name="plan" style="resize: vertical;"  value="{{c.data.rcf.plan}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
           </div>
@@ -658,7 +684,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Impact on your IC/OD Office Mission?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.impact" id="impact" name="impact" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.impact" id="impact" name="impact" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="1">Minimal to no Effect</option>
                   <option value="3">Significant Effect</option>
@@ -669,7 +695,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the impact on Public Trust?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.pub_impact" id="pub_impact" name="pub_impact" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.pub_impact" id="pub_impact" name="pub_impact" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="1">Minimal to no Effect</option>
                   <option value="3">Significant Effect</option>
@@ -680,7 +706,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Organizational Impact?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.org_impact" id="org_impact" name="org_impact"  ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.org_impact" id="org_impact" name="org_impact"  ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="1">Single IC or OD Office</option>
                   <option value="3">More than one IC and OD office</option>
@@ -691,7 +717,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">What is the Financial Impact to your IC/OD Office?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.financial_impact" id="financial_impact" name="financial_impact" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.financial_impact" id="financial_impact" name="financial_impact" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="1">Up to $500,000</option>
                   <option value="3">$500,000 to $5 Million</option>
@@ -702,7 +728,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">In your professional judgement, what would be the overall impact on your IC/OD Office if this risk occurred?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.overall_impact" id="overall_impact" name="overall_impact" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.overall_impact" id="overall_impact" name="overall_impact" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="1">Minimal to no Effect</option>
                   <option value="3">Significant Effect</option>
@@ -720,7 +746,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Are written policies, procedures, or controls in place to manage this risk?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.inplace" id="inplace" name="inplace" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.inplace" id="inplace" name="inplace" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0">Yes</option>
                   <option value="5">No</option>
                 </select>
@@ -729,19 +755,19 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Are written policies, procedures, and controls effective?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.effective" id="effective" name="effective" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.effective" id="effective" name="effective" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="0.5">Strongly Agree</option>
                   <option value="1.5">Agree</option>
                   <option value="4">Disagree</option>
-                  <option value="5">Stringly Disagree</option>
+                  <option value="5">Strongly Disagree</option>
                 </select>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Are all policies included in formal Federal, HHS, NIH or IC guidance?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.include" id="include" name="include" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.include" id="include" name="include" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0">Yes</option>
                   <option value="5">No</option>
                 </select>
@@ -750,19 +776,19 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Individuals within my IC/OD Office are aware of this risk?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.aware" id="aware" name="aware" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.aware" id="aware" name="aware" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="0.5">Strongly Agree</option>
                   <option value="1.5">Agree</option>
                   <option value="4">Disagree</option>
-                  <option value="5">Stringly Disagree</option>
+                  <option value="5">Strongly Disagree</option>
                 </select>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Is IC/OD Office management taking formal actions to mitigate or address this risk?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.formal_action" id="formal_action" name="formal_action" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.formal_action" id="formal_action" name="formal_action" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="1">Yes</option>
                   <option value="5">No</option>
@@ -772,7 +798,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">In your professional judgement, what is the likelihood that the identified risk could occur?</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.likelihood" id="likelihood" name="likelihood" ng-change="c.updateScore()">
+                <select class="form-control" ng-model="c.data.rcf.likelihood" id="likelihood" name="likelihood" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
                   <option value="0.5">Very unlikely</option>
                   <option value="1.5">Unlikely</option>
@@ -822,7 +848,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">AU Recommend</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend" ng-disabled="c.data.role.indexOf('POC') > -1">
+                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend"  ng-disabled="!c.data.canEdit || c.data.role.indexOf('POC') > -1">
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
@@ -831,10 +857,10 @@
                 </select>
               </div>
             </div>
-            <div class="form-section" style="display:flex;" ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
+            <div class="form-section" style="display:flex;" ng-if="c.data.rcf.status == 'Closed' || c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">OMPC Recommend</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.ompc_recommend" id="ompc_recommend" name="ompc_recommend">
+                <select class="form-control" ng-model="c.data.rcf.ompc_recommend" id="ompc_recommend" name="ompc_recommend" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
@@ -843,10 +869,10 @@
                 </select>
               </div>
             </div>
-            <div class="form-section" style="display:flex;" ng-if="c.data.role.indexOf('RC') > -1">
+            <div class="form-section" style="display:flex;" ng-if="c.data.rcf.status == 'Closed' || c.data.role.indexOf('RC') > -1">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">EO Final Decision</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.eo_final_decision" id="eo_final_decision" name="eo_final_decision">
+                <select class="form-control" ng-model="c.data.rcf.eo_final_decision" id="eo_final_decision" name="eo_final_decision" ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
@@ -865,13 +891,13 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Rationale for Red Risk, Changes to Risk Score, Changes to Risk Response, or Risk Retirement</div>
               <div class="col-md-9">
-                <textarea rows=3 ng-model="c.data.rcf.rationale" id="rationale" name="rationale" value="{{c.data.rcf.rationale}}" class="form-control"></textarea>
+                <textarea rows=3 ng-model="c.data.rcf.rationale" id="rationale" name="rationale" style="resize: vertical;"  value="{{c.data.rcf.rationale}}" class="form-control"  ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Comments</div>
               <div class="col-md-9">
-                <textarea rows=3 ng-model="c.data.rcf.form_comments" id="form_comments" name="form_comments" value="{{c.data.rcf.form_comments}}" class="form-control"></textarea>
+                <textarea rows=3 ng-model="c.data.rcf.form_comments" id="form_comments" name="form_comments" style="resize: vertical;"  value="{{c.data.rcf.form_comments}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
           </div>
@@ -904,7 +930,7 @@
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Submit
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving" ng-show="c.data.canEdit">
           {{c.data.save_text}}
         </button>
         <button type="button" class="table-button btn btn-primary" ng-click="c.gotoPage('management','board');">
@@ -933,7 +959,7 @@
           <div class="col-md-4" style="line-height:35px;text-align:right;">POC:</div>
           <div class="col-md-8">
             <select class="form-control" name="pocSelect" id="pocSelect" ng-options="option.name for option in c.data.pocs track by option.id"
-                    ng-model="c.data.rcf.poc" ng-disabled="c.data.role.indexOf('RC') == -1">
+                    ng-model="c.data.rcf.poc"  ng-disabled="!c.data.canEdit || c.data.role.indexOf('RC') == -1">
             </select>
           </div>
         </div>
@@ -943,7 +969,7 @@
       </div>
       <div class="comment-block">      
         <div class="comment-submit">
-          <div style="width:100%;"><textarea name="comment" placeholder="Add comment here" rows="3" ng-model="c.data.comment" style="width:100%;border-color:#ddd;border-radius:5px;"></textarea></div>
+          <div style="width:100%;"><textarea name="comment" placeholder="Add comment here" rows="3" ng-model="c.data.comment" style="resize: vertical;width:100%;border-color:#ddd;border-radius:5px;"></textarea></div>
           <div style="width:100%; text-align:right;"><button type="button" class="table-button btn btn-primary" ng-disabled="c.data.comment == undefined || c.data.comment == ''" ng-click="c.addComment()">Submit</button></div> 
         </div>
         <div class="comment-list">
@@ -951,8 +977,8 @@
             <p class="break-word kb-comments-list ng-binding" style="white-space: pre-wrap">No comments.</p> 
           </div>
           <div class="comment-row" ng-repeat = "row in c.data.comments" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize"> 
-            <p style="font-weight: bold" class="author pad-right kb-comments-list ng-binding"> {{row.userName}} <span class="published pad-right"> - {{row.time}}</span> <a class="btn-link" ng-click="c.deleteComment(row.sys_id)" role="link" ng-show="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || row.userID == c.data.userID">Delete</a></p> 
-            <p class="break-word kb-comments-list ng-binding" style="white-space: pre-wrap">{{row.comment}}</p> 
+            <p style="font-weight: bold" class="author pad-right kb-comments-list ng-binding"> {{row.userName}} <span class="published pad-right"> - {{row.time}}</span> <a class="btn-link" ng-click="c.deleteComment(row.sys_id)" role="link" ng-show="row.status !== '2' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || row.userID == c.data.userID)">Delete</a></p> 
+            <p class="break-word kb-comments-list ng-binding" style="white-space: pre-wrap">{{row.status =='2'? 'RM Reject: ':''}}{{row.comment}}</p> 
           </div>
         </div>
         <div class="tab-paging-section" ng-if="(c.data.comments.length / c.data.pageSize) > 1">
@@ -998,14 +1024,25 @@
 </div>
 <div id="confirmDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
   <div class="modal-dialog modal-lg" style="width:20%;">
-    <div class="modal-content" style="height:150px; overflow-y:auto; overflow-x: hidden;">
+    <div class="modal-content" style="height:200px; overflow-y:auto; overflow-x: hidden;" ng-if="c.data.action == 'RMReject'">
+      <div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage">
+      </div>
+      <div class="col-md-12 message-box" style="margin-top:0px;" align="center">
+        <textarea name="reject_comment" placeholder="Add comment here" rows="3" ng-model="c.data.reject_comment" style="resize: none;width:100%;border-color:#ddd;border-radius:5px;"></textarea>
+      </div>
+      <div class="col-md-12" align="center">
+        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.goAhead();" data-dismiss="modal" ng-disabled="c.data.action == 'RMReject' && (c.data.reject_comment == undefined || c.data.reject_comment == '')">Yes</button>
+        <button class="btn btn-primary" ng-click="c.cancelConfirm();" data-dismiss="modal">No</button>
+      </div>
+    </div>
+    <div class="modal-content" style="height:150px; overflow-y:auto; overflow-x: hidden;" ng-if="c.data.action !== 'RMReject'">
       <div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage">
       </div>
       <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.action == 'Submit'">
         <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyManager" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyManager">&nbsp;Notify Risk Manager
       </div>
       <div class="col-md-12" align="center">
-        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.goAhead();" data-dismiss="modal">Yes</button>
+        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.goAhead();" data-dismiss="modal" ng-disabled="c.data.action == 'RMReject' && (c.data.reject_comment == undefined || c.data.reject_comment == '')">Yes</button>
         <button class="btn btn-primary" ng-click="c.cancelConfirm();" data-dismiss="modal">No</button>
       </div>
     </div>

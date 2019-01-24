@@ -36,10 +36,7 @@
         <item_table/>
         <mandatory>false</mandatory>
         <message/>
-        <message_html><![CDATA[<p>Dear&nbsp;${event.parm1},</p>
-<p>&nbsp;</p>
-<p>There are&nbsp;${event.parm2} <strong>Unclosed</strong> risks left in the <a href="${mail_script:RiskMgmtApplicationURL}?xpage=management" target="_blank">Risk Management Application</a> for this fiscal year.</p>
-<p>&nbsp;</p>]]></message_html>
+        <message_html><![CDATA[<p>Dear&nbsp;${event.parm1},<br /><br /> There are&nbsp;${event.parm2} <strong>Unclosed</strong> risks left in the <a href="${mail_script:RiskMgmtApplicationURL}?xpage=management" target="_blank">Risk Management Application</a> for this fiscal year.</p>]]></message_html>
         <message_list/>
         <message_text/>
         <name>Risk Unclosed Notification</name>
@@ -61,7 +58,7 @@
         <sys_customer_update>false</sys_customer_update>
         <sys_domain>global</sys_domain>
         <sys_id>be8cfa02db036b00b86770c08c9619c9</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>Risk Unclosed Notification</sys_name>
         <sys_overrides/>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
@@ -70,7 +67,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sysevent_email_action_be8cfa02db036b00b86770c08c9619c9</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-22 15:06:04</sys_updated_on>
+        <sys_updated_on>2019-01-24 18:37:00</sys_updated_on>
         <sys_version>2</sys_version>
         <template display_value="Unsubscribe and Preferences">7ed0481f3b0b2200c869c2c703efc487</template>
         <type>email</type>

@@ -16,10 +16,10 @@
 	cm.addQuery('sys_id',sys_id);
 	cm.query();
 	cm.next();
-	cm.status = '0'; //1 - new, 0 - archived
+	cm.status = '0'; //1 - new, 0 - archived, 2 - system
 	cm.update();
 	var cmt = new GlideRecord('x_naci_risk_manage_comments');
-	cmt.addQuery('status','1'); //1 - new, 0 - archived
+	cmt.addQuery('status','IN',['1','2']); //1 - new, 0 - archived, 2 - system
 	cmt.addQuery('risk_number',cm.risk_number.toString());
 	cmt.orderByDesc('sys_created_on');
 	cmt.query();
@@ -30,6 +30,7 @@
 					  userID:cmt.userid.toString(),
 					  userName:cmt.username.toString(),
 					  comment:cmt.comment.toString(),
+			          status: cmt.status.toString(),
 					  time: cmt.sys_created_on.toString()});
 	}
 	return comments;
@@ -48,7 +49,7 @@
         <sys_created_on>2019-01-10 18:59:17</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>ce709e2bdbfa6300b86770c08c9619ef</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>deleteComment</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -56,7 +57,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_ce709e2bdbfa6300b86770c08c9619ef</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-10 20:44:49</sys_updated_on>
+        <sys_updated_on>2019-01-24 18:00:12</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

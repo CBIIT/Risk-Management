@@ -2,7 +2,7 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope,$rootScope,$location, RiskMgmtRisk, RiskMgmtFile) {
+        <client_script><![CDATA[function($scope,$rootScope,$location, RiskMgmtRisk, RiskMgmtFile, RiskMgmtStatic) {
   /* widget controller */
   var c = this;
 	var s = $location.search();
@@ -130,6 +130,7 @@
 		var params = {};
 		params.fiscalYear = c.data.fiscalYear;
 		params.ids = c.data.selectedRisks.join(',');
+		params.isPOC = c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 ? "0" : "1";
 		c.data.loading = true;
 		c.data.load_text = 'Loading...';
 		RiskMgmtRisk.load(params,c.data.sessionId).then(function(rs){
@@ -179,12 +180,10 @@
 			 && file.type !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
 			 && file.type !== 'application/msword'
 			 && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
-			console.log("please upload a pdf or powerpoint, word file.");
 			c.errorMessage = true;
 			c.upload_status = 'upload';
 		}
 		else if(file.size > 18874368){
-			console.log("File size should not exceed 18 MB.");
 			c.errorMessage = true;
 			c.upload_status = 'upload';
 		}
@@ -272,14 +271,6 @@
 				var section_6 = JSON.parse(rcf.section_6);
 				rcf.rationale = section_6.rationale;
 				rcf.form_comments = section_6.form_comments;
-			  
-			/*
-			  console.log(rcf.statement);
-			 console.log(rcf.policies);
-			 console.log(rcf.activities);
-			 console.log(rcf.plan);
-			 console.log(rcf.comments);
-			*/
 			  //generate PDF
 			  c.generatePDF(rcf);
 			},function(error){
@@ -331,8 +322,8 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 				  body: [
 							['Risk Title', rcf.title],
-							['Is this an Enterprise Risk?', rcf.enterprise],
-						  ['Risk Response',rcf.response],
+							['Is this an Enterprise Risk?', rcf.enterprise =='N/P'?"": rcf.enterprise],
+						  ['Risk Response',rcf.response =='N/P'?"": rcf.response],
 						  ['Functional Ownership',rcf.ownership],
 						  ['Risk Managers',rcf.r_managers]
 					],
@@ -342,13 +333,27 @@
 												}
 			});
 		  var finalY = doc.previousAutoTable.finalY;
+		  var tmp = doc.splitTextToSize(rcf.statement?rcf.statement : "", 220, {fontSize: 10});
+		  var len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 3,
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Risk Statement']],
-					body: [[rcf.statement]]
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: len * 3.7}
+												},
+				  didDrawCell: function(data) {
+						  if (data.row.section === 'body' && data.column.dataKey == "0" ) {
+								  doc.text(16, finalY + 15, tmp);
+							}
+					}
+
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -356,10 +361,10 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 				  body: [
-							['Immediacy', rcf.immediacy],
-							['Span of Control', rcf.control],
-						  ['Special Interest Risk',rcf.interest],
-						  ['Risk Category',rcf.category],
+							['Immediacy', rcf.immediacy =='N/P'?"": rcf.immediacy],
+							['Span of Control', rcf.control =='N/P'?"": rcf.control],
+						  ['Special Interest Risk',rcf.interest =='N/P'?"": (rcf.interest == "other" && rcf.interest_other && rcf.interest_other !=="" ? "Other:"+rcf.interest_other : rcf.interest)],
+						  ['Risk Category',rcf.category =='N/P'?"": rcf.category],
 						  ['Risk Subcategory',rcf.subcategory]
 					],
 				  columnStyles: {
@@ -369,7 +374,11 @@
 			});
 		
 		  finalY = doc.previousAutoTable.finalY;
-		  var tmp = doc.splitTextToSize(rcf.policies, 220);
+		  tmp = doc.splitTextToSize(rcf.policies?rcf.policies : "", 220, {fontSize: 10});
+		  len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 3,
 				  pageBreak: 'avoid',
@@ -379,17 +388,18 @@
 				  head: [['What are the primary policies and procedures in place to manage this risk']],
 					body: [['']],
 				  columnStyles: {
-						             0:{minCellHeight: 60}
-												},
-				  didDrawCell: function(data) {
-						  console.log(data);
-							if (data.row.section === 'body' && data.column.dataKey == "0" ) {
-								  console.log('test');
-									doc.text(15, finalY + 16, tmp);
-							}
-					}
+						             0:{minCellHeight: len * 3.7}
+												}
 			});
 		  finalY = doc.previousAutoTable.finalY;
+		  doc.setFontSize(8);
+		  doc.setTextColor(80);
+		  doc.text(16, finalY + 5 - (len * 3.7), tmp);
+		  tmp = doc.splitTextToSize(rcf.activities?rcf.activities: "", 220, {fontSize: 10});
+		  len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 3,
 				  pageBreak: 'avoid',
@@ -397,9 +407,20 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['What are the risk management activities undertaken this fiscal year related to this risk? (FMFIA Support)']],
-					body: [[rcf.activities]]
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: len * 3.7}
+												}
 			});
 		  finalY = doc.previousAutoTable.finalY;
+		  doc.setFontSize(8);
+		  doc.setTextColor(80);
+		  doc.text(16, finalY + 5 - (len * 3.7), tmp);
+		  tmp = doc.splitTextToSize(rcf.plan?rcf.plan: "", 220, {fontSize: 10});
+		  len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 3,
 				  pageBreak: 'avoid',
@@ -407,12 +428,18 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Describe the Action Plan for a REDUCE Risk Response or the Rationale for Choosing an ACCEPT Risk Response.']],
-					body: [[rcf.plan]]
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: len * 3.7}
+												}
 			});
 		  finalY = doc.previousAutoTable.finalY;
+		  doc.setFontSize(8);
+		  doc.setTextColor(80);
+		  doc.text(16, finalY + 5 - (len * 3.7), tmp);
 		  if(finalY > 260){
 				doc.addPage();
-				finalY = 0;
+				finalY = 5;
 			}
 		  doc.setLineWidth(0.5);  
 		  doc.setDrawColor(0, 0, 0);
@@ -432,7 +459,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['What is the Impact on your IC/OD Office Mission?']],
-					body: [[rcf.impact]]
+					body: [[RiskMgmtStatic.getElement("impact",rcf.impact)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -442,7 +469,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['What is the impact on Public Trust?']],
-					body: [[rcf.pub_impact]]
+					body: [[RiskMgmtStatic.getElement("pub_impact",rcf.pub_impact)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -452,7 +479,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['What is the Organizational Impact?']],
-					body: [[rcf.org_impact]]
+					body: [[RiskMgmtStatic.getElement("org_impact",rcf.org_impact)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -462,7 +489,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['What is the Financial Impact to your IC/OD Office?']],
-					body: [[rcf.financial_impact]]
+					body: [[RiskMgmtStatic.getElement("financial_impact",rcf.financial_impact)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -472,12 +499,12 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['In your professional judgement, what would be the overall impact on your IC/OD Office if this risk occurred?']],
-					body: [[rcf.overall_impact]]
+					body: [[RiskMgmtStatic.getElement("overall_impact",rcf.overall_impact)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  if(finalY > 260){
 				doc.addPage();
-				finalY = 0;
+				finalY = 5;
 			}
 		  doc.setLineWidth(0.5);  
 		  doc.setDrawColor(0, 0, 0);
@@ -496,8 +523,8 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
-				  head: [['Are written policies, procedures, or controls in place to manage this risk?']],
-					body: [[rcf.inplace]]
+				  head: [['Are written policies, procedures, or controls in place to manage this risk? (If No, SKIP the next two questions)']],
+					body: [[RiskMgmtStatic.getElement("inplace",rcf.inplace)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -506,8 +533,8 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
-				  head: [['Are written policies, procedures, and controls effective?']],
-					body: [[rcf.effective]]
+				  head: [['Are written policies, procedures, and controls effective? (If applicable)']],
+					body: [[RiskMgmtStatic.getElement("effective",rcf.effective)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -516,8 +543,8 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
-				  head: [['Are all policies included in formal Federal, HHS, NIH or IC guidance?']],
-					body: [[rcf.include]]
+				  head: [['Are all policies included in formal Federal, HHS, NIH or IC guidance? (If applicable)']],
+					body: [[RiskMgmtStatic.getElement("include",rcf.include)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -527,7 +554,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Individuals within my IC/OD Office are aware of this risk.']],
-					body: [[rcf.aware]]
+					body: [[RiskMgmtStatic.getElement("aware",rcf.aware)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -537,7 +564,7 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Is IC/OD Office management taking formal actions to mitigate or address this risk?']],
-					body: [[rcf.formal_action]]
+					body: [[RiskMgmtStatic.getElement("formal_action",rcf.formal_action)]]
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  doc.autoTable({
@@ -547,13 +574,13 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['In yours professional judegement, what is the likelihood that the identified risk could occur?']],
-					body: [[rcf.likelihood]]
+					body: [[RiskMgmtStatic.getElement("likelihood",rcf.likelihood)]]
 			});
-		
+		  
 		  finalY = doc.previousAutoTable.finalY;
 		  if(finalY > 260){
 				doc.addPage();
-				finalY = 0;
+				finalY = 5;
 			}
 		  doc.setLineWidth(0.5);  
 		  doc.setDrawColor(0, 0, 0);
@@ -584,8 +611,9 @@
 		  finalY = doc.previousAutoTable.finalY;
 		  if(finalY > 260){
 				doc.addPage();
-				finalY = 0;
+				finalY = 5;
 			}
+		  
 		  doc.setLineWidth(0.5);  
 		  doc.setDrawColor(0, 0, 0);
 		  doc.line(10, finalY + 5, 200, finalY + 5);
@@ -597,6 +625,11 @@
 		  doc.setLineWidth(0.5);  
 		  doc.setDrawColor(0, 0, 0);
 		  doc.line(10, finalY + 10, 200, finalY + 10);
+		  tmp = doc.splitTextToSize(rcf.rationale? rcf.rationale: "", 220, {fontSize: 10});
+		  len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 13,
 				  pageBreak: 'avoid',
@@ -604,9 +637,20 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Rationale for Red Risk, Changes to Risk Score, Changes to Risk Response, or Risk Retirement:']],
-					body: [[rcf.rationale]]
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: len * 3.7}
+												}
 			});
 		  finalY = doc.previousAutoTable.finalY;
+		  doc.setFontSize(8);
+		  doc.setTextColor(80);
+		  doc.text(16, finalY + 5 - (len * 3.7), tmp);
+		  tmp = doc.splitTextToSize(rcf.form_comments? rcf.form_comments: "", 220, {fontSize: 10});
+		  len = tmp.length;
+		  if(len <= 7){
+				len = len + 1;
+			}
 		  doc.autoTable({
 					startY: finalY + 3,
 				  pageBreak: 'avoid',
@@ -614,9 +658,16 @@
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
 				  head: [['Comments']],
-					body: [[rcf.form_comments]]
+					body: [['']],
+				  columnStyles: {
+						             0:{minCellHeight: len * 3.7}
+												}
 			});
 		  finalY = doc.previousAutoTable.finalY;
+		  doc.setFontSize(8);
+		  doc.setTextColor(80);
+		  doc.text(16, finalY + 5 - (len * 3.7), tmp);
+		
 		  var pages = doc.internal.getNumberOfPages();
 		  //draw last page's side lines and bottom line
 		  doc.setLineWidth(0.5);
@@ -715,7 +766,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>582</sys_mod_count>
+        <sys_mod_count>697</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -723,7 +774,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-23 00:18:45</sys_updated_on>
+        <sys_updated_on>2019-01-24 18:33:43</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
