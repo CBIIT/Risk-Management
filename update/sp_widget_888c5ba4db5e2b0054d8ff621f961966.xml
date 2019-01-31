@@ -606,7 +606,26 @@
 				  columnStyles: {
 												 0:{fontStyle: 'bold',cellWidth:25,fillColor:[58, 73, 114], textColor: [255,255,255]},
 												 1:{cellWidth:75}
-												}
+												},
+				  willDrawCell: function(data) {
+						if (data.row.section === 'body' && data.column.index === "1") {
+							  if (data.cell.raw <= 18.5) {
+                    doc.setTextColor(255);
+                    doc.setFillColor(0, 128, 0);
+									  console.log('green');
+                }
+							  else if (data.cell.raw >= 19 && data.cell.raw <= 33.5) {
+                    doc.setTextColor(0);
+                    doc.setFillColor(255, 255, 0);
+									  console.log('yellow');
+                }
+							  else if (data.cell.raw >= 34) {
+                    doc.setTextColor(255);
+                    doc.setFillColor(255, 0, 0);
+									  console.log('red');
+                }
+						}
+					}
 			});
 		  finalY = doc.previousAutoTable.finalY;
 		  if(finalY > 260){
@@ -766,7 +785,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>700</sys_mod_count>
+        <sys_mod_count>711</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -774,7 +793,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-25 16:11:29</sys_updated_on>
+        <sys_updated_on>2019-01-31 21:35:33</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
