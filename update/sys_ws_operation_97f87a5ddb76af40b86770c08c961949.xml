@@ -26,6 +26,8 @@
 	var ompc_recommend = request.body.data.ompc_recommend;
 	var eo_final_decision = request.body.data.eo_final_decision;
 	var section_6 = request.body.data.section_6;
+	
+	var notify = request.body.data.notify;
 
 	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
 	gr.addQuery('sys_id',sys_id);
@@ -47,6 +49,18 @@
 	gr.eo_final_decision = eo_final_decision;
 	gr.section_6 = JSON.stringify(section_6);
 	gr.update();
+	
+	if(notify && notify == "1"){
+		var poc_name = gr.getDisplayValue('poc_name');
+		var poc_email = "";
+		var user_item = new GlideRecord('sys_user');
+	    user_item.addQuery('sys_id', gr.getDisplayValue('poc_id'));
+		user_item.query();
+		while(user_item.next()){
+			poc_email += user_item.getDisplayValue('email') + ",";
+		}
+		gs.eventQueue('x_naci_risk_manage.notify_poc',gr, poc_name, poc_email);
+	}
 	return 1;
 
 })(request, response);]]></operation_script>
@@ -63,7 +77,7 @@
         <sys_created_on>2019-01-03 22:11:18</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>97f87a5ddb76af40b86770c08c961949</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>4</sys_mod_count>
         <sys_name>updateRisk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -71,7 +85,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_97f87a5ddb76af40b86770c08c961949</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-11 16:31:11</sys_updated_on>
+        <sys_updated_on>2019-01-30 17:02:21</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

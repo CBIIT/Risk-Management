@@ -683,7 +683,7 @@
 				doc.line(10, 10, 10, 280);
 		    doc.line(200, 10, 200,280);
 			}
-			doc.save('Risk Form');
+			doc.save(rcf.fiscalYear + ' RCF - '+ rcf.title);
 	};
 	
 	
@@ -766,7 +766,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>697</sys_mod_count>
+        <sys_mod_count>700</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -774,7 +774,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-24 18:33:43</sys_updated_on>
+        <sys_updated_on>2019-01-25 16:11:29</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
