@@ -36,6 +36,10 @@
 	};
 	
 	c.updateScore = function(){
+		if(c.data.inplace == "10"){
+			c.data.effective = "0";
+			c.data.include = "0.0";
+		}
 		c.data.impact_score = parseInt(c.data.impact) 
 			+ parseFloat(c.data.pub_impact) 
 			+ parseFloat(c.data.org_impact) 
@@ -241,7 +245,7 @@
         <sys_created_on>2019-01-04 23:15:50</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>e5c19471db32238054d8ff621f961968</sys_id>
-        <sys_mod_count>342</sys_mod_count>
+        <sys_mod_count>348</sys_mod_count>
         <sys_name>riskmgmt new risk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -249,7 +253,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_e5c19471db32238054d8ff621f961968</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-28 21:16:52</sys_updated_on>
+        <sys_updated_on>2019-02-04 15:23:26</sys_updated_on>
         <template><![CDATA[<div class="newrisk-content">
 	<div class="newrisk-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -498,16 +502,17 @@
           <div class="form-section" style="display:flex;">
             <div class="col-md-2" style="padding-left:0px;text-align:right;">Are written policies, procedures, or controls in place to manage this risk?</div>
             <div class="col-md-5">
-              <select class="form-control" ng-model="c.data.inplace" id="inplace" name="inplace" ng-init="c.data.inplace = '0'" ng-change="c.updateScore()">
+              <select class="form-control" ng-model="c.data.inplace" id="inplace" name="inplace" ng-init="c.data.inplace = '0.0'" ng-change="c.updateScore()">
+                <option value="0.0"></option>
                 <option value="0">Yes</option>
-                <option value="5">No</option>
+                <option value="10">No</option>
               </select>
             </div>
           </div>
           <div class="form-section" style="display:flex;">
             <div class="col-md-2" style="padding-left:0px;text-align:right;">Are written policies, procedures, and controls effective?</div>
             <div class="col-md-5">
-              <select class="form-control" ng-model="c.data.effective" id="effective" name="effective" ng-init="c.data.effective = '0'" ng-change="c.updateScore()">
+              <select class="form-control" ng-model="c.data.effective" id="effective" name="effective" ng-init="c.data.effective = '0'" ng-change="c.updateScore()" ng-disabled="c.data.inplace == '10'">
                 <option value="0"></option>
                 <option value="0.5">Strongly Agree</option>
                 <option value="1.5">Agree</option>
@@ -519,7 +524,8 @@
           <div class="form-section" style="display:flex;">
             <div class="col-md-2" style="padding-left:0px;text-align:right;">Are all policies included in formal Federal, HHS, NIH or IC guidance?</div>
             <div class="col-md-5">
-              <select class="form-control" ng-model="c.data.include" id="include" name="include" ng-init="c.data.include = '0'" ng-change="c.updateScore()">
+              <select class="form-control" ng-model="c.data.include" id="include" name="include" ng-init="c.data.include = '0.0'" ng-change="c.updateScore()" ng-disabled="c.data.inplace == '10'">
+                <option value="0.0"></option>
                 <option value="0">Yes</option>
                 <option value="5">No</option>
               </select>
