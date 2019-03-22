@@ -202,7 +202,7 @@
 				RiskMgmtFile.uploadFile(attach, c.data.sessionId).then(function(res){
 					if(res){
 						c.upload_status = 'upload';
-						c.errorMesage = false;
+						c.errorMessage = false;
 						c.data.meetingnotes.attachments = res.data.result;
 						c.file2upload = '';
 						$('#file2upload').val("");
@@ -285,6 +285,8 @@
 	c.meetingNotes = function(doc, year){
 		c.data.meetingnotes.doc = doc;
 		c.data.meetingnotes.fiscalYear = year;
+		c.errorMessage = false;
+		c.file2upload = '';
 		$('#file2upload').val("");
 		var params = {};
 		params.doc = doc;
@@ -801,7 +803,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>741</sys_mod_count>
+        <sys_mod_count>745</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -809,7 +811,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-03-21 21:33:50</sys_updated_on>
+        <sys_updated_on>2019-03-22 14:55:47</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
