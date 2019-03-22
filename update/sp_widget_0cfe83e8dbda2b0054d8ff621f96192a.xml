@@ -2,7 +2,7 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope,$rootScope, $location) {
+        <client_script><![CDATA[function($scope,spModal, $rootScope, $location) {
   var c = this;
   var s = $location.search();
   var redirect = false;
@@ -52,20 +52,44 @@
 	}
 	
 	window.showMessageBox = function(message, willgoto){
+		/*
 		$('#messageContent').html(message);
 		$('#messageDiv').modal('show');
 		c.willgoto = willgoto;
+		*/
+		spModal.open({
+			 title: 'Information Dialog',
+			 message: '<div class="spModal_content">'+message+'</div>',
+			 backdrop: 'static',
+       keyboard: false,
+			 buttons: [
+                {label:'Ok', primary: true}
+            ]
+			}).then(function() {
+					if(willgoto){
+						s.xpage = willgoto.xpage;
+						s.sub = willgoto.sub;
+						s.fid = willgoto.other;
+						s.next = willgoto.next;
+						$location.search(s).replace();
+					}
+        }, function() {
+          
+        });
 	}
 	
+	/*
+		
 	c.closeMessageBox = function(){
 		$('#messageDiv').modal('hide');
 		setTimeout(function(){
 			$('#messageDiv').trigger('click');
 		},300);
-		
 	}
 	
-	$('#messageDiv').on('hidden.bs.modal', function (e) {
+	
+	//hidden.bs.modal
+	$('#messageDiv').on('hide.bs.modal', function (e) {
 		if(c.willgoto){
 			s.xpage = c.willgoto.xpage;
 			s.sub = c.willgoto.sub;
@@ -74,6 +98,8 @@
 			$location.search(s).replace();
 		}
 	})
+	*/
+	
 	
 }]]></client_script>
         <controller_as>c</controller_as>
@@ -98,7 +124,7 @@
         <sys_created_on>2018-12-07 19:18:30</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0cfe83e8dbda2b0054d8ff621f96192a</sys_id>
-        <sys_mod_count>79</sys_mod_count>
+        <sys_mod_count>96</sys_mod_count>
         <sys_name>riskmgmt main</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -106,7 +132,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0cfe83e8dbda2b0054d8ff621f96192a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-15 19:53:34</sys_updated_on>
+        <sys_updated_on>2019-03-21 20:02:03</sys_updated_on>
         <template><![CDATA[<div class="col-md-1"></div>
 <div id="riskmgmt-main" class="col-md-10" ng-if="c.xpage !== 'permission' && c.xpage !== 'settings'">
   <div class="top-menu">
@@ -161,6 +187,7 @@
   </div>
 </div>
 <div class="col-md-1"></div>
+<!--
 <div id="messageDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
     <div class="modal-dialog modal-lg" style="width:20%;">
         <div class="modal-content" style="height:200px; overflow-y:auto; overflow-x: hidden;">
@@ -174,6 +201,7 @@
             </div>
         </div>
     </div>
-</div>]]></template>
+</div>
+-->]]></template>
     </sp_widget>
 </record_update>

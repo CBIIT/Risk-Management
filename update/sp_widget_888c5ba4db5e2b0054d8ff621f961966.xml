@@ -11,6 +11,8 @@
 	c.data.pageSize = 10;
 	c.data.bigCurrentPage = 1;
 	
+	c.data.filtered = [];
+	
 	c.data.searchText = "";
 	c.data.isRC_RT = true;
 	c.data.prev_maxSize = 5;
@@ -56,7 +58,7 @@
 	
 	c.pageChanged = function(){
 		if($scope.sortKey == 'doc'){
-			console.log(c.data.filtered);
+			//console.log(c.data.filtered);
 		}
 	}
 	
@@ -202,6 +204,8 @@
 						c.upload_status = 'upload';
 						c.errorMesage = false;
 						c.data.meetingnotes.attachments = res.data.result;
+						c.file2upload = '';
+						$('#file2upload').val("");
 						$scope.$apply();
 					}
 				}, function(error){
@@ -242,7 +246,7 @@
 				rcf.enterprise = section_1.enterprise;
 				rcf.response = section_1.response;
 				rcf.ownership = section_1.ownership;
-				rcf.r_managers = section_1.r_managers;
+				//rcf.r_managers = section_1.r_managers;
 				rcf.statement = section_1.statement;
 				rcf.immediacy = section_1.immediacy;
 				rcf.control = section_1.control;
@@ -281,6 +285,7 @@
 	c.meetingNotes = function(doc, year){
 		c.data.meetingnotes.doc = doc;
 		c.data.meetingnotes.fiscalYear = year;
+		$('#file2upload').val("");
 		var params = {};
 		params.doc = doc;
 		params.fiscalYear = year;
@@ -325,7 +330,7 @@
 							['Is this an Enterprise Risk?', rcf.enterprise =='N/P'?"": rcf.enterprise],
 						  ['Risk Response',rcf.response =='N/P'?"": rcf.response],
 						  ['Functional Ownership',rcf.ownership],
-						  ['Risk Managers',rcf.r_managers]
+						  ['Risk Managers',rcf.manager_name]
 					],
 				  columnStyles: {
 						             0:{fontStyle: 'bold',cellWidth:25,fillColor:[58, 73, 114], textColor: [255,255,255]},
@@ -702,7 +707,7 @@
 				doc.line(10, 10, 10, 280);
 		    doc.line(200, 10, 200,280);
 			}
-			doc.save(rcf.fiscalYear + ' RCF - '+ rcf.title);
+			doc.save(rcf.fiscalYear + ' RCF - '+ rcf.title + '.pdf');
 	};
 	
 	
@@ -718,10 +723,16 @@
 				});
 				c.data.risks.forEach(function(risk){
 					c.data.auRisks[risk.doc].push(risk.title);
+					var section_1 = JSON.parse(risk.section_1);
+					risk.enterprise = section_1.enterprise;
 				});
 				if(cb){
 					cb();
 				}
+				else{
+					$scope.$apply();
+				}
+				
 			},function(error){
 				console.log(error);
 			});
@@ -736,9 +747,14 @@
 						c.data.auRisks[risk.doc] = [];
 					}
 					c.data.auRisks[risk.doc].push(risk.title);
+					var section_1 = JSON.parse(risk.section_1);
+					risk.enterprise = section_1.enterprise;
 				});
 				if(cb){
 					cb();
+				}
+				else{
+					$scope.$apply();
 				}
 			},function(error){
 				console.log(error);
@@ -785,7 +801,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>711</sys_mod_count>
+        <sys_mod_count>741</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -793,7 +809,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-31 21:35:33</sys_updated_on>
+        <sys_updated_on>2019-03-21 21:33:50</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
@@ -817,19 +833,26 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RC') > -1">
     <table width="100%" id="export-table">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('title')" style="width:20%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:16%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('score')" style="width:6%;text-align:center;">Score <i ng-show="sortKey == 'score' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'score' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:8%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:8%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:8%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('ompc_recommend')" style="width:8%;text-align:center;">OMPC<br>Recommend <i ng-show="sortKey == 'ompc_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'ompc_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('eo_final_decision')" style="width:8%;text-align:center;">EO<br>Final Decision <i ng-show="sortKey == 'eo_final_decision' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'eo_final_decision' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" style="width:8%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th style="width:16%;text-align:center;">Action</th>
       </tr>
       <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
+        <td class="td-right-line" ng-show="x.score == 0 "></td>
+        <td class="td-right-line" ng-show="x.score >= 0.5 && x.score <= 18.5" style="background-color:green;color:white;">{{x.score}}</td>
+        <td class="td-right-line" ng-show="x.score >= 19 && x.score <= 33.5" style="background-color:yellow;color:black;">{{x.score}}</td>
+        <td class="td-right-line" ng-show="x.score >= 34" style="background-color:red;color:white;">{{x.score}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
@@ -853,8 +876,9 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RT') > -1">
     <table width="100%">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('title')" style="width:20%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:16%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
@@ -865,6 +889,7 @@
       <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
@@ -887,8 +912,9 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1">
     <table width="100%">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:10%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('title')" style="width:32%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('title')" style="width:28%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
@@ -898,6 +924,7 @@
       <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
+        <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
@@ -925,7 +952,7 @@
           <option value="20">20</option>
         </select>
       </div>
-      <div class="tab-paging-label">Items per page:</div>
+      <div class="tab-paging-label"><b>{{c.data.filtered.length}}</b> Items | Items per page:</div>
   </div>
 </div>
 <div id="loadRiskDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
@@ -953,7 +980,10 @@
               </td>
               <td class="td-right-line">{{m.doc}}</td>
               <td class="td-right-line">{{m.title}}</td>
-              <td class="td-right-line">{{m.score}}</td>
+              <td class="td-right-line" ng-show="m.score == 0 "></td>
+              <td class="td-right-line" ng-show="m.score >= 0.5 && m.score <= 18.5" style="background-color:green;color:white;">{{m.score}}</td>
+              <td class="td-right-line" ng-show="m.score >= 19 && m.score <= 33.5" style="background-color:yellow;color:black;">{{m.score}}</td>
+              <td class="td-right-line" ng-show="m.score >= 34" style="background-color:red;color:white;">{{m.score}}</td>
             </tr>
           </table>
         </div>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <element audit="true" extends="task" label="Risk Management" max_length="40" name="x_naci_risk_manage_risk_management" sizeclass="39" type="collection">
+    <element audit="true" extends="task" label="Risk Management" max_length="40" name="x_naci_risk_manage_risk_management" sizeclass="48" type="collection">
         <element label="Action Plan" max_length="5000" name="action_plan" type="string"/>
         <element label="Approval Action" max_length="100" name="approval_action" type="string"/>
         <element label="AU Recommend" max_length="100" name="au_recommend" type="string"/>
@@ -23,6 +23,6 @@
         <element label="Stage" max_length="100" name="stage" type="string"/>
         <element label="Start By POC" max_length="1" name="start_by_poc" type="string"/>
         <element label="Title" max_length="1000" name="title" type="string"/>
-        <element label="Version" max_length="40" name="version" type="integer"/>
+        <element attributes="edge_encryption_enabled=true" label="Version" max_length="40" name="version" type="integer"/>
     </element>
 </database>

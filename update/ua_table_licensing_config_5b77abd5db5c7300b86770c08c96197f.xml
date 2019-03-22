@@ -5,24 +5,24 @@
         <license_condition/>
         <license_model>none</license_model>
         <license_roles/>
-        <name>x_naci_risk_manage_pocs</name>
+        <name>x_naci_risk_manage_comments</name>
         <op_delete>true</op_delete>
         <op_insert>true</op_insert>
         <op_update>true</op_update>
         <owner_condition/>
         <sys_class_name>ua_table_licensing_config</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
-        <sys_created_on>2018-12-28 19:17:38</sys_created_on>
+        <sys_created_on>2018-12-31 17:00:43</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
-        <sys_id>362e83fbdb97a300b86770c08c9619ca</sys_id>
+        <sys_id>5b77abd5db5c7300b86770c08c96197f</sys_id>
         <sys_mod_count>0</sys_mod_count>
-        <sys_name>x_naci_risk_manage_pocs</sys_name>
+        <sys_name>x_naci_risk_manage_comments</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
-        <sys_update_name>ua_table_licensing_config_362e83fbdb97a300b86770c08c9619ca</sys_update_name>
+        <sys_update_name>ua_table_licensing_config_5b77abd5db5c7300b86770c08c96197f</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2018-12-28 19:17:38</sys_updated_on>
+        <sys_updated_on>2018-12-31 17:00:43</sys_updated_on>
     </ua_table_licensing_config>
 </record_update>

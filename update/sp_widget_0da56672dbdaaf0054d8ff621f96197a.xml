@@ -2,7 +2,7 @@
 <record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[function($scope, $rootScope, $location, RiskMgmtRisk, RiskMgmtComment, RiskMgmtFile) {
+        <client_script><![CDATA[function($scope,spModal, $rootScope, $location, RiskMgmtRisk, RiskMgmtComment, RiskMgmtFile) {
   /* widget controller */
   var c = this;
 	var cb = null;
@@ -25,7 +25,7 @@
 	c.file2upload = '';
 	
 	c.data.tab_1 = {
-		isOpen:false
+		isOpen:true
 	};
 	c.data.tab_2 = {
 		isOpen:false
@@ -183,6 +183,8 @@
 						c.upload_status = 'upload';
 						c.errorMesage = false;
 						c.data.attachments = res.data.result;
+						c.file2upload = '';
+						$('#file2upload').val("");
 						$scope.$apply();
 					}
 				}, function(error){
@@ -202,6 +204,7 @@
 						var result = res.data.result;
 						$('#confirmDiv').modal('hide');
 						$scope.$apply();
+						$scope.myForm.$setPristine();
 						window.showMessageBox("Risk successfully submitted.",{xpage:'management',sub:'board'});
 					}, function(error){
 						console.log(error);
@@ -222,6 +225,7 @@
 							var result = res.data.result;
 							$('#confirmDiv').modal('hide');
 							$scope.$apply();
+							$scope.myForm.$setPristine();
 							if(result == 1){
 								window.showMessageBox("Risk has been successfully approved.",{xpage:'management',sub:'board'});
 							}
@@ -246,6 +250,7 @@
 							var result = res.data.result;
 							$('#confirmDiv').modal('hide');
 							$scope.$apply();
+							$scope.myForm.$setPristine();
 							if(result == 1){
 								window.showMessageBox("Risk has been rejected. An email notification has been sent to Risk POC and RT.",{xpage:'management',sub:'board'});
 							}
@@ -271,6 +276,7 @@
 							var result = res.data.result;
 							$('#confirmDiv').modal('hide');
 							$scope.$apply();
+							$scope.myForm.$setPristine();
 							if(result == 1){
 								window.showMessageBox("Risk has been successfully approved.",{xpage:'management',sub:'board'});
 							}
@@ -319,6 +325,7 @@
 								var result = res.data.result;
 								$('#confirmDiv').modal('hide');
 								$scope.$apply();
+								$scope.myForm.$setPristine();
 								if(result == 1){
 									window.showMessageBox("Risk has been successfully locked.",{xpage:'management',sub:'board'});
 								}
@@ -368,13 +375,14 @@
 		params.section_1.enterprise = c.data.rcf.enterprise;
 		params.section_1.response = c.data.rcf.response;
 		params.section_1.ownership = c.data.rcf.ownership;
-		params.section_1.r_managers = c.data.rcf.r_managers;
+		//params.section_1.r_managers = c.data.rcf.r_managers;
 		params.section_1.statement = c.data.rcf.statement;
 		params.section_1.immediacy = c.data.rcf.immediacy;
 		params.section_1.control = c.data.rcf.control;
 		params.section_1.interest = c.data.rcf.interest;
 		params.section_1.interest_other = c.data.rcf.interest_other;
 		params.section_1.category = c.data.rcf.category;
+		params.section_1.category_other = c.data.rcf.category_other;
 		params.section_1.subcategory = c.data.rcf.subcategory;
 		params.policies = c.data.rcf.policies;
 		params.activities = c.data.rcf.activities;
@@ -420,7 +428,7 @@
 			c.data.confirmMessage = "Save the form?";
 			//post to server
 			cb = function(){
-				console.log(c.data.notifyPOC);
+				//console.log(c.data.notifyPOC);
 				var notify = c.data.notifyPOC? "1" : "0";
 			  c.updateAndNotifyRisk(notify);
 			};
@@ -436,13 +444,14 @@
 			params.section_1.enterprise = c.data.rcf.enterprise;
 			params.section_1.response = c.data.rcf.response;
 			params.section_1.ownership = c.data.rcf.ownership;
-			params.section_1.r_managers = c.data.rcf.r_managers;
+			//params.section_1.r_managers = c.data.rcf.r_managers;
 			params.section_1.statement = c.data.rcf.statement;
 			params.section_1.immediacy = c.data.rcf.immediacy;
 			params.section_1.control = c.data.rcf.control;
 			params.section_1.interest = c.data.rcf.interest;
 			params.section_1.interest_other = c.data.rcf.interest_other;
 			params.section_1.category = c.data.rcf.category;
+			params.section_1.category_other = c.data.rcf.category_other;
 			params.section_1.subcategory = c.data.rcf.subcategory;
 			params.policies = c.data.rcf.policies;
 			params.activities = c.data.rcf.activities;
@@ -477,6 +486,7 @@
 				var data = rs.data.result;
 				c.data.saving = false;
 				c.data.save_text = 'Save';
+				$scope.myForm.$setPristine();
 				window.showMessageBox("Risk successfully updated.");
 			}, function(error){
 				console.log(error);
@@ -494,13 +504,14 @@
 		params.section_1.enterprise = c.data.rcf.enterprise;
 		params.section_1.response = c.data.rcf.response;
 		params.section_1.ownership = c.data.rcf.ownership;
-		params.section_1.r_managers = c.data.rcf.r_managers;
+		//params.section_1.r_managers = c.data.rcf.r_managers;
 		params.section_1.statement = c.data.rcf.statement;
 		params.section_1.immediacy = c.data.rcf.immediacy;
 		params.section_1.control = c.data.rcf.control;
 		params.section_1.interest = c.data.rcf.interest;
 		params.section_1.interest_other = c.data.rcf.interest_other;
 		params.section_1.category = c.data.rcf.category;
+		params.section_1.category_other = c.data.rcf.category_other;
 		params.section_1.subcategory = c.data.rcf.subcategory;
 		params.policies = c.data.rcf.policies;
 		params.activities = c.data.rcf.activities;
@@ -537,7 +548,14 @@
 			c.data.notifyPOC = false;
 			c.data.saving = false;
 			c.data.save_text = 'Save';
-			window.showMessageBox("Risk successfully updated and POC notified.");
+			$scope.myForm.$setPristine();
+			if(notify == "1"){
+				window.showMessageBox("Risk successfully updated and POC notified.");
+			}
+			else{
+				window.showMessageBox("Risk successfully updated.");
+			}
+			
 		}, function(error){
 			console.log(error);
 		});
@@ -555,13 +573,14 @@
 		c.data.rcf.enterprise = section_1.enterprise;
 		c.data.rcf.response = section_1.response;
 		c.data.rcf.ownership = section_1.ownership;
-		c.data.rcf.r_managers = section_1.r_managers;
+		//c.data.rcf.r_managers = section_1.r_managers;
 		c.data.rcf.statement = section_1.statement;
 		c.data.rcf.immediacy = section_1.immediacy;
 		c.data.rcf.control = section_1.control;
 		c.data.rcf.interest = section_1.interest;
 		c.data.rcf.interest_other = section_1.interest_other;
 		c.data.rcf.category = section_1.category;
+		c.data.rcf.category_other = section_1.category_other;
 		c.data.rcf.subcategory = section_1.subcategory;
 
 		var section_2 = JSON.parse(c.data.rcf.section_2);
@@ -618,12 +637,19 @@
 			c.data.canEdit = true;
 		}
 		if(s.next && c.data.rcf.status == "Initial Review" && (s.next == "approve" || s.next == "reject")){
-			if(s.next == "approve"){
-				c.RMApproveRisk();
+			var managers = c.data.rcf.manager_id.split(',');
+			if(c.data.role.indexOf('RC') > -1  || c.data.role.indexOf('RT') > -1 || managers.indexOf(c.data.userID) > -1){
+				if(s.next == "approve"){
+					c.RMApproveRisk();
+				}
+				else if(s.next == "reject"){
+					c.RMRejectRisk();
+				}
 			}
-			else if(s.next == "reject"){
-				c.RMRejectRisk();
+			else{
+				window.showMessageBox("You don't have the previleges to approve/reject this Risk form.",{xpage:'management',sub:'board'});
 			}
+			
 		}
 	},function(error){
 		console.log(error);
@@ -644,6 +670,42 @@
 		$scope.$apply();
 	}, function(error){
 		console.log(error);
+	});
+	
+	
+	window.onbeforeunload = function(e){
+		if ($scope.myForm.$dirty) {
+			return "You RCF has unsaved changes, do you still want to leave this page?";
+		}
+	};
+	
+	var leaveFlag = true;
+	
+	$scope.$on('$locationChangeStart', function(event, next, current) {
+		if ($scope.myForm.$dirty && leaveFlag) {
+			var idx = next.indexOf('?');
+			var dict = next.substring(idx+1).split('&')
+				.map(function(element){
+					return element.split('=');
+				})
+				.reduce(function(acc, curr) { 
+				acc[curr[0]] = curr[1]; return acc; }, {});
+			event.preventDefault();
+			spModal.open({
+			 title: 'Leave page?',
+			 message: "You RCF has unsaved changes, do you still want to leave this page?",
+			 buttons: [
+                {label:'Leave', primary: true},
+                {label:'Stay', cancel: true}
+            ]
+			}).then(function() {
+          //c.gotoPage(dict.xpage,dict.sub,dict.fid);
+				  leaveFlag = false;
+				  c.gotoPage(dict.xpage,dict.sub, dict.fib);
+        }, function() {
+          
+        })
+		}
 	});
 	
 	
@@ -675,7 +737,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>318</sys_mod_count>
+        <sys_mod_count>394</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -683,11 +745,11 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-02-05 16:13:56</sys_updated_on>
+        <sys_updated_on>2019-03-21 21:35:17</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
-    <span><i class="fa fa-chevron-right" style="margin-left:10px;margin-right:10px;"></i>RCF: {{c.data.rcf.number}}</span>
+    <span><i class="fa fa-chevron-right" style="margin-left:10px;margin-right:10px;"></i>{{c.data.rcf.number}} : {{c.data.rcf.title}}</span>
   </div>
   <div class="container risk-detail-block">
     <div class="col-md-8 risk-section">
@@ -699,6 +761,7 @@
         <h4 style="text-align:center;font-weight:bold;">
           Risk Capture Form
         </h4>
+        <form name="myForm" confirm-on-exit>
         <uib-accordion close-others="false">
           <div uib-accordion-group class="panel-default" is-open="c.data.tab_1.isOpen">
             <uib-accordion-heading>
@@ -709,7 +772,8 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Title</div>
               <div class="col-md-9">
-                <input type="text" ng-model="c.data.rcf.title" id="title" name="title" value="{{c.data.rcf.title}}" class="form-control"  ng-disabled="!c.data.canEdit">
+                <!-- <input type="text" ng-model="c.data.rcf.title" id="title" name="title" value="{{c.data.rcf.title}}" class="form-control"  ng-disabled="!c.data.canEdit"> -->
+                <textarea rows=1 ng-model="c.data.rcf.title" id="title" name="title" style="resize: vertical;"  value="{{c.data.rcf.title}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
@@ -729,15 +793,18 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Functional Ownership</div>
               <div class="col-md-5">
-                <input type="text" ng-model="c.data.rcf.ownership" id="ownership" name="ownership" value="{{c.data.rcf.ownership}}" class="form-control" ng-disabled="!c.data.canEdit">
+                <!-- <input type="text" ng-model="c.data.rcf.ownership" id="ownership" name="ownership" value="{{c.data.rcf.ownership}}" class="form-control" ng-disabled="!c.data.canEdit"> -->
+                <textarea rows=1 ng-model="c.data.rcf.ownership" id="ownership" name="ownership" style="resize: vertical;"  value="{{c.data.rcf.ownership}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
+            <!--
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Managers</div>
               <div class="col-md-9">
                 <input type="text" ng-model="c.data.rcf.r_managers" id="r_managers" name="r_managers" value="{{c.data.rcf.r_managers}}" class="form-control" ng-disabled="!c.data.canEdit">
               </div>
             </div>
+						-->
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;text-align:right;">Risk Statement</div>
               <div class="col-md-9">
@@ -781,7 +848,8 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <input type="text" ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"  ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" value="{{c.data.rcf.interest_other}}" class="form-control" ng-disabled="!c.data.canEdit">
+                <!-- <input type="text" ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"  ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" value="{{c.data.rcf.interest_other}}" class="form-control" ng-disabled="!c.data.canEdit"> -->
+                <textarea rows=1 ng-if="c.data.rcf.interest == 'Other'" placeholder="Please specify"   ng-model="c.data.rcf.interest_other" id="interest_other" name="interest_other" style="resize: vertical;"  value="{{c.data.rcf.interest_other}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
@@ -801,11 +869,15 @@
                   <option value="Other">Other</option>
                 </select>
               </div>
+              <div class="col-md-4">
+                <textarea rows=1 ng-if="c.data.rcf.category == 'Other'" placeholder="Please specify"   ng-model="c.data.rcf.category_other" id="category_other" name="category_other" style="resize: vertical;"  value="{{c.data.rcf.category_other}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
+              </div>
             </div>
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">Risk Subcategory</div>
               <div class="col-md-9">
-                <input type="text" ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" value="{{c.data.rcf.subcategory}}" class="form-control" ng-disabled="!c.data.canEdit">
+                <!-- <input type="text" spellcheck="true" ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" value="{{c.data.rcf.subcategory}}" class="form-control" ng-disabled="!c.data.canEdit"> -->
+                <textarea rows=1 ng-model="c.data.rcf.subcategory" id="subcategory" name="subcategory" style="resize: vertical;"  value="{{c.data.rcf.subcategory}}" class="form-control" ng-disabled="!c.data.canEdit"></textarea>
               </div>
             </div>
             <div class="form-section" style="display:flex;">
@@ -957,7 +1029,7 @@
               <div class="col-md-5">
                 <select class="form-control" ng-model="c.data.rcf.likelihood" id="likelihood" name="likelihood" ng-change="c.updateScore()" ng-disabled="!c.data.canEdit">
                   <option value="0"></option>
-                  <option value="0.5">Very unlikely</option>
+                  <option value="0.5">Very Unlikely</option>
                   <option value="1.5">Unlikely</option>
                   <option value="4">Likely</option>
                   <option value="5">Very Likely</option>
@@ -1017,7 +1089,7 @@
             <div class="form-section" style="display:flex;">
               <div class="col-md-3" style="padding-left:0px;line-height:35px;text-align:right;">AU Recommend</div>
               <div class="col-md-5">
-                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend"  ng-disabled="!c.data.canEdit || c.data.role.indexOf('POC') > -1">
+                <select class="form-control" ng-model="c.data.rcf.au_recommend" id="au_recommend" name="au_recommend"  ng-disabled="!c.data.canEdit">
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
@@ -1073,6 +1145,7 @@
             </div>
           </div>
         </uib-accordion>
+        </form>
       </div>
       <div class="risk-button-section">
         <!-- Waiting for RM approval -->
@@ -1098,7 +1171,7 @@
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.unlockRisk()" ng-show="c.data.rcf.status == 'Closed' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Unlock
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Submit to RM
         </button>
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving" ng-show="c.data.canEdit">
@@ -1118,6 +1191,12 @@
           <div class="col-md-4" style="text-align:right;">Fiscal Year:</div>
           <div class="col-md-8">
             {{c.data.rcf.fiscalYear}}
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="col-md-4" style="text-align:right;">AU(DOC):</div>
+          <div class="col-md-8">
+            {{c.data.rcf.doc}}
           </div>
         </div>
         <div class="form-section">
