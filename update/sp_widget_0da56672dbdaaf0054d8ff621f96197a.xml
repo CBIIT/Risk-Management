@@ -214,13 +214,33 @@
 			$('#confirmDiv').modal('show');
 	}
 	
+	c.submitRisk2RC = function(){
+			c.data.action = 'Submit2RC';
+			c.data.confirmMessage = "Are you ready to submit this risk to RC?";
+			//post to server
+			cb = function(){
+				c.saveRiskBeforeAction(function(){
+					RiskMgmtRisk.submitRisk2RC({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
+						var result = res.data.result;
+						$('#confirmDiv').modal('hide');
+						$scope.$apply();
+						$scope.myForm.$setPristine();
+						window.showMessageBox("Risk successfully submitted to RC.",{xpage:'management',sub:'board'});
+					}, function(error){
+						console.log(error);
+					});
+				});
+			};
+			$('#confirmDiv').modal('show');
+	}
+	
 	c.RMApproveRisk = function(){
 		
 			c.data.action = 'RMApprove';
 			c.data.confirmMessage = "Are you sure you want to approve this risk?";
 			//post to server
 			cb = function(){
-					c.saveRiskBeforeAction(function(){
+					c.saveSharedRiskBeforeAction(function(){
 						RiskMgmtRisk.RMApproveRisk({sys_id:c.data.rcf.sys_id}, c.data.sessionId).then(function(res){
 							var result = res.data.result;
 							$('#confirmDiv').modal('hide');
@@ -365,6 +385,63 @@
 		$('#confirmDiv').modal('show');
 	}
 	
+	c.saveSharedRiskBeforeAction = function(action){
+		var params = {};
+		params.sys_id = c.data.rcf.sys_id;
+		params.poc_name = "Shared";
+		params.poc_id = "Shared";
+		params.title = c.data.rcf.title;
+		params.section_1 = {};
+		params.section_1.enterprise = c.data.rcf.enterprise;
+		params.section_1.response = c.data.rcf.response;
+		params.section_1.ownership = c.data.rcf.ownership;
+		params.section_1.statement = c.data.rcf.statement;
+		params.section_1.immediacy = c.data.rcf.immediacy;
+		params.section_1.control = c.data.rcf.control;
+		params.section_1.interest = c.data.rcf.interest;
+		params.section_1.interest_other = c.data.rcf.interest_other;
+		params.section_1.category = c.data.rcf.category;
+		params.section_1.category_other = c.data.rcf.category_other;
+		params.section_1.subcategory = c.data.rcf.subcategory;
+		params.policies = c.data.rcf.policies;
+		params.activities = c.data.rcf.activities;
+		params.plan = c.data.rcf.plan;
+		params.section_2 = {};
+		params.section_2.impact = c.data.rcf.impact;
+		params.section_2.pub_impact = c.data.rcf.pub_impact;
+		params.section_2.org_impact = c.data.rcf.org_impact;
+		params.section_2.financial_impact = c.data.rcf.financial_impact;
+		params.section_2.overall_impact = c.data.rcf.overall_impact;
+		params.section_3 = {};
+		params.section_3.inplace = c.data.rcf.inplace;
+		params.section_3.effective = c.data.rcf.effective;
+		params.section_3.include = c.data.rcf.include;
+		params.section_3.aware = c.data.rcf.aware;
+		params.section_3.formal_action = c.data.rcf.formal_action;
+		params.section_3.likelihood = c.data.rcf.likelihood;
+		params.section_4 = {};
+		params.section_4.impact_score = c.data.rcf.impact_score;
+		params.section_4.likelihood_score = c.data.rcf.likelihood_score;
+		params.score = c.data.rcf.total_score;
+		params.au_recommend = c.data.rcf.au_recommend;
+		params.ompc_recommend = c.data.rcf.ompc_recommend;
+		params.eo_final_decision = c.data.rcf.eo_final_decision;
+		params.section_6 = {};
+		params.section_6.rationale = c.data.rcf.rationale;
+		params.section_6.form_comments = c.data.rcf.form_comments;
+		params.notify = "0";
+		c.data.saving = true;
+		RiskMgmtRisk.update(params, c.data.sessionId).then(function(rs){
+			var data = rs.data.result;
+			c.data.saving = false;
+			if(action){
+				action();
+			}
+		}, function(error){
+			console.log(error);
+		});
+	}
+	
 	c.saveRiskBeforeAction = function(action){
 		var params = {};
 		params.sys_id = c.data.rcf.sys_id;
@@ -434,6 +511,16 @@
 			};
 			$('#confirmDiv').modal('show');
 		}
+		else if(c.data.rcf.status == 'Open' && c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1){
+			c.data.action = 'Save';
+			c.data.confirmMessage = "Save the form?";
+			//post to server
+			cb = function(){
+				var notify = c.data.pocNotifyRT? "2" : "0";
+			  c.updateAndNotifyRisk(notify);
+			};
+			$('#confirmDiv').modal('show');
+		}
 		else{
 			var params = {};
 			params.sys_id = c.data.rcf.sys_id;
@@ -494,6 +581,64 @@
 		}
 	}
 	
+	c.updateSharedRisk = function(){
+		var params = {};
+		params.sys_id = c.data.rcf.sys_id;
+		params.poc_name = "Shared";
+		params.poc_id = "Shared";
+		params.title = c.data.rcf.title;
+		params.section_1 = {};
+		params.section_1.enterprise = c.data.rcf.enterprise;
+		params.section_1.response = c.data.rcf.response;
+		params.section_1.ownership = c.data.rcf.ownership;
+		params.section_1.statement = c.data.rcf.statement;
+		params.section_1.immediacy = c.data.rcf.immediacy;
+		params.section_1.control = c.data.rcf.control;
+		params.section_1.interest = c.data.rcf.interest;
+		params.section_1.interest_other = c.data.rcf.interest_other;
+		params.section_1.category = c.data.rcf.category;
+		params.section_1.category_other = c.data.rcf.category_other;
+		params.section_1.subcategory = c.data.rcf.subcategory;
+		params.policies = c.data.rcf.policies;
+		params.activities = c.data.rcf.activities;
+		params.plan = c.data.rcf.plan;
+		params.section_2 = {};
+		params.section_2.impact = c.data.rcf.impact;
+		params.section_2.pub_impact = c.data.rcf.pub_impact;
+		params.section_2.org_impact = c.data.rcf.org_impact;
+		params.section_2.financial_impact = c.data.rcf.financial_impact;
+		params.section_2.overall_impact = c.data.rcf.overall_impact;
+		params.section_3 = {};
+		params.section_3.inplace = c.data.rcf.inplace;
+		params.section_3.effective = c.data.rcf.effective;
+		params.section_3.include = c.data.rcf.include;
+		params.section_3.aware = c.data.rcf.aware;
+		params.section_3.formal_action = c.data.rcf.formal_action;
+		params.section_3.likelihood = c.data.rcf.likelihood;
+		params.section_4 = {};
+		params.section_4.impact_score = c.data.rcf.impact_score;
+		params.section_4.likelihood_score = c.data.rcf.likelihood_score;
+		params.score = c.data.rcf.total_score;
+		params.au_recommend = c.data.rcf.au_recommend;
+		params.ompc_recommend = c.data.rcf.ompc_recommend;
+		params.eo_final_decision = c.data.rcf.eo_final_decision;
+		params.section_6 = {};
+		params.section_6.rationale = c.data.rcf.rationale;
+		params.section_6.form_comments = c.data.rcf.form_comments;
+		params.notify = "0";
+		c.data.saving = true;
+		c.data.save_text = 'Saving...';
+		RiskMgmtRisk.update(params, c.data.sessionId).then(function(rs){
+			var data = rs.data.result;
+			c.data.saving = false;
+			c.data.save_text = 'Save';
+			$scope.myForm.$setPristine();
+			window.showMessageBox("Risk successfully updated.");
+		}, function(error){
+			console.log(error);
+		});
+	}
+	
 	c.updateAndNotifyRisk = function(notify){
 		var params = {};
 		params.sys_id = c.data.rcf.sys_id;
@@ -551,6 +696,9 @@
 			$scope.myForm.$setPristine();
 			if(notify == "1"){
 				window.showMessageBox("Risk successfully updated and POC notified.");
+			}
+			else if(notify == "2"){
+				window.showMessageBox("Risk successfully updated and Risk Team Member notified.");
 			}
 			else{
 				window.showMessageBox("Risk successfully updated.");
@@ -737,7 +885,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>400</sys_mod_count>
+        <sys_mod_count>419</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -745,7 +893,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-03-22 18:31:22</sys_updated_on>
+        <sys_updated_on>2019-05-07 20:33:32</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -1093,8 +1241,8 @@
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
-                  <option value="Add to inventory">Add to inventory</option>
-                  <option value="Do not add to inventory">Do not add to inventory</option>
+                  <option value="Add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Add to inventory</option>
+                  <option value="Do not add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Do not add to inventory</option>
                 </select>
               </div>
             </div>
@@ -1105,8 +1253,8 @@
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
-                  <option value="Add to inventory">Add to inventory</option>
-                  <option value="Do not add to inventory">Do not add to inventory</option>
+                  <option value="Add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Add to inventory</option>
+                  <option value="Do not add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Do not add to inventory</option>
                 </select>
               </div>
             </div>
@@ -1117,8 +1265,8 @@
                   <option value="N/P"></option>
                   <option value="Maintain the risk">Maintain the risk</option>
                   <option value="Retire the risk">Retire the risk</option>
-                  <option value="Add to inventory">Add to inventory</option>
-                  <option value="Do not add to inventory">Do not add to inventory</option>
+                  <option value="Add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Add to inventory</option>
+                  <option value="Do not add to inventory" ng-show="c.data.rcf.risk_type != 'current'">Do not add to inventory</option>
                 </select>
               </div>
             </div>
@@ -1149,10 +1297,10 @@
       </div>
       <div class="risk-button-section">
         <!-- Waiting for RM approval -->
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMApproveRisk()" ng-show="c.data.rcf.status == 'Initial Review' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMApproveRisk()" ng-show="c.data.rcf.status == 'Initial Review' && c.data.rcf.risk_type != 'shared'  && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Approve
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMRejectRisk()" ng-show="c.data.rcf.status == 'Initial Review' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.RMRejectRisk()" ng-show="c.data.rcf.status == 'Initial Review' && c.data.rcf.risk_type != 'shared'  && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RM') > -1 || c.data.role.indexOf('RM&POC') > -1 ) " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Reject
         </button>
         <!-- Waiting for RC approval -->
@@ -1171,10 +1319,16 @@
         <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.unlockRisk()" ng-show="c.data.rcf.status == 'Closed' && c.data.role.indexOf('RC') > -1 " ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Unlock
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk()" ng-show="c.data.rcf.status == 'Open' && c.data.rcf.risk_type != 'shared' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
           Submit to RM
         </button>
-        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving" ng-show="c.data.canEdit">
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.submitRisk2RC()" ng-show="c.data.rcf.status == 'Open' && c.data.rcf.risk_type == 'shared' && (c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1)" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving">
+          Submit to RC
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving" ng-show="c.data.canEdit && c.data.rcf.risk_type != 'shared' ">
+          {{c.data.save_text}}
+        </button>
+        <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.updateSharedRisk()" ng-disabled="c.data.rcf.title == undefined || c.data.rcf.title.trim() == '' || c.data.saving" ng-show="c.data.canEdit">
           {{c.data.save_text}}
         </button>
         <button type="button" class="table-button btn btn-primary" ng-click="c.gotoPage('management','board');">
@@ -1205,7 +1359,13 @@
             {{c.data.rcf.manager_name}}
           </div>
         </div>
-        <div class="form-section">
+        <div class="form-section" ng-if="c.data.rcf.risk_type == 'shared'">
+          <div class="col-md-4" style="text-align:right;">POC:</div>
+          <div class="col-md-8">
+            Shared
+          </div>
+        </div>
+        <div class="form-section" ng-if="c.data.rcf.risk_type != 'shared'">
           <div class="col-md-4" style="line-height:35px;text-align:right;">POC:</div>
           <div class="col-md-8">
             <select class="form-control" name="pocSelect" id="pocSelect" ng-options="option.name for option in c.data.pocs track by option.id"
@@ -1291,8 +1451,11 @@
       <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.action == 'Submit'">
         <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyManager" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyManager">&nbsp;Notify Risk Manager
       </div>
-      <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.action == 'Save'">
+      <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="(c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1) && c.data.action == 'Save'">
         <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyPOC" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyPOC">&nbsp;Notify Risk POC
+      </div>
+      <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1 && c.data.action == 'Save'">
+        <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.pocNotifyRT" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.pocNotifyRT">&nbsp;Notify Risk Team Member
       </div>
       <div class="col-md-12 message-box" style="margin-top:0px;" align="center" ng-if="c.data.action == 'RCApprove'">
         <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyRT" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyRT">&nbsp;Notify Risk Team Member

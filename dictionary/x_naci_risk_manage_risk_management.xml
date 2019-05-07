@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <element audit="true" extends="task" label="Risk Management" max_length="40" name="x_naci_risk_manage_risk_management" sizeclass="48" type="collection">
+    <element audit="true" extends="task" label="Risk Management" max_length="40" name="x_naci_risk_manage_risk_management" sizeclass="37" type="collection">
         <element label="Action Plan" max_length="5000" name="action_plan" type="string"/>
         <element label="Approval Action" max_length="100" name="approval_action" type="string"/>
         <element label="AU Recommend" max_length="100" name="au_recommend" type="string"/>
@@ -14,6 +14,7 @@
         <element label="POC Name" max_length="100" name="poc_name" type="string"/>
         <element label="Primary Policies" max_length="5000" name="primary_policies" type="string"/>
         <element label="Risk Management Activities" max_length="5000" name="risk_management_activities" type="string"/>
+        <element label="Risk Type" max_length="100" name="risk_type" type="string"/>
         <element label="Score" max_length="100" name="score" type="string"/>
         <element label="Section 1" max_length="5000" name="section_1" type="string"/>
         <element label="Section 2" max_length="1000" name="section_2" type="string"/>

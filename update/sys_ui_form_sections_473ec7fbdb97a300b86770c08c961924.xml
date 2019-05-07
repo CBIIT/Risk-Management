@@ -14,19 +14,6 @@
             <sys_updated_by>system</sys_updated_by>
             <sys_updated_on>2019-02-05 14:38:28</sys_updated_on>
         </sys_ui_form_section>
-        <sys_ui_form_section action="INSERT_OR_UPDATE">
-            <position>1</position>
-            <sys_created_by>system</sys_created_by>
-            <sys_created_on>2019-02-05 14:38:28</sys_created_on>
-            <sys_domain>global</sys_domain>
-            <sys_id>4b3ec7fbdb97a300b86770c08c961925</sys_id>
-            <sys_mod_count>0</sys_mod_count>
-            <sys_overrides/>
-            <sys_ui_form display_value="x_naci_risk_manage_risk_management" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">473ec7fbdb97a300b86770c08c961924</sys_ui_form>
-            <sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section>
-            <sys_updated_by>system</sys_updated_by>
-            <sys_updated_on>2019-02-05 14:38:28</sys_updated_on>
-        </sys_ui_form_section>
         <sys_ui_form action="INSERT_OR_UPDATE">
             <name>x_naci_risk_manage_risk_management</name>
             <roles/>

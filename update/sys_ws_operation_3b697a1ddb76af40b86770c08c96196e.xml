@@ -11,6 +11,7 @@
         <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
 
 	var fiscalYear = request.body.data.fiscalYear;
+	var sharedRisk = request.body.data.sharedRisk;
 	var docs = request.body.data.docs.split(',');
 	var managers = request.body.data.manager_names.split('|');
 	var manager_ids = request.body.data.manager_ids.split('|');
@@ -33,14 +34,15 @@
 	
 	
 	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
-	for(var i = 0; i < docs.length; i++){
+	if(sharedRisk){
+		// save as one risk
 		gr.initialize();
-		gr.doc = docs[i];
+		gr.doc = docs.join(",");
 		gr.title = title;
-		gr.manager_name = managers[i];
-		gr.manager_id = manager_ids[i];
-		gr.poc_name = pocs[i];
-		gr.poc_id = poc_ids[i];
+		gr.manager_name = "Shared";
+		gr.manager_id = "Shared";
+		gr.poc_name = "Shared";
+		gr.poc_id = "Shared";
 		gr.fiscal_year = fiscalYear;
 		gr.section_1 =  JSON.stringify(section_1);
 		gr.primary_policies = policies;
@@ -54,13 +56,44 @@
 		gr.ompc_recommend = ompc_recommend;
 		gr.eo_final_decision = eo_final_decision;
 		gr.section_6 = JSON.stringify(section_6);
-		gr.start_by_poc = isPOC;
+		gr.start_by_poc = 0;
+		gr.risk_type = "shared";
 		gr.insert();
-		
-		if(isPOC == "1"){
-			gs.eventQueue('x_naci_risk_manage.notify_rt',gr, 'Risk Team Member');
+	}
+	else{
+		for(var i = 0; i < docs.length; i++){
+			gr.initialize();
+			gr.doc = docs[i];
+			gr.title = title;
+			gr.manager_name = managers[i];
+			gr.manager_id = manager_ids[i];
+			gr.poc_name = pocs[i];
+			gr.poc_id = poc_ids[i];
+			gr.fiscal_year = fiscalYear;
+			gr.section_1 =  JSON.stringify(section_1);
+			gr.primary_policies = policies;
+			gr.risk_management_activities = activities;
+			gr.action_plan = plan;
+			gr.section_2 = JSON.stringify(section_2);
+			gr.section_3 = JSON.stringify(section_3);
+			gr.section_4 = JSON.stringify(section_4);
+			gr.score = score;
+			gr.au_recommend = au_recommend;
+			gr.ompc_recommend = ompc_recommend;
+			gr.eo_final_decision = eo_final_decision;
+			gr.section_6 = JSON.stringify(section_6);
+			gr.start_by_poc = isPOC;
+			gr.risk_type = "new";
+			gr.insert();
+
+			/*
+			if(isPOC == "1"){
+				gs.eventQueue('x_naci_risk_manage.notify_rt',gr, 'Risk Team Member');
+			}
+			*/
 		}
 	}
+	
 	
 	return docs.length;
 
@@ -78,7 +111,7 @@
         <sys_created_on>2019-01-03 22:23:25</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>3b697a1ddb76af40b86770c08c96196e</sys_id>
-        <sys_mod_count>10</sys_mod_count>
+        <sys_mod_count>14</sys_mod_count>
         <sys_name>createRisks</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -86,7 +119,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_3b697a1ddb76af40b86770c08c96196e</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-30 17:39:08</sys_updated_on>
+        <sys_updated_on>2019-05-07 19:23:31</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>
