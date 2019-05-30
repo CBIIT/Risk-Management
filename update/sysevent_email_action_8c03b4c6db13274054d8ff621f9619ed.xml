@@ -50,7 +50,7 @@
         <send_self>true</send_self>
         <sms_alternate/>
         <style/>
-        <subject>Risk Management Notification: New risk has been initiated for this year</subject>
+        <subject>Risk Management Notification: Risk Update Completed</subject>
         <subscribable>false</subscribable>
         <sys_class_name>sysevent_email_action</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
@@ -58,7 +58,7 @@
         <sys_customer_update>false</sys_customer_update>
         <sys_domain>global</sys_domain>
         <sys_id>8c03b4c6db13274054d8ff621f9619ed</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>5</sys_mod_count>
         <sys_name>RCF Create or load Notification</sys_name>
         <sys_overrides/>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
@@ -67,7 +67,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sysevent_email_action_8c03b4c6db13274054d8ff621f9619ed</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-04-12 17:05:30</sys_updated_on>
+        <sys_updated_on>2019-05-29 16:00:37</sys_updated_on>
         <sys_version>2</sys_version>
         <template display_value="Unsubscribe and Preferences">7ed0481f3b0b2200c869c2c703efc487</template>
         <type>email</type>

@@ -11,6 +11,7 @@
         <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
 
     var sys_id = request.body.data.sys_id;
+	//var email_content = request.body.data.email_content;
 	
 	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
 	gr.addQuery('sys_id',sys_id);
@@ -22,6 +23,13 @@
 		gr.update();
 		
 		gs.eventQueue('x_naci_risk_manage.rm_notify_rt',gr, 'Risk Team Member');
+		/*
+		var RT_email = "elena.kusterer@nih.gov";
+		if(!email_content || email_content.trim() == ""){
+			email_content = "-";
+		}
+		gs.eventQueue('x_naci_risk_manage.rm_notify_rt',gr, email_content, RT_email);
+		*/
 		return 1;
 	}
 	else{
@@ -41,7 +49,7 @@
         <sys_created_on>2019-01-14 15:24:22</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>fb75cebcdbc36700b86770c08c961950</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>5</sys_mod_count>
         <sys_name>RMApproveRisk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -49,7 +57,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_fb75cebcdbc36700b86770c08c961950</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-03-18 14:23:08</sys_updated_on>
+        <sys_updated_on>2019-05-29 15:24:56</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

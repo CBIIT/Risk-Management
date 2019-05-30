@@ -6,5 +6,7 @@
         <element label="Manager Name" max_length="500" name="manager_name" type="string"/>
         <element label="POC ID" max_length="3000" name="poc_id" type="string"/>
         <element label="POC Name" max_length="1000" name="poc_name" type="string"/>
+        <element label="RT ID" max_length="1000" name="rt_id" type="string"/>
+        <element label="RT Name" max_length="1000" name="rt_name" type="string"/>
     </element>
 </database>

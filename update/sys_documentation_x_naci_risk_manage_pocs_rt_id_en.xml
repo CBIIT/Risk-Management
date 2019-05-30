@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update>
+    <sys_documentation element="rt_id" label="RT ID" language="en" table="x_naci_risk_manage_pocs">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>rt_id</element>
+            <help/>
+            <hint/>
+            <label>RT ID</label>
+            <language>en</language>
+            <name>x_naci_risk_manage_pocs</name>
+            <plural>RT IDs</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>yuw5@nih.gov</sys_created_by>
+            <sys_created_on>2019-05-21 19:16:34</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_id>0cdcf0fddbed770054d8ff621f96198d</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>RT ID</sys_name>
+            <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+            <sys_update_name>sys_documentation_x_naci_risk_manage_pocs_rt_id_en</sys_update_name>
+            <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-05-21 19:16:34</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

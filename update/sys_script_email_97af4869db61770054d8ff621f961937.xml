@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_email">
+    <sys_script_email action="INSERT_OR_UPDATE">
+        <name>RiskMgmtApplicationRC2RTMessage</name>
+        <new_lines_to_html>false</new_lines_to_html>
+        <script><![CDATA[(function runMailScript(current, template, email, email_action, event) {
+
+    if(event.parm1 != "-"){
+		template.print("<br />Message from Risk Champion: " + event.parm1 + "<br />");
+	}
+	else{
+		template.print("");
+	}
+
+})(current, template, email, email_action, event);]]></script>
+        <sys_class_name>sys_script_email</sys_class_name>
+        <sys_created_by>yuw5@nih.gov</sys_created_by>
+        <sys_created_on>2019-05-20 21:21:26</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>97af4869db61770054d8ff621f961937</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>RiskMgmtApplicationRC2RTMessage</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_script_email_97af4869db61770054d8ff621f961937</sys_update_name>
+        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-05-20 21:21:26</sys_updated_on>
+    </sys_script_email>
+</record_update>
