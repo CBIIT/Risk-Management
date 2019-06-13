@@ -21,6 +21,9 @@
 	c.data.loading = false;
 	c.data.load_text = 'Load';
 	
+	c.data.selectedDOC = [];
+	c.data.selectedStatus= [];
+	
 	c.data.meetingnotes = {};
 	c.upload_status = "upload";
 	c.file2upload = '';
@@ -30,7 +33,7 @@
 	$scope.prev_sortKey = 'doc';
 	$scope.prev_reverse = true;
 	
-	$scope.sort = function(keyname) {		
+	$scope.sort = function(keyname) {
 		$scope.sortKey = keyname;
 		$scope.reverse = !$scope.reverse;
 	};
@@ -38,6 +41,40 @@
 	$scope.prev_sort = function(keyname) {		
 		$scope.prev_sortKey = keyname;
 		$scope.prev_reverse = !$scope.prev_reverse;
+	};
+	
+	c.filterByDOC = function(){
+		return function( item ) {
+			if(c.data.selectedDOC.length == 0){
+				return false;
+			}
+			if(c.data.doc.length == c.data.selectedDOC.length){
+				return true;
+			}
+			else{
+				var docs = item.doc.split(",");
+				for(var i = 0; i< docs.length; i++){
+					if(c.data.selectedDOC.indexOf(docs[i]) > -1){
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+	};
+	
+	c.filterByStatus = function(){
+		return function( item ) {
+			if(c.data.selectedStatus.length == 0){
+				return false;
+			}
+			if(c.data.status.length == c.data.selectedStatus.length){
+				return true;
+			}
+			else{
+				 return c.data.selectedStatus.indexOf(item.status) > -1;
+			}
+		};
 	};
 	
 	c.handleKeyPress = function(keyEvent){
@@ -54,6 +91,10 @@
 	
 	c.filterRisks = function(){
 		
+	}
+	
+	c.showDOCFilter = function(){
+		console.log('fasdfasdf');
 	}
 	
 	c.pageChanged = function(){
@@ -301,6 +342,70 @@
 				console.log(error);
 			});
 		
+	}
+	
+	c.showDOCFilter = function(){
+		c.data.doc_filter_show = true;
+	}
+	
+	c.hideDOCFilter = function(){
+		c.data.doc_filter_show = false;
+	}
+	
+	c.updateDOCData = function(item){
+		if(item.selected){
+			c.data.selectedDOC.push(item.id);
+		}
+		else{
+			var idx = c.data.selectedDOC.indexOf(item.id);
+			if (idx > -1) {
+				c.data.selectedDOC.splice(idx, 1);
+			}
+		}
+	}
+	
+	c.selectAll_DOC = function(){
+		var selectAll = document.getElementById("selectAll_DOC");
+		c.data.selectedDOC = [];
+		if(selectAll.checked){
+			var tmp = [];
+			c.data.doc.map(function(obj){
+				tmp.push(obj.id);
+			});
+			c.data.selectedDOC = tmp;
+		}
+	}
+	
+	c.showStatusFilter = function(){
+		c.data.status_filter_show = true;
+	}
+	
+	c.hideStatusFilter = function(){
+		c.data.status_filter_show = false;
+	}
+	
+	c.updateStatusData = function(item){
+		if(item.selected){
+			c.data.selectedStatus.push(item.id);
+		}
+		else{
+			var idx = c.data.selectedStatus.indexOf(item.id);
+			if (idx > -1) {
+				c.data.selectedStatus.splice(idx, 1);
+			}
+		}
+	}
+	
+	c.selectAll_Status = function(){
+		var selectAll = document.getElementById("selectAll_Status");
+		c.data.selectedStatus = [];
+		if(selectAll.checked){
+			var tmp = [];
+			c.data.status.map(function(obj){
+				tmp.push(obj.id);
+			});
+			c.data.selectedStatus = tmp;
+		}
 	}
 	
 	c.generatePDF = function(rcf){
@@ -720,6 +825,9 @@
 				var result = rs.data.result;
 				c.data.risks = result;
 				c.data.auRisks = {};
+				c.data.status = [];
+				c.data.selectedStatus = [];
+				var cache = {};
 				$rootScope.user.doc.forEach(function(dc){
 					c.data.auRisks[dc] = [];
 				});
@@ -727,7 +835,21 @@
 					c.data.auRisks[risk.doc].push(risk.title);
 					var section_1 = JSON.parse(risk.section_1);
 					risk.enterprise = section_1.enterprise;
+					if(!(risk.status in cache)){
+						cache[risk.status] = 0;
+					}
+					cache[risk.status] ++;
 				});
+				for(var s in cache){
+					c.data.status.push({id: s, name: s, count: cache[s]});
+					c.data.selectedStatus.push(s);
+				}
+				c.data.doc = [];
+				c.data.selectedDOC = [];
+				for(var k in c.data.auRisks){
+					c.data.selectedDOC.push(k);
+					c.data.doc.push({id: k, name: k, count: c.data.auRisks[k].length});
+				}
 				if(cb){
 					cb();
 				}
@@ -744,6 +866,9 @@
 				var result = rs.data.result;
 				c.data.risks = result;
 				c.data.auRisks = {};
+				c.data.status = [];
+				c.data.selectedStatus = [];
+				var cache = {};
 				c.data.risks.forEach(function(risk){
 					if(!(risk.doc in c.data.auRisks)){
 						c.data.auRisks[risk.doc] = [];
@@ -751,7 +876,21 @@
 					c.data.auRisks[risk.doc].push(risk.title);
 					var section_1 = JSON.parse(risk.section_1);
 					risk.enterprise = section_1.enterprise;
+					if(!(risk.status in cache)){
+						cache[risk.status] = 0;
+					}
+					cache[risk.status] ++;
 				});
+				for(var s in cache){
+					c.data.status.push({id: s, name: s, count: cache[s]});
+					c.data.selectedStatus.push(s);
+				}
+				c.data.doc = [];
+				c.data.selectedDOC = [];
+				for(var k in c.data.auRisks){
+					c.data.selectedDOC.push(k);
+					c.data.doc.push({id: k, name: k, count: c.data.auRisks[k].length});
+				}
 				if(cb){
 					cb();
 				}
@@ -803,7 +942,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>746</sys_mod_count>
+        <sys_mod_count>819</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -811,7 +950,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-10 18:48:43</sys_updated_on>
+        <sys_updated_on>2019-06-13 22:40:42</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">
@@ -835,19 +974,40 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RC') > -1">
     <table width="100%" id="export-table">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')" ng-mouseover="c.showDOCFilter()" ng-mouseleave="c.hideDOCFilter()" style="width:8%;text-align:center;">
+          AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.doc_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:110px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_DOC" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_DOC()" ng-checked="c.data.selectedDOC.length != 0  && c.data.selectedDOC.length == c.data.doc.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.doc">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateDOCData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedDOC.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th class="td-right-line" ng-click="sort('title')" style="width:16%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('score')" style="width:6%;text-align:center;">Score <i ng-show="sortKey == 'score' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'score' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('manager_name')" style="width:8%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('poc_name')" style="width:8%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('score')" style="width:4%;text-align:center;">Score <i ng-show="sortKey == 'score' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'score' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('risk_team_member_name')" style="width:6%;text-align:center;">Risk Team Member <i ng-show="sortKey == 'risk_team_member_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'risk_team_member_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:6%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:6%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:8%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('ompc_recommend')" style="width:8%;text-align:center;">OMPC<br>Recommend <i ng-show="sortKey == 'ompc_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'ompc_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('eo_final_decision')" style="width:8%;text-align:center;">EO<br>Final Decision <i ng-show="sortKey == 'eo_final_decision' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'eo_final_decision' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('status')" style="width:8%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" ng-mouseover="c.showStatusFilter()" ng-mouseleave="c.hideStatusFilter()"  style="width:8%;text-align:center;">
+          Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.status_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:120px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_Status" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_Status()" ng-checked="c.data.selectedStatus.length != 0  && c.data.selectedStatus.length == c.data.status.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.status">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateStatusData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedStatus.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th style="width:16%;text-align:center;">Action</th>
       </tr>
-      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | filter: c.filterByDOC() | filter: c.filterByStatus() | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line" style="word-break: break-all;">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
         <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
@@ -855,6 +1015,7 @@
         <td class="td-right-line" ng-show="x.score >= 0.5 && x.score <= 18.5" style="background-color:green;color:white;">{{x.score}}</td>
         <td class="td-right-line" ng-show="x.score >= 19 && x.score <= 33.5" style="background-color:yellow;color:black;">{{x.score}}</td>
         <td class="td-right-line" ng-show="x.score >= 34" style="background-color:red;color:white;">{{x.score}}</td>
+        <td class="td-right-line">{{x.risk_team_member_name}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
@@ -878,20 +1039,42 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RT') > -1">
     <table width="100%">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')"  ng-mouseover="c.showDOCFilter()" ng-mouseleave="c.hideDOCFilter()"  style="width:8%;text-align:center;">
+          AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.doc_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:110px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_DOC" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_DOC()" ng-checked="c.data.selectedDOC.length != 0  && c.data.selectedDOC.length == c.data.doc.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.doc">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateDOCData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedDOC.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th class="td-right-line" ng-click="sort('title')" style="width:16%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('risk_team_member_name')" style="width:6%;text-align:center;">Risk Team Member <i ng-show="sortKey == 'risk_team_member_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'risk_team_member_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:7%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:7%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('ompc_recommend')" style="width:12%;text-align:center;">OMPC<br>Recommend <i ng-show="sortKey == 'ompc_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'ompc_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" ng-mouseover="c.showStatusFilter()" ng-mouseleave="c.hideStatusFilter()"  style="width:10%;text-align:center;">
+          Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.status_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:120px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_Status" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_Status()" ng-checked="c.data.selectedStatus.length != 0  && c.data.selectedStatus.length == c.data.status.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.status">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateStatusData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedStatus.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th style="width:16%;text-align:center;">Action</th>
       </tr>
-      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | filter: c.filterByDOC() | filter: c.filterByStatus() | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
         <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
+        <td class="td-right-line">{{x.risk_team_member_name}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>
@@ -914,19 +1097,41 @@
   <div class="table-section" ng-if="c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1">
     <table width="100%">
       <tr class="table-header">
-        <th class="td-right-line" ng-click="sort('doc')" style="width:8%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('doc')" ng-mouseover="c.showDOCFilter()" ng-mouseleave="c.hideDOCFilter()" style="width:8%;text-align:center;">
+          AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.doc_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:110px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_DOC" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_DOC()" ng-checked="c.data.selectedDOC.length != 0  && c.data.selectedDOC.length == c.data.doc.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.doc">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateDOCData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedDOC.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th class="td-right-line" ng-click="sort('title')" style="width:28%;text-align:center;">Risk Title <i ng-show="sortKey == 'title' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'title' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('enterprise')" style="width:6%;text-align:center;">Enterprise<br>Risk <i ng-show="sortKey == 'enterprise' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'enterprise' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('manager_name')" style="width:10%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('poc_name')" style="width:10%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('risk_team_member_name')" style="width:6%;text-align:center;">Risk Team Member <i ng-show="sortKey == 'risk_team_member_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'risk_team_member_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('manager_name')" style="width:7%;text-align:center;">Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('poc_name')" style="width:7%;text-align:center;">POC <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
         <th class="td-right-line" ng-click="sort('au_recommend')" style="width:12%;text-align:center;">AU<br>Recommend <i ng-show="sortKey == 'au_recommend' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'au_recommend' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-        <th class="td-right-line" ng-click="sort('status')" style="width:10%;text-align:center;">Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
+        <th class="td-right-line" ng-click="sort('status')" ng-mouseover="c.showStatusFilter()" ng-mouseleave="c.hideStatusFilter()"  style="width:10%;text-align:center;">
+          Status <i ng-show="sortKey == 'status' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'status' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i>
+          <div ng-show="c.data.status_filter_show" onclick="event.stopPropagation()" style="position: absolute;border: 1px solid #8b8d93;background-color: #8b8d93;border-radius: 5px;margin-top: 10px;box-shadow: 0 6px 12px rgba(0, 0, 0, .175);font-size: 12px;min-width:120px;">
+            <div class="filter-options">
+              <input type="checkbox" id="selectAll_Status" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-click="c.selectAll_Status()" ng-checked="c.data.selectedStatus.length != 0  && c.data.selectedStatus.length == c.data.status.length">&nbsp;All
+            </div>
+            <div class="filter-options" ng-repeat="cat in c.data.status">
+              <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="cat.selected" ng-click="c.updateStatusData(cat)" value="{{cat.id}}" role="checkbox" aria-invalid="false" ng-checked="c.data.selectedStatus.indexOf(cat.id) > -1">&nbsp;{{cat.name}} ({{cat.count}})
+            </div>
+          </div>
+        </th>
         <th style="width:16%;text-align:center;">Action</th>
       </tr>
-      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
+      <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.risks | filter:c.data.searchText | filter: c.filterByDOC() | filter: c.filterByStatus() | orderBy:sortKey:reverse)" ng-show="$index >= (c.data.bigCurrentPage -1) * c.data.pageSize && $index < c.data.bigCurrentPage * c.data.pageSize">
 				<td class="td-right-line">{{x.doc}}</td>
         <td class="td-right-line">{{x.title}} {{x.version? '&lt;V' + x.version +'&gt;' : ''}}</td>
         <td class="td-right-line">{{x.enterprise == 'N/P' ? "" : x.enterprise}}</td>
+        <td class="td-right-line">{{x.risk_team_member_name}}</td>
         <td class="td-right-line">{{x.manager_name}}</td>
         <td class="td-right-line">{{x.poc_name}}</td>
         <td class="td-right-line">{{x.au_recommend == 'N/P' ? "" : x.au_recommend}}</td>

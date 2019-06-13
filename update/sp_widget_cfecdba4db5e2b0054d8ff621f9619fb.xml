@@ -12,13 +12,13 @@
 	c.currentConfig.doc = '';
 	c.currentConfig.manager = [];
 	c.currentConfig.poc = [];
-	//c.currentConfig.rt = [];
+	c.currentConfig.rt = [];
 	c.currentConfig.manager_id = [];
 	c.currentConfig.poc_id = [];
-	//c.currentConfig.rt_id = [];
+	c.currentConfig.rt_id = [];
 	c.data.manager_input = "";
 	c.data.poc_input = "";
-	//c.data.rt_input = "";
+	c.data.rt_input = "";
 	
 	$scope.sortKey = 'doc';
 	$scope.reverse = true;
@@ -65,7 +65,6 @@
 			for(i = 0; i< mn.length; i++){
 				c.currentConfig.poc.push({id: mi[i], name: mn[i]});
 			}
-			/*
 			c.data.rt_input = "";
 			c.currentConfig.rt = [];
 			if(result.rt_id != ""){
@@ -75,7 +74,6 @@
 					c.currentConfig.rt.push({id: mi[i], name: mn[i]});
 				}
 			}
-			*/
 			
 			$scope.$apply();
 			$('#configDiv').modal('show');
@@ -103,7 +101,6 @@
 		});
 		params.poc = params.poc.substring(0, params.poc.length -1);
 		params.poc_id = params.poc_id.substring(0, params.poc_id.length -1);
-		/*
 		params.rt = '';
 		params.rt_id = '';
 		c.currentConfig.rt.forEach(function(p){
@@ -112,7 +109,6 @@
 		});
 		params.rt = params.rt.substring(0, params.rt.length -1);
 		params.rt_id = params.rt_id.substring(0, params.rt_id.length -1);
-		*/
 		RiskMgmtPOC.update(params, c.data.sessionId).then(function(rs){
 			//var result = rs.data.result;
 			c.currentConfig = {};
@@ -232,7 +228,7 @@
         <sys_created_on>2018-12-07 20:19:36</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>cfecdba4db5e2b0054d8ff621f9619fb</sys_id>
-        <sys_mod_count>181</sys_mod_count>
+        <sys_mod_count>186</sys_mod_count>
         <sys_name>riskmgmt config</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -240,7 +236,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_cfecdba4db5e2b0054d8ff621f9619fb</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-29 14:58:59</sys_updated_on>
+        <sys_updated_on>2019-06-12 18:59:20</sys_updated_on>
         <template><![CDATA[<div class="settings-content">
 	<div class="settings-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');"><i class="fa fa-chevron-left"></i> Back to Risk Management</a>
@@ -261,18 +257,14 @@
           <th ng-click="sort('doc')" style="width:15%;text-align:center;">AU(DOC) <i ng-show="sortKey == 'doc' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'doc' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
           <th ng-click="sort('manager_name')" style="width:20%;text-align:center;">Risk Manager <i ng-show="sortKey == 'manager_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'manager_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
           <th ng-click="sort('poc_name')" style="width:30%;text-align:center;">Risk POCs <i ng-show="sortKey == 'poc_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'poc_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-          <!--
-						<th ng-click="sort('rt_name')" style="width:20%;text-align:center;">Risk Team Member <i ng-show="sortKey == 'rt_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'rt_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
-          -->
+          <th ng-click="sort('rt_name')" style="width:20%;text-align:center;">Risk Team Member <i ng-show="sortKey == 'rt_name' && !reverse" class="fa fa-arrow-up" aria-hidden="true"></i><i ng-show="sortKey == 'rt_name' && reverse" class="fa fa-arrow-down" aria-hidden="true"></i></th>
 					<th style="width:15%;text-align:center;">Action</th>
         </tr>
         <tr class="table-row" ng-repeat="x in c.data.filtered = (c.data.pocs | filter:c.data.searchText | orderBy:sortKey:reverse)">
           <td>{{x.doc}}</td>
           <td>{{x.manager_name}}</td>
           <td>{{x.poc_name}}</td>
-          <!--
-						<td>{{x.rt_name}}</td>
-					-->
+          <td>{{x.rt_name}}</td>
          	<td>
             <button type="button" class="table-button btn btn-primary" ng-click="c.editPOCs(x.sys_id);">
               Edit
@@ -293,11 +285,11 @@
         <h4  class="modal-title">Config</h4>
       </div>      
       <div class="modal-body" style="padding-bottom: 0px;">
-        <div class="form-section">
+        <div class="form-section" style="display:block;">
           <label for="doc">AU(DOC):</label>
           <input type="text" ng-model="c.currentConfig.doc" id="doc" name="doc" value="{{c.currentConfig.doc}}" disabled="true" class="form-control">
         </div>
-        <div class="form-section">
+        <div class="form-section" style="display:block;">
           <label for="manager"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Manager:</label>
           <tags-input ng-model="c.currentConfig.manager" placeholder="Add a manager" key-property="id" display-property="name" replace-spaces-with-dashes=false text="c.data.manager_input" style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'1')" on-tag-removing="c.tagRemoving($tag,'1')">
             <auto-complete source="c.loadDictionary($query)"
@@ -309,7 +301,7 @@
                            max-results-to-show="10"></auto-complete>
           </tags-input>
         </div>
-        <div class="form-section">
+        <div class="form-section" style="display:block;">
           <label for="poc"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk POCs:</label>
           <tags-input ng-model="c.currentConfig.poc" placeholder="Add a POC" key-property="id" display-property="name"  replace-spaces-with-dashes=false text="c.data.poc_input" style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'2')" on-tag-removing="c.tagRemoving($tag,'2')">
             <auto-complete source="c.loadDictionary($query)"
@@ -321,8 +313,7 @@
                            max-results-to-show="10"></auto-complete>
           </tags-input>
         </div>
-        <!--
-        <div class="form-section">
+        <div class="form-section" style="display:block;">
           <label for="poc"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Team Member:</label>
           <tags-input ng-model="c.currentConfig.rt" placeholder="Add a Risk Team Member" key-property="id" display-property="name"  replace-spaces-with-dashes=false text="c.data.rt_input" style="border: 1px solid #e5e5e5;" on-tag-adding="c.tagAdding($tag,'3')" on-tag-removing="c.tagRemoving($tag,'3')">
             <auto-complete source="c.loadDictionary($query)"
@@ -334,9 +325,8 @@
                            max-results-to-show="10"></auto-complete>
           </tags-input>
         </div>
-				-->
       </div>
-      <div class="form-section" style="text-align:center; padding-top: 15px;border-top: 1px solid #e5e5e5;">
+      <div class="form-section" style="text-align:center; padding-top: 15px;border-top: 1px solid #e5e5e5;display:block;">
           <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.saveConfig()" ng-disabled="c.currentConfig.manager.length == 0 || c.currentConfig.poc.length == 0">
             Save
           </button>

@@ -43,6 +43,9 @@
 		gr.manager_id = "Shared";
 		gr.poc_name = "Shared";
 		gr.poc_id = "Shared";
+		//Risk Team Member
+		gr.risk_team_member_id = "Shared";
+		gr.risk_team_member_name = "Shared";
 		gr.fiscal_year = fiscalYear;
 		gr.section_1 =  JSON.stringify(section_1);
 		gr.primary_policies = policies;
@@ -61,6 +64,20 @@
 		gr.insert();
 	}
 	else{
+		var rts = {};
+		var rt = new GlideRecord('x_naci_risk_manage_pocs');
+		rt.addQuery('doc','IN',docs);
+		rt.query();
+		while(rt.next()){
+			if(rt.rt_id !== ''){
+				rts[rt.doc] = {rt_id:rt.rt_id.split(',')[0],
+						  rt_name:rt.rt_name.split(',')[0] };
+			}
+			else{
+				rts[rt.doc] = {rt_id:'57d8408d6f098e001c857eeeae3ee459',
+						  rt_name: 'Elena Kusterer'};
+			}
+		}
 		for(var i = 0; i < docs.length; i++){
 			gr.initialize();
 			gr.doc = docs[i];
@@ -69,6 +86,9 @@
 			gr.manager_id = manager_ids[i];
 			gr.poc_name = pocs[i];
 			gr.poc_id = poc_ids[i];
+			//Risk Team Member
+			gr.risk_team_member_id = rts[docs[i]].rt_id;
+			gr.risk_team_member_name = rts[docs[i]].rt_name;
 			gr.fiscal_year = fiscalYear;
 			gr.section_1 =  JSON.stringify(section_1);
 			gr.primary_policies = policies;
@@ -111,7 +131,7 @@
         <sys_created_on>2019-01-03 22:23:25</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>3b697a1ddb76af40b86770c08c96196e</sys_id>
-        <sys_mod_count>14</sys_mod_count>
+        <sys_mod_count>15</sys_mod_count>
         <sys_name>createRisks</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -119,7 +139,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_3b697a1ddb76af40b86770c08c96196e</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-07 19:23:31</sys_updated_on>
+        <sys_updated_on>2019-06-12 17:42:03</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

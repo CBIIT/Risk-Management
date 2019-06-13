@@ -390,6 +390,8 @@
 		params.sys_id = c.data.rcf.sys_id;
 		params.poc_name = "Shared";
 		params.poc_id = "Shared";
+		params.rt_name = "Shared";
+		params.rt_id = "Shared";
 		params.title = c.data.rcf.title;
 		params.section_1 = {};
 		params.section_1.enterprise = c.data.rcf.enterprise;
@@ -447,6 +449,8 @@
 		params.sys_id = c.data.rcf.sys_id;
 		params.poc_name = c.data.rcf.poc.name;
 		params.poc_id = c.data.rcf.poc.id;
+		params.rt_name = c.data.rcf.rt.name;
+		params.rt_id = c.data.rcf.rt.id;
 		params.title = c.data.rcf.title;
 		params.section_1 = {};
 		params.section_1.enterprise = c.data.rcf.enterprise;
@@ -526,6 +530,8 @@
 			params.sys_id = c.data.rcf.sys_id;
 			params.poc_name = c.data.rcf.poc.name;
 			params.poc_id = c.data.rcf.poc.id;
+			params.rt_name = c.data.rcf.rt.name;
+			params.rt_id = c.data.rcf.rt.id;
 			params.title = c.data.rcf.title;
 			params.section_1 = {};
 			params.section_1.enterprise = c.data.rcf.enterprise;
@@ -586,6 +592,8 @@
 		params.sys_id = c.data.rcf.sys_id;
 		params.poc_name = "Shared";
 		params.poc_id = "Shared";
+		params.rt_name = "Shared";
+		params.rt_id = "Shared";
 		params.title = c.data.rcf.title;
 		params.section_1 = {};
 		params.section_1.enterprise = c.data.rcf.enterprise;
@@ -644,6 +652,8 @@
 		params.sys_id = c.data.rcf.sys_id;
 		params.poc_name = c.data.rcf.poc.name;
 		params.poc_id = c.data.rcf.poc.id;
+		params.rt_name = c.data.rcf.rt.name;
+		params.rt_id = c.data.rcf.rt.id;
 		params.title = c.data.rcf.title;
 		params.section_1 = {};
 		params.section_1.enterprise = c.data.rcf.enterprise;
@@ -729,6 +739,8 @@
 		c.data.rcf = result.rcf;
 		c.data.rcf.poc = {id:c.data.rcf.poc_id,
 										 name: c.data.rcf.poc_name};
+		c.data.rcf.rt = {id:c.data.rcf.rt_id,
+										 name: c.data.rcf.rt_name};
 		var section_1 = JSON.parse(c.data.rcf.section_1);
 		c.data.rcf.enterprise = section_1.enterprise;
 		c.data.rcf.response = section_1.response;
@@ -769,6 +781,13 @@
 		var arr_id = result.pocs.poc_id.split(',');
 		for(var i = 0; i< arr_id.length; i++){
 			c.data.pocs.push({id: arr_id[i], name: arr_name[i]});
+		}
+		//Risk Team members
+		c.data.rts = [];
+		arr_name = result.pocs.rt.split(',');
+		arr_id = result.pocs.rt_id.split(',');
+		for(var i = 0; i< arr_id.length; i++){
+			c.data.rts.push({id: arr_id[i], name: arr_name[i]});
 		}
 		c.data.canEdit = true;
 		if(c.data.rcf.status == 'Closed'){
@@ -897,7 +916,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>440</sys_mod_count>
+        <sys_mod_count>448</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -905,7 +924,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-29 15:19:16</sys_updated_on>
+        <sys_updated_on>2019-06-12 19:16:55</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -1354,20 +1373,20 @@
       </div>
       <div class="basic-info-block">
         <div class="form-section">
-          <div class="col-md-4" style="text-align:right;">Fiscal Year:</div>
-          <div class="col-md-8">
+          <div class="col-md-5" style="text-align:right;">Fiscal Year:</div>
+          <div class="col-md-7">
             {{c.data.rcf.fiscalYear}}
           </div>
         </div>
         <div class="form-section">
-          <div class="col-md-4" style="text-align:right;">AU(DOC):</div>
-          <div class="col-md-8" style="word-break: break-all;">
+          <div class="col-md-5" style="text-align:right;">AU(DOC):</div>
+          <div class="col-md-7" style="word-break: break-all;">
             {{c.data.rcf.doc}}
           </div>
         </div>
         <div class="form-section">
-          <div class="col-md-4" style="text-align:right;">Manager:</div>
-          <div class="col-md-8">
+          <div class="col-md-5" style="text-align:right;">Manager:</div>
+          <div class="col-md-7">
             {{c.data.rcf.manager_name}}
           </div>
         </div>
@@ -1378,10 +1397,24 @@
           </div>
         </div>
         <div class="form-section" ng-if="c.data.rcf.risk_type != 'shared'">
-          <div class="col-md-4" style="line-height:35px;text-align:right;">POC:</div>
-          <div class="col-md-8">
+          <div class="col-md-5" style="line-height:35px;text-align:right;">POC:</div>
+          <div class="col-md-7">
             <select class="form-control" name="pocSelect" id="pocSelect" ng-options="option.name for option in c.data.pocs track by option.id"
                     ng-model="c.data.rcf.poc"  ng-disabled="(c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1) || (c.data.role.indexOf('RC') > -1 && c.data.rcf.status == 'Closed') || (c.data.role.indexOf('RT') > -1 && c.data.rcf.status !== 'Open')">
+            </select>
+          </div>
+        </div>
+        <div class="form-section" ng-if="c.data.rcf.risk_type == 'shared'">
+          <div class="col-md-5" style="text-align:right;">Risk Team Member:</div>
+          <div class="col-md-7">
+            Shared
+          </div>
+        </div>
+        <div class="form-section" ng-if="c.data.rcf.risk_type != 'shared'">
+          <div class="col-md-5" style="line-height:35px;text-align:right;">Risk Team Member:</div>
+          <div class="col-md-7">
+            <select class="form-control" name="rtSelect" id="rtSelect" ng-options="option.name for option in c.data.rts track by option.id"
+                    ng-model="c.data.rcf.rt"  ng-disabled="c.data.role.indexOf('RC') == -1 || (c.data.role.indexOf('RC') > -1 && c.data.rcf.status == 'Closed')">
             </select>
           </div>
         </div>

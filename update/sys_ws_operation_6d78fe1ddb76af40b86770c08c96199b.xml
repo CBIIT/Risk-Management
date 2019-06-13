@@ -27,6 +27,8 @@
 	tmp.manager_id = gr.getDisplayValue('manager_id');
 	tmp.poc_name = gr.getDisplayValue('poc_name');
 	tmp.poc_id = gr.getDisplayValue('poc_id');
+	tmp.rt_name = gr.getDisplayValue('risk_team_member_name');
+	tmp.rt_id = gr.getDisplayValue('risk_team_member_id');
 	tmp.au_recommend = gr.getDisplayValue('au_recommend');
 	tmp.ompc_recommend = gr.getDisplayValue('ompc_recommend');
 	tmp.eo_final_decision = gr.getDisplayValue('eo_final_decision');
@@ -52,7 +54,9 @@
 	poc.next();
 	
 	result.pocs = {poc: poc.getDisplayValue('poc_name'),
-				 poc_id: poc.getDisplayValue('poc_id')};  
+				 poc_id: poc.getDisplayValue('poc_id'),
+				  rt: poc.getDisplayValue('rt_name'),
+				 rt_id: poc.getDisplayValue('rt_id')};  
 	
 	return result;
 
@@ -70,7 +74,7 @@
         <sys_created_on>2019-01-03 22:09:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>6d78fe1ddb76af40b86770c08c96199b</sys_id>
-        <sys_mod_count>9</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>getRiskById</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -78,7 +82,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_6d78fe1ddb76af40b86770c08c96199b</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-04-12 15:25:53</sys_updated_on>
+        <sys_updated_on>2019-06-12 18:27:02</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>
