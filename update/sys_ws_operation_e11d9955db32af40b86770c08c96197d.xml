@@ -29,7 +29,27 @@
 	gr.rt_name = rt;
 	gr.rt_id = rt_id;
 	gr.update();
-	return 1;
+	//update manager for existing risks if any
+	var today = new Date();
+	var fiscalYear = "";
+	if(today.getMonth() > 9){
+		fiscalYear = today.getFullYear() + 1;
+	}
+	else{
+		fiscalYear = today.getFullYear();
+	}
+	var risk = new GlideRecord('x_naci_risk_manage_risk_management');
+	risk.addQuery('fiscal_year',fiscalYear.toString());
+	risk.addQuery('doc',gr.doc.toString());
+	risk.addQuery('risk_type','!=','shared');
+	risk.query();
+	while(risk.next()){
+		risk.manager_name = manager;
+		risk.manager_id = manager_id;
+		risk.update();
+	}
+	//return 1;
+	return {fy: fiscalYear, doc: gr.doc.toString(), rm: manager, rm_id: manager_id};
 })(request, response);]]></operation_script>
         <operation_uri>/api/x_naci_risk_manage/riskmgmtrestapi/updatePOC</operation_uri>
         <produces>application/json,application/xml,text/xml</produces>
@@ -44,7 +64,7 @@
         <sys_created_on>2019-01-03 15:35:40</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>e11d9955db32af40b86770c08c96197d</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>9</sys_mod_count>
         <sys_name>updatePOC</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -52,7 +72,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_e11d9955db32af40b86770c08c96197d</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-11 17:04:48</sys_updated_on>
+        <sys_updated_on>2019-06-19 21:37:48</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

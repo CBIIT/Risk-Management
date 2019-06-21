@@ -36,10 +36,10 @@
         <item_table/>
         <mandatory>false</mandatory>
         <message/>
-        <message_html><![CDATA[<p>Dear ${risk_team_member_name},<br /><br />This risk has been completed by RC:<br />DOC: ${doc}<br /> Risk Title:&nbsp;<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a><br /><br />Please login to Risk Management Application to review.</p>]]></message_html>
+        <message_html><![CDATA[<p>Dear ${event.parm1},<br /><br />This risk has been completed by RC:<br />DOC: ${doc}<br /> Risk Title:&nbsp;<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a><br /><br />Please login to Risk Management Application to review.</p>]]></message_html>
         <message_list/>
         <message_text/>
-        <name>RCF Approve Notification</name>
+        <name>RCF Approve by RC Notification</name>
         <omit_watermark>false</omit_watermark>
         <order>100</order>
         <push_message_only>false</push_message_only>
@@ -58,8 +58,8 @@
         <sys_customer_update>false</sys_customer_update>
         <sys_domain>global</sys_domain>
         <sys_id>5c2f9bffdb1ba300b86770c08c961977</sys_id>
-        <sys_mod_count>6</sys_mod_count>
-        <sys_name>RCF Approve Notification</sys_name>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>RCF Approve by RC Notification</sys_name>
         <sys_overrides/>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -67,9 +67,9 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sysevent_email_action_5c2f9bffdb1ba300b86770c08c961977</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-12 20:27:25</sys_updated_on>
+        <sys_updated_on>2019-06-19 13:52:22</sys_updated_on>
         <sys_version>2</sys_version>
-        <template display_value="Unsubscribe and Preferences">7ed0481f3b0b2200c869c2c703efc487</template>
+        <template/>
         <type>email</type>
         <weight>0</weight>
     </sysevent_email_action>

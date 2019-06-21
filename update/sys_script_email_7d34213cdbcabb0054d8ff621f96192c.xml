@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_update table="sys_script_email">
     <sys_script_email action="INSERT_OR_UPDATE">
-        <name>RiskMgmtApplicationRejectComment</name>
+        <name>RiskMgmtApplicationLatestComment</name>
         <new_lines_to_html>false</new_lines_to_html>
         <script><![CDATA[(function runMailScript(current, template, email, email_action, event) {
 
    var cmt = new GlideRecord('x_naci_risk_manage_comments');
-	cmt.addQuery('status','2');
+	cmt.addQuery('status','1');
 	cmt.addQuery('risk_number',current.sys_id);
 	cmt.orderByDesc('sys_created_on');
 	cmt.query();
-	cmt.next();
-	template.print(cmt.comment.toString());
-
+	if(cmt.getRowCount() == 0){
+		template.print("");
+	}
+	else{
+		cmt.next();
+		template.print("<br />" + cmt.comment.toString() + "<br />");
+	}
+	
 })(current, template, email, email_action, event);]]></script>
         <sys_class_name>sys_script_email</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
         <sys_created_on>2019-06-12 16:06:55</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>7d34213cdbcabb0054d8ff621f96192c</sys_id>
-        <sys_mod_count>0</sys_mod_count>
-        <sys_name>RiskMgmtApplicationRejectComment</sys_name>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>RiskMgmtApplicationLatestComment</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_script_email_7d34213cdbcabb0054d8ff621f96192c</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-12 16:06:55</sys_updated_on>
+        <sys_updated_on>2019-06-18 22:19:18</sys_updated_on>
     </sys_script_email>
 </record_update>

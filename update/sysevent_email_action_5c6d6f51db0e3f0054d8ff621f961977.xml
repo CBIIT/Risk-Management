@@ -23,7 +23,7 @@
         <digest_template/>
         <digest_text/>
         <digestable>false</digestable>
-        <event_name>x_naci_risk_manage.notify_poc</event_name>
+        <event_name>x_naci_risk_manage.notify_poc_create</event_name>
         <event_parm_1>false</event_parm_1>
         <event_parm_2>true</event_parm_2>
         <exclude_delegates>false</exclude_delegates>
@@ -36,10 +36,10 @@
         <item_table/>
         <mandatory>false</mandatory>
         <message/>
-        <message_html><![CDATA[<p>Dear ${poc_name},<br /><br /> Your risk has been uploaded/updated:<br /> Risk Title:&nbsp;<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a><br />${mail_script:RiskMgmtApplicationMessage}<br />Latest Comment: <br />${mail_script:RiskMgmtApplicationLatestComment}<br /> Please login to Risk Management Application to review.</p>]]></message_html>
+        <message_html><![CDATA[<p>Dear ${poc_name},<br /><br />A new risk has been initiated:<br />Risk Title:&nbsp;<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a><br />${mail_script:RiskMgmtApplicationMessage}<br /> Please login to Risk Management Application to review.</p>]]></message_html>
         <message_list/>
         <message_text/>
-        <name>RCF RT Update  Notification</name>
+        <name>RCF RT Create Notification</name>
         <omit_watermark>false</omit_watermark>
         <order>100</order>
         <push_message_only>false</push_message_only>
@@ -50,24 +50,24 @@
         <send_self>true</send_self>
         <sms_alternate/>
         <style/>
-        <subject>Risk Management Notification: Review and Edit Risk</subject>
+        <subject>Risk Management Notification: New Risk has been Initiated</subject>
         <subscribable>false</subscribable>
         <sys_class_name>sysevent_email_action</sys_class_name>
         <sys_created_by>yuw5@nih.gov</sys_created_by>
-        <sys_created_on>2019-01-30 16:49:04</sys_created_on>
+        <sys_created_on>2019-06-14 15:25:57</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_domain>global</sys_domain>
-        <sys_id>18113c46db13274054d8ff621f961904</sys_id>
-        <sys_mod_count>14</sys_mod_count>
-        <sys_name>RCF RT Update  Notification</sys_name>
+        <sys_id>5c6d6f51db0e3f0054d8ff621f961977</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>RCF RT Create Notification</sys_name>
         <sys_overrides/>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
-        <sys_update_name>sysevent_email_action_18113c46db13274054d8ff621f961904</sys_update_name>
+        <sys_update_name>sysevent_email_action_5c6d6f51db0e3f0054d8ff621f961977</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-19 13:54:21</sys_updated_on>
+        <sys_updated_on>2019-06-19 13:54:10</sys_updated_on>
         <sys_version>2</sys_version>
         <template/>
         <type>email</type>

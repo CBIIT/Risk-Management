@@ -36,7 +36,7 @@
         <item_table/>
         <mandatory>false</mandatory>
         <message/>
-        <message_html><![CDATA[<p>Dear ${event.parm1},<br /><br /> The following risk is waiting for your approval:<br /> Title:<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a> <br /><br /> How would you like to proceed:<br /><br /> <a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}&amp;next=approve" target="_blank">Approve this risk</a><br /><br /> <a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}&amp;next=reject" target="_blank">Reject this risk</a></p>]]></message_html>
+        <message_html><![CDATA[<p>Dear ${manager_name},<br /><br /> The NCI Risk Team has reviewed and finalized the Risk Capture Form (RCF) for the following risk:<br /> Title:<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}" target="_blank">${title}</a> <br />${mail_script:RiskMgmtApplicationMessage}<br />Please review and validate the finalized RCF by clicking on the Approve or Reject button below.<br /><br /> <a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}&amp;next=approve" target="_blank">Approve this risk</a>&nbsp;or&nbsp;<a href="${mail_script:RiskMgmtApplicationURL}?xpage=management&amp;sub=form&amp;fid=${sys_id}&amp;next=reject" target="_blank">Reject this risk</a><br /><br /> Thanks for your support of the NCI Risk Management Program.<br /><br /> NCI Risk Management Team</p>]]></message_html>
         <message_list/>
         <message_text/>
         <name>RCF Submission Notification</name>
@@ -58,7 +58,7 @@
         <sys_customer_update>false</sys_customer_update>
         <sys_domain>global</sys_domain>
         <sys_id>94c2dbb7db3ea300b86770c08c961981</sys_id>
-        <sys_mod_count>16</sys_mod_count>
+        <sys_mod_count>21</sys_mod_count>
         <sys_name>RCF Submission Notification</sys_name>
         <sys_overrides/>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
@@ -67,9 +67,9 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sysevent_email_action_94c2dbb7db3ea300b86770c08c961981</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-29 16:01:27</sys_updated_on>
+        <sys_updated_on>2019-06-21 21:44:45</sys_updated_on>
         <sys_version>2</sys_version>
-        <template display_value="Unsubscribe and Preferences">7ed0481f3b0b2200c869c2c703efc487</template>
+        <template/>
         <type>email</type>
         <weight>0</weight>
     </sysevent_email_action>

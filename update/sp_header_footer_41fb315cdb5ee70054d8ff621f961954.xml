@@ -54,20 +54,24 @@
 		data.role.push('RC');
 		data.role_name = 'Risk Champion';
 	}
-	else if(gs.getUser().isMemberOf('Risk Management RT')){
-		data.role.push('RT');
-		data.role_name = 'Risk Team Member';
-	}
+// 	else if(gs.getUser().isMemberOf('Risk Management RT')){
+// 		data.role.push('RT');
+// 		data.role_name = 'Risk Team Member';
+// 	}
 	else{
-		//check in manager & poc
+		//check in manager & poc & risk team member
 		var gr = new GlideRecord('x_naci_risk_manage_pocs');
 		var tmp = gr.addQuery('manager_id','CONTAINS',user_sys_id);
 		tmp.addOrCondition('poc_id','CONTAINS',user_sys_id);
+		tmp.addOrCondition('rt_id','CONTAINS',user_sys_id);
 		gr.query();
 		if(gr.getRowCount() !== 0){
 			while(gr.next()){
 				data.doc.push(gr.getDisplayValue('doc'));
-				if(gr.getDisplayValue('manager_id').split(',').indexOf(user_sys_id) >= 0 &&         gr.getDisplayValue('poc_id').split(',').indexOf(user_sys_id) >= 0){
+				if(gr.getDisplayValue('rt_id').split(',').indexOf(user_sys_id) >= 0){
+					data.role.push('RT');
+				}
+				else if(gr.getDisplayValue('manager_id').split(',').indexOf(user_sys_id) >= 0 &&         gr.getDisplayValue('poc_id').split(',').indexOf(user_sys_id) >= 0){
 					data.role.push('RM&POC');
 				}
 				else if(gr.getDisplayValue('manager_id').split(',').indexOf(user_sys_id) >= 0){
@@ -78,7 +82,10 @@
 				}
 			}
 			
-			if(data.role.indexOf("RM&POC") > -1){
+			if(data.role.indexOf("RT") > -1){
+				data.role_name = 'Risk Team Member';
+			}
+			else if(data.role.indexOf("RM&POC") > -1){
 				data.role_name = 'Risk Manager & POC';
 			}
 			else if(data.role.indexOf("RM") > -1 && data.role.indexOf("POC") > -1){
@@ -101,7 +108,7 @@
         <sys_created_on>2018-12-06 18:37:42</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>41fb315cdb5ee70054d8ff621f961954</sys_id>
-        <sys_mod_count>24</sys_mod_count>
+        <sys_mod_count>25</sys_mod_count>
         <sys_name>riskmgmt header</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -109,7 +116,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_header_footer_41fb315cdb5ee70054d8ff621f961954</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-25 15:04:02</sys_updated_on>
+        <sys_updated_on>2019-06-18 14:50:13</sys_updated_on>
         <template><![CDATA[<div id="riskmgmt-header" style="min-width:1020px;">
   <div id="riskmgmt-logo">
     <div class="col-md-1"></div>

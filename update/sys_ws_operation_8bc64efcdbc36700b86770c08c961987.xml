@@ -27,13 +27,37 @@
 		if(notify){
 			var rt_name = gr.getDisplayValue('risk_team_member_name');
 			var rt_email = "";
-			var user_item = new GlideRecord('sys_user');
-			user_item.addQuery('sys_id', gr.getDisplayValue('risk_team_member_id'));
-			user_item.query();
-			while(user_item.next()){
-				rt_email += user_item.getDisplayValue('email') + ",";
+			if(gr.doc.toString().indexOf(",") > -1){
+				var docs = gr.doc.toString().split(',');
+				var user_ids = [];
+				var rt = new GlideRecord('x_naci_risk_manage_pocs');
+				rt.addQuery('doc','IN',docs);
+				rt.query();
+				while(rt.next()){
+					var rts = rt.rt_id.toString();
+					rts.split(',').forEach(function(r){
+						if(user_ids.indexOf(r) == -1){
+							user_ids.push(r);
+						}
+					});
+				}
+				var user_item = new GlideRecord('sys_user');
+				user_item.addQuery('sys_id', "IN", user_ids);
+				user_item.query();
+				while(user_item.next()){
+					rt_email += user_item.getDisplayValue('email') + ",";
+				}
+				gs.eventQueue('x_naci_risk_manage.rt_final',gr, "Risk Team Member", rt_email);
 			}
-			gs.eventQueue('x_naci_risk_manage.rt_final',gr, rt_name, rt_email);
+			else{
+				var user_item = new GlideRecord('sys_user');
+				user_item.addQuery('sys_id', gr.getDisplayValue('risk_team_member_id'));
+				user_item.query();
+				while(user_item.next()){
+					rt_email += user_item.getDisplayValue('email') + ",";
+				}
+				gs.eventQueue('x_naci_risk_manage.rt_final',gr, rt_name, rt_email);
+			}
 		}
 		return 1;
 	}
@@ -55,7 +79,7 @@
         <sys_created_on>2019-01-14 15:30:11</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>8bc64efcdbc36700b86770c08c961987</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>8</sys_mod_count>
         <sys_name>RCApproveRisk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -63,7 +87,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_8bc64efcdbc36700b86770c08c961987</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-12 20:29:57</sys_updated_on>
+        <sys_updated_on>2019-06-18 18:30:32</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

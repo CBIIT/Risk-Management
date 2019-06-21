@@ -57,6 +57,10 @@
 	gr.update();
 	
 	if(notify && notify == "1"){
+		var email_content = request.body.data.email_content;
+		if(!email_content || email_content.trim() == ""){
+			email_content = "-";
+		}
 		var poc_name = gr.getDisplayValue('poc_name');
 		var poc_email = "";
 		var user_item = new GlideRecord('sys_user');
@@ -65,10 +69,14 @@
 		while(user_item.next()){
 			poc_email += user_item.getDisplayValue('email') + ",";
 		}
-		gs.eventQueue('x_naci_risk_manage.notify_poc',gr, poc_name, poc_email);
+		gs.eventQueue('x_naci_risk_manage.notify_poc',gr, email_content, poc_email);
 		//gs.eventQueue('x_naci_risk_manage.notify_poc',gr, email_content, poc_email);
 	}
 	else if(notify && notify == "2"){
+		var email_content = request.body.data.email_content;
+		if(!email_content || email_content.trim() == ""){
+			email_content = "-";
+		}
 		var rt_name = gr.getDisplayValue('risk_team_member_name');
 		var rt_email = "";
 		var user_item = new GlideRecord('sys_user');
@@ -77,7 +85,7 @@
 		while(user_item.next()){
 			rt_email += user_item.getDisplayValue('email') + ",";
 		}
-		gs.eventQueue('x_naci_risk_manage.notify_rt',gr, rt_name, rt_email);
+		gs.eventQueue('x_naci_risk_manage.notify_rt',gr, email_content, rt_email);
 	}
 	return 1;
 
@@ -95,7 +103,7 @@
         <sys_created_on>2019-01-03 22:11:18</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>97f87a5ddb76af40b86770c08c961949</sys_id>
-        <sys_mod_count>10</sys_mod_count>
+        <sys_mod_count>11</sys_mod_count>
         <sys_name>updateRisk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -103,7 +111,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_97f87a5ddb76af40b86770c08c961949</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-12 20:29:47</sys_updated_on>
+        <sys_updated_on>2019-06-18 20:57:21</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

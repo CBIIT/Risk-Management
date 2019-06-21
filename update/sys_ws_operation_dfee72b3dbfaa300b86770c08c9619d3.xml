@@ -23,6 +23,10 @@
 	gr.update();
 	
 	if(notify){
+		var email_content = request.body.data.email_content;
+		if(!email_content || email_content.trim() == ""){
+			email_content = "-";
+		}
 		var manager_name = gr.getDisplayValue('manager_name').replace(",","&");
 		var manager_email = "";
 		var user_item = new GlideRecord('sys_user');
@@ -32,7 +36,7 @@
 			manager_email += user_item.getDisplayValue('email') + ",";
 		}
 		manager_email = manager_email.substring(0,manager_email.length - 1);
-		gs.eventQueue('x_naci_risk_manage.notify_manager',gr, manager_name, manager_email);
+		gs.eventQueue('x_naci_risk_manage.notify_manager',gr, email_content, manager_email);
 		/*
 		if(!email_content || email_content.trim() == ""){
 			email_content = "-";
@@ -58,7 +62,7 @@
         <sys_created_on>2019-01-11 17:00:55</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>dfee72b3dbfaa300b86770c08c9619d3</sys_id>
-        <sys_mod_count>13</sys_mod_count>
+        <sys_mod_count>14</sys_mod_count>
         <sys_name>submitRisk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -66,7 +70,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_dfee72b3dbfaa300b86770c08c9619d3</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-05-29 15:54:07</sys_updated_on>
+        <sys_updated_on>2019-06-18 20:58:12</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

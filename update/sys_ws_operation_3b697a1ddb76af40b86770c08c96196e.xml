@@ -31,7 +31,7 @@
 	var eo_final_decision = request.body.data.eo_final_decision;
 	var section_6 = request.body.data.section_6;
 	var isPOC = request.body.data.isPOC; // 1- Yes, 0 - No
-	
+	var notify = request.body.data.notify;
 	
 	var gr = new GlideRecord('x_naci_risk_manage_risk_management');
 	if(sharedRisk){
@@ -105,12 +105,35 @@
 			gr.start_by_poc = isPOC;
 			gr.risk_type = "new";
 			gr.insert();
-
-			/*
-			if(isPOC == "1"){
-				gs.eventQueue('x_naci_risk_manage.notify_rt',gr, 'Risk Team Member');
+			
+			if(notify && notify == "1"){
+				if(isPOC == "1"){
+					var rt_name = gr.getDisplayValue('risk_team_member_name');
+					var rt_email = "";
+					var user_item = new GlideRecord('sys_user');
+					user_item.addQuery('sys_id', gr.getDisplayValue('risk_team_member_id'));
+					user_item.query();
+					while(user_item.next()){
+						rt_email += user_item.getDisplayValue('email') + ",";
+					}
+					gs.eventQueue('x_naci_risk_manage.notify_rt_create',gr, rt_name, rt_email);
+				}
+				else{
+					var email_content = request.body.data.email_content;
+					if(!email_content || email_content.trim() == ""){
+						email_content = "-";
+					}
+					var poc_name = gr.getDisplayValue('poc_name');
+					var poc_email = "";
+					var user_item = new GlideRecord('sys_user');
+					user_item.addQuery('sys_id', gr.getDisplayValue('poc_id'));
+					user_item.query();
+					while(user_item.next()){
+						poc_email += user_item.getDisplayValue('email') + ",";
+					}
+					gs.eventQueue('x_naci_risk_manage.notify_poc_create',gr, email_content, poc_email);
+				}
 			}
-			*/
 		}
 	}
 	
@@ -131,7 +154,7 @@
         <sys_created_on>2019-01-03 22:23:25</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>3b697a1ddb76af40b86770c08c96196e</sys_id>
-        <sys_mod_count>15</sys_mod_count>
+        <sys_mod_count>20</sys_mod_count>
         <sys_name>createRisks</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -139,7 +162,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_3b697a1ddb76af40b86770c08c96196e</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-12 17:42:03</sys_updated_on>
+        <sys_updated_on>2019-06-18 20:12:53</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>
