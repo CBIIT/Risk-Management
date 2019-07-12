@@ -119,7 +119,7 @@
 	}
 	
 	c.loadRisks = function(){
-		if($rootScope.user && $rootScope.user.doc.length > 0){
+		if($rootScope.user && c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1 && $rootScope.user.doc.length > 0){
 			RiskMgmtRisk.getByCriteria({year:c.data.prevFiscalYear,doc: $rootScope.user.doc,stage:'Closed'},c.data.sessionId).then(function(rs){
 				var result = rs.data.result;
 				c.removeDuplicate(result);
@@ -290,7 +290,49 @@
 				//rcf.r_managers = section_1.r_managers;
 				rcf.statement = section_1.statement;
 				rcf.immediacy = section_1.immediacy;
+			  if(rcf.immediacy == 'N/P'){
+					rcf.immediacy = '';
+				}
+			  else if(rcf.immediacy == 'in the past'){
+					rcf.immediacy = 'The risk has occurred in the past.';
+				}
+			  else if(rcf.immediacy == 'uncertain'){
+					rcf.immediacy = 'It is uncertain when the risk may occur.';
+				}
+			  else if(rcf.immediacy == 'one month'){
+					rcf.immediacy = 'The risk may occur within one month.';
+				}
+				else if(rcf.immediacy == 'six months'){
+					rcf.immediacy = 'The risk may occur within six months.';
+				}
+			  else if(rcf.immediacy == 'one year'){
+					rcf.immediacy = 'The risk may occur within one year.';
+				}
+			  else if(rcf.immediacy == 'more than one year'){
+					rcf.immediacy = 'The risk may occur more than a year from now.';
+				}
+			  else if(rcf.immediacy == 'N/A'){
+					rcf.immediacy = 'N/A';
+				}
+			  else{
+					rcf.immediacy = '';
+				}
 				rcf.control = section_1.control;
+				if(rcf.control == 'N/P'){
+					rcf.control = '';
+				}
+				else if(rcf.control == 'handled by IC/OD'){
+					rcf.control = 'The risk can be handled by the IC/OD Office.';
+				}
+				else if(rcf.control == 'can be managed by NIH'){
+					rcf.control = 'The risk can be handled by the IC/OD Office, but can be managed by the NIH.';
+				}
+				else if(rcf.control == 'cannot be directly managed'){
+					rcf.control = 'The risk is external to the NIH and cannot be directly managed.';
+				}
+				else{
+					rcf.control = '';
+				}
 				rcf.interest = section_1.interest;
 				rcf.interest_other = section_1.interest_other;
 				rcf.category = section_1.category;
@@ -473,8 +515,8 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 				  body: [
-							['Immediacy', rcf.immediacy =='N/P'?"": rcf.immediacy],
-							['Span of Control', rcf.control =='N/P'?"": rcf.control],
+							['Immediacy', rcf.immediacy],
+							['Span of Control', rcf.control],
 						  ['Special Interest Risk',rcf.interest =='N/P'?"": (rcf.interest == "other" && rcf.interest_other && rcf.interest_other !=="" ? "Other:"+rcf.interest_other : rcf.interest)],
 						  ['Risk Category',rcf.category =='N/P'?"": rcf.category],
 						  ['Risk Subcategory',rcf.subcategory]
@@ -497,7 +539,7 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
-				  head: [['What are the primary policies and procedures in place to manage this risk']],
+				  head: [['What are the primary policies and procedures in place to manage this risk?']],
 					body: [['']],
 				  columnStyles: {
 						             0:{minCellHeight: len * 3.7}
@@ -685,7 +727,7 @@
 				  theme: 'grid',
 				  styles:{lineColor:[0,0,0],fontSize:8},
 					headStyles: {fillColor: [58, 73, 114],textColor: [255,255,255]},
-				  head: [['In yours professional judegement, what is the likelihood that the identified risk could occur?']],
+				  head: [['In your professional judgement, what is the likelihood that the identified risk could occur?']],
 					body: [[RiskMgmtStatic.getElement("likelihood",rcf.likelihood)]]
 			});
 		  
@@ -820,7 +862,7 @@
 	
 	c.getThisYearsRisks = function(cb){
 		c.data.role = $rootScope.user.role;
-		if($rootScope.user && $rootScope.user.doc.length > 0){
+		if($rootScope.user && c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1 && $rootScope.user.doc.length > 0){
 			RiskMgmtRisk.getByCriteria({year:c.data.fiscalYear,doc: $rootScope.user.doc},c.data.sessionId).then(function(rs){
 				var result = rs.data.result;
 				c.data.risks = result;
@@ -956,7 +998,7 @@
         <sys_created_on>2018-12-07 20:17:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>888c5ba4db5e2b0054d8ff621f961966</sys_id>
-        <sys_mod_count>822</sys_mod_count>
+        <sys_mod_count>828</sys_mod_count>
         <sys_name>riskmgmt management</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -964,7 +1006,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_888c5ba4db5e2b0054d8ff621f961966</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-17 21:24:45</sys_updated_on>
+        <sys_updated_on>2019-06-25 15:33:51</sys_updated_on>
         <template><![CDATA[<div class="management-content">
 	<div class="management-header">
   	<div class="management-year">

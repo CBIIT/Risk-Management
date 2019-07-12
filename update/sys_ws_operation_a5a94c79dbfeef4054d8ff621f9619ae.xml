@@ -18,7 +18,7 @@
 	var rt = new GlideRecord('x_naci_risk_manage_pocs');
 	rt.query();
 	while(rt.next()){
-		if(rt.rt_id !== ''){
+		if(rt.rt_id.toString() !== ''){
 			rts[rt.doc] = {rm_id: rt.manager_id.toString(),
 						   rm_name: rt.manager_name.toString(),
 						   rt_id:rt.rt_id.split(',')[0],
@@ -87,7 +87,7 @@
         <sys_created_on>2019-01-04 22:50:15</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>a5a94c79dbfeef4054d8ff621f9619ae</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>8</sys_mod_count>
         <sys_name>loadRisks</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -95,7 +95,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_ws_operation_a5a94c79dbfeef4054d8ff621f9619ae</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-19 20:53:25</sys_updated_on>
+        <sys_updated_on>2019-06-24 15:52:58</sys_updated_on>
         <web_service_definition display_value="riskmgmtRestAPI">f1537d81dbb66f40b86770c08c9619ee</web_service_definition>
         <web_service_version/>
     </sys_ws_operation>

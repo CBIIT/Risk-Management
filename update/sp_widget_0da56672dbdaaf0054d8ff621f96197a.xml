@@ -212,6 +212,9 @@
 				});
 			};
 			$('#confirmDiv').modal('show');
+		  c.data.notifyManager = false;
+		  c.data.notify_rm_create_email_content = "";
+		
 	}
 	
 	c.submitRisk2RC = function(){
@@ -309,7 +312,7 @@
 					});
 			};
 			$('#confirmDiv').modal('show');
-		
+		  c.data.notifyRT = false;
 	}
 	
 	/*
@@ -514,6 +517,8 @@
 			  c.updateAndNotifyRisk(notify);
 			};
 			$('#confirmDiv').modal('show');
+			c.data.notifyPOC = false;
+			c.data.notify_poc_create_email_content = "";
 		}
 		else if(c.data.rcf.status == 'Open' && c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1){
 			c.data.action = 'Save';
@@ -524,6 +529,8 @@
 			  c.updateAndNotifyRisk(notify);
 			};
 			$('#confirmDiv').modal('show');
+			c.data.pocNotifyRT = false;
+			c.data.notify_rt_create_email_content = "";
 		}
 		else{
 			var params = {};
@@ -914,7 +921,7 @@
         <sys_created_on>2018-12-14 16:04:24</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>0da56672dbdaaf0054d8ff621f96197a</sys_id>
-        <sys_mod_count>460</sys_mod_count>
+        <sys_mod_count>468</sys_mod_count>
         <sys_name>riskmgmt form</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
@@ -922,7 +929,7 @@
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_0da56672dbdaaf0054d8ff621f96197a</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-21 21:48:37</sys_updated_on>
+        <sys_updated_on>2019-06-26 14:05:11</sys_updated_on>
         <template><![CDATA[<div class="risk-detail-content">
 	<div class="risk-detail-nav">
   	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
@@ -1496,9 +1503,9 @@
         <div ng-show="c.data.notifyManager" style="padding: 10px 10px 0px 10px;">
           <span style="color:darkgray;">Please edit the content of this email in below.</span>
           <div style="border: 1px solid #ddd;border-radius: 5px;text-align: left;font-size:13px;padding: 10px;margin-top: 10px;">
-            <p>Dear ${manager_name},<br /><br /> 
+            <p>Dear {{c.data.rcf.manager_name}},<br /><br /> 
               The NCI Risk Team has reviewed and finalized the Risk Capture Form (RCF) for the following risk:<br /> 
-              Title:<a href="javascript:void(0);">{{c.data.rcf.title}}</a>
+              Title: <a href="javascript:void(0);">{{c.data.rcf.title}}</a>
               <br /><br />
               <textarea rows=3 placeholder="Additional text" ng-model="c.data.notify_rm_create_email_content" name="notify_rm_create_email_content" id="notify_rm_create_email_content" style="resize: vertical;"  value="" class="form-control"></textarea>
               <br />
@@ -1519,7 +1526,7 @@
               Dear {{c.data.rcf.poc_name}},
               <br /><br />
               Your risk has been uploaded/updated:<br /> 
-              Risk Title:<a href="javascript:void(0);">{{c.data.rcf.title}}</a>
+              Risk Title: <a href="javascript:void(0);">{{c.data.rcf.title}}</a>
               <br /><br />
               <textarea rows=3 placeholder="Additional text" ng-model="c.data.notify_poc_create_email_content" name="notify_poc_create_email_content" id="notify_poc_create_email_content" style="resize: vertical;"  value="" class="form-control"></textarea>
               <br />
@@ -1539,7 +1546,7 @@
               <br /><br />
               This risk has been uploaded/updated:<br /><br /> 
               DOC: {{c.data.rcf.doc}}<br /> 
-              Risk Title:<a href="javascript:void(0);">{{c.data.rcf.title}}</a>
+              Risk Title: <a href="javascript:void(0);">{{c.data.rcf.title}}</a>
               <br /><br />
               <textarea rows=3 placeholder="Additional text" ng-model="c.data.notify_rt_create_email_content" name="notify_rt_create_email_content" id="notify_rt_create_email_content" style="resize: vertical;"  value="" class="form-control"></textarea>
               <br />
