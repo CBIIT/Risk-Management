@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_portal">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_portal">
     <sp_portal action="INSERT_OR_UPDATE">
         <css_variables/>
         <default>false</default>
@@ -22,17 +21,19 @@
         <sys_created_on>2018-12-04 20:05:04</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>3b9cf36fdb82a70054d8ff621f96198e</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>4</sys_mod_count>
         <sys_name>Risk Manager Portal</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_portal_3b9cf36fdb82a70054d8ff621f96198e</sys_update_name>
-        <sys_updated_by>zhoujim@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-16 16:18:35</sys_updated_on>
+        <sys_updated_by>system</sys_updated_by>
+        <sys_updated_on>2020-07-16 02:56:01</sys_updated_on>
         <theme display_value="riskmgmt theme">9c3cee6cdb9a2b0054d8ff621f9619ed</theme>
         <title>Risk Manager Portal</title>
+        <ts_index_group display_value="portal_index_group">2c3e7d1513c93300e618bfd63244b0d7</ts_index_group>
         <url_suffix>riskmgmt</url_suffix>
     </sp_portal>
+    <sys_translated_text action="delete_multiple" query="documentkey=3b9cf36fdb82a70054d8ff621f96198e"/>
 </record_update>

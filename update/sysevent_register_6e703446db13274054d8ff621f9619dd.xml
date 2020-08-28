@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sysevent_register">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysevent_register">
     <sysevent_register action="INSERT_OR_UPDATE">
+        <caller_access/>
         <description>send email to risk poc when risk is loaded and updated</description>
         <event_name>x_naci_risk_manage.notify_poc</event_name>
         <fired_by>RCF uploaded</fired_by>

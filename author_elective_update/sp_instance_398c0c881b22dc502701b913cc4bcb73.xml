@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">aa3c8c481b22dc502701b913cc4bcb12</sp_column>
+        <sp_widget display_value="NCI Session Timeout Widget">20f522821be91c1090aaed39bc4bcbc1</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-05 14:41:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>398c0c881b22dc502701b913cc4bcb73</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sp_instance_398c0c881b22dc502701b913cc4bcb73</sys_update_name>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-05 14:41:37</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=398c0c881b22dc502701b913cc4bcb73"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</application>
+        <file_path/>
+        <instance_id>802cf015dbabc0d0e7a54619329619ee</instance_id>
+        <instance_name>ncidev2</instance_name>
+        <name>sp_instance_398c0c881b22dc502701b913cc4bcb73</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance"><sp_instance action="INSERT_OR_UPDATE"><active>true</active><class_name/><color>default</color><css/><glyph/><id/><order>1</order><roles/><short_description/><size>md</size><sp_column display_value="1">aa3c8c481b22dc502701b913cc4bcb12</sp_column><sp_widget display_value="NCI Session Timeout Widget">20f522821be91c1090aaed39bc4bcbc1</sp_widget><sys_class_name>sp_instance</sys_class_name><sys_created_by>georgejc@nih.gov</sys_created_by><sys_created_on>2020-08-05 14:41:37</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>398c0c881b22dc502701b913cc4bcb73</sys_id><sys_mod_count>0</sys_mod_count><sys_name/><sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope><sys_update_name>sp_instance_398c0c881b22dc502701b913cc4bcb73</sys_update_name><sys_updated_by>georgejc@nih.gov</sys_updated_by><sys_updated_on>2020-08-05 14:41:37</sys_updated_on><title/><url/><widget_parameters/></sp_instance><sys_translated_text action="delete_multiple" query="documentkey=398c0c881b22dc502701b913cc4bcb73"/></record_update>]]></payload>
+        <payload_hash>1455064807</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source>9cf98cc41b22dc502701b913cc4bcb2b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-05 14:41:37</sys_created_on>
+        <sys_id>1a9cc8881b22dc502701b913cc4bcbb9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>173bf120c0f0000001</sys_recorded_at>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-05 14:41:37</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>129cc8886722dc5002a0ad1c907741b9</update_guid>
+        <update_guid_history>129cc8886722dc5002a0ad1c907741b9:1455064807</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Record deleted Aug 28, 2020 07:29:45">bf3dbd5b1bf6dc106daea681f54bcb29</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-28 11:29:45</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>8aafcb6406634ed09f59fdfa14e1e690</sys_id>
+        <sys_metadata>398c0c881b22dc502701b913cc4bcb73</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_scope_delete display_value="">4e3677c5ae2347009da8075431590000</sys_scope_delete>
+        <sys_update_name>sp_instance_398c0c881b22dc502701b913cc4bcb73</sys_update_name>
+        <sys_update_version display_value="sp_instance_398c0c881b22dc502701b913cc4bcb73">1a9cc8881b22dc502701b913cc4bcbb9</sys_update_version>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-28 11:29:45</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

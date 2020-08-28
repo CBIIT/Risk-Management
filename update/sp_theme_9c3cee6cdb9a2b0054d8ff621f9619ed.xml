@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_theme">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_theme">
     <sp_theme action="INSERT_OR_UPDATE">
         <css_variables/>
         <footer display_value="riskmgmt footer">a2bb6a6cdb9a2b0054d8ff621f9619a7</footer>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update>
+<?xml version="1.0" encoding="UTF-8"?><record_update>
     <sys_dictionary action="INSERT_OR_UPDATE" element="title" table="x_naci_risk_manage_risk_management">
         <active>true</active>
         <array>false</array>
@@ -63,8 +62,8 @@
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_dictionary_x_naci_risk_manage_risk_management_title</sys_update_name>
-        <sys_updated_by>system</sys_updated_by>
-        <sys_updated_on>2019-02-05 14:38:23</sys_updated_on>
+        <sys_updated_by>razasa@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-07-02 16:05:16</sys_updated_on>
         <table_reference>false</table_reference>
         <text_index>false</text_index>
         <u_model_id/>

@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database>
-    <element label="POCs" max_length="40" name="x_naci_risk_manage_pocs" type="collection">
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="POCs" max_length="40" name="x_naci_risk_manage_pocs" sizeclass="38" type="collection">
         <element label="DOC" max_length="100" name="doc" type="string"/>
         <element label="Manager ID" max_length="500" name="manager_id" type="string"/>
         <element label="Manager Name" max_length="500" name="manager_name" type="string"/>

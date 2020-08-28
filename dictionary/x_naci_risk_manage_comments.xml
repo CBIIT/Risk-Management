@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database>
-    <element label="Comments" max_length="40" name="x_naci_risk_manage_comments" type="collection">
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Comments" max_length="40" name="x_naci_risk_manage_comments" sizeclass="162" type="collection">
         <element label="Comment" max_length="5000" name="comment" type="string"/>
         <element label="Risk Number" max_length="100" name="risk_number" type="string"/>
         <element label="Status" max_length="1" name="status" type="string"/>

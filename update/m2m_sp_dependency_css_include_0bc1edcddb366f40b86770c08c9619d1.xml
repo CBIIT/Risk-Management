@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="m2m_sp_dependency_css_include">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_dependency_css_include">
     <m2m_sp_dependency_css_include action="INSERT_OR_UPDATE">
         <order>100</order>
         <sp_css_include display_value="riskmgmt Tag CSS">94a12141db766f40b86770c08c96192b</sp_css_include>

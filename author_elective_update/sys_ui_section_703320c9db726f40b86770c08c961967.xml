@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_ui_section action="DELETE" caption="New Section" section_id="703320c9db726f40b86770c08c961967" sys_domain="global" table="x_naci_risk_manage_risk_management" version="3" view="">
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>doc</element>
+            <position>0</position>
+            <sys_created_by>yuw5@nih.gov</sys_created_by>
+            <sys_created_on>2019-01-02 16:36:33</sys_created_on>
+            <sys_id>f43320c9db726f40b86770c08c961969</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section>
+            <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-01-02 16:36:33</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>title</element>
+            <position>1</position>
+            <sys_created_by>yuw5@nih.gov</sys_created_by>
+            <sys_created_on>2019-01-02 16:36:33</sys_created_on>
+            <sys_id>783320c9db726f40b86770c08c961969</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section>
+            <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-01-02 16:36:33</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_element action="INSERT_OR_UPDATE">
+            <element>stage</element>
+            <position>2</position>
+            <sys_created_by>yuw5@nih.gov</sys_created_by>
+            <sys_created_on>2019-01-02 16:36:33</sys_created_on>
+            <sys_id>f83320c9db726f40b86770c08c961969</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_ui_formatter/>
+            <sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section>
+            <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-01-02 16:36:33</sys_updated_on>
+            <sys_user/>
+            <type/>
+        </sys_ui_element>
+        <sys_ui_section action="DELETE">
+            <caption>New Section</caption>
+            <header>false</header>
+            <name>x_naci_risk_manage_risk_management</name>
+            <roles/>
+            <sys_class_name>sys_ui_section</sys_class_name>
+            <sys_created_by>yuw5@nih.gov</sys_created_by>
+            <sys_created_on>2019-01-02 16:36:33</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_domain>global</sys_domain>
+            <sys_id>703320c9db726f40b86770c08c961967</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>New Section</sys_name>
+            <sys_overrides/>
+            <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+            <sys_update_name>sys_ui_section_703320c9db726f40b86770c08c961967</sys_update_name>
+            <sys_updated_by>yuw5@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-01-02 16:36:33</sys_updated_on>
+            <sys_user/>
+            <title>false</title>
+            <view display_value="Default view" name="NULL">Default view</view>
+            <view_name/>
+        </sys_ui_section>
+    </sys_ui_section>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</application>
+        <file_path/>
+        <instance_id>dba30fcd6f39a540ffcca9cc5d3ee446</instance_id>
+        <instance_name>nci</instance_name>
+        <name>sys_ui_section_703320c9db726f40b86770c08c961967</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update><sys_ui_section caption="New Section" section_id="703320c9db726f40b86770c08c961967" sys_domain="global" table="x_naci_risk_manage_risk_management" version="3" view=""><sys_ui_element action="INSERT_OR_UPDATE"><element>doc</element><position>0</position><sys_created_by>yuw5@nih.gov</sys_created_by><sys_created_on>2019-01-02 16:36:33</sys_created_on><sys_id>f43320c9db726f40b86770c08c961969</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section><sys_updated_by>yuw5@nih.gov</sys_updated_by><sys_updated_on>2019-01-02 16:36:33</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>title</element><position>1</position><sys_created_by>yuw5@nih.gov</sys_created_by><sys_created_on>2019-01-02 16:36:33</sys_created_on><sys_id>783320c9db726f40b86770c08c961969</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section><sys_updated_by>yuw5@nih.gov</sys_updated_by><sys_updated_on>2019-01-02 16:36:33</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>stage</element><position>2</position><sys_created_by>yuw5@nih.gov</sys_created_by><sys_created_on>2019-01-02 16:36:33</sys_created_on><sys_id>f83320c9db726f40b86770c08c961969</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="New Section" display_value="New Section" name="x_naci_risk_manage_risk_management" sys_domain="global" view="Default view">703320c9db726f40b86770c08c961967</sys_ui_section><sys_updated_by>yuw5@nih.gov</sys_updated_by><sys_updated_on>2019-01-02 16:36:33</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_section action="INSERT_OR_UPDATE"><caption>New Section</caption><header>false</header><name>x_naci_risk_manage_risk_management</name><roles/><sys_class_name>sys_ui_section</sys_class_name><sys_created_by>yuw5@nih.gov</sys_created_by><sys_created_on>2019-01-02 16:36:33</sys_created_on><sys_customer_update>false</sys_customer_update><sys_domain>global</sys_domain><sys_id>703320c9db726f40b86770c08c961967</sys_id><sys_mod_count>0</sys_mod_count><sys_name>New Section</sys_name><sys_overrides/><sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope><sys_update_name>sys_ui_section_703320c9db726f40b86770c08c961967</sys_update_name><sys_updated_by>yuw5@nih.gov</sys_updated_by><sys_updated_on>2019-01-02 16:36:33</sys_updated_on><sys_user/><title>false</title><view display_value="Default view" name="NULL">Default view</view><view_name/></sys_ui_section></sys_ui_section></record_update>]]></payload>
+        <payload_hash>73841800</payload_hash>
+        <record_name>Risk Management</record_name>
+        <reverted_from/>
+        <source>5a4d03fcdbb43bc062c772840f9619be</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>conwayjam@nih.gov</sys_created_by>
+        <sys_created_on>2019-04-11 20:27:15</sys_created_on>
+        <sys_id>216d87fcdbb43bc062c772840f961970</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>16a0e1542d30000001</sys_recorded_at>
+        <sys_updated_by>conwayjam@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-04-11 20:27:15</sys_updated_on>
+        <type>Form Layout</type>
+        <update_guid>ed6d87fc23b43bc0a3f63297fc5b936f</update_guid>
+        <update_guid_history>ed6d87fc23b43bc0a3f63297fc5b936f:73841800</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>conwayjam@nih.gov</sys_created_by>
+        <sys_created_on>2019-04-15 19:12:44</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sys_ui_section">sys_ui_section</sys_db_object>
+        <sys_id>01b53002281c47f08004777df76d0840</sys_id>
+        <sys_metadata>703320c9db726f40b86770c08c961967</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>New Section</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_parent display_value="Risk Management">4fe0d614db36eb40b86770c08c9619c1</sys_parent>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_scope_delete display_value="">4e3677c5ae2347009da8075431590000</sys_scope_delete>
+        <sys_update_name>sys_ui_section_703320c9db726f40b86770c08c961967</sys_update_name>
+        <sys_update_version display_value="sys_ui_section_703320c9db726f40b86770c08c961967">216d87fcdbb43bc062c772840f961970</sys_update_version>
+        <sys_updated_by>conwayjam@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-04-15 19:12:44</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

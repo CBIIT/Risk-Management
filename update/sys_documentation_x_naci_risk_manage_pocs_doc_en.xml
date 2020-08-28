@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update>
+<?xml version="1.0" encoding="UTF-8"?><record_update>
     <sys_documentation element="doc" label="DOC" language="en" table="x_naci_risk_manage_pocs">
         <sys_documentation action="INSERT_OR_UPDATE">
             <element>doc</element>

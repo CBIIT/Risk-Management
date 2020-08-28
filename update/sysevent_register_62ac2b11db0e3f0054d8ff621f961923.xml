@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sysevent_register">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysevent_register">
     <sysevent_register action="INSERT_OR_UPDATE">
+        <caller_access/>
         <description>send email to risk team member when risk is created by POC</description>
         <event_name>x_naci_risk_manage.notify_rt_create</event_name>
         <fired_by>RCF Creation</fired_by>

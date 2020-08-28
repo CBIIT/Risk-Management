@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container">
+    <sp_container action="DELETE">
+        <background_color/>
+        <background_image/>
+        <background_style>default</background_style>
+        <bootstrap_alt>false</bootstrap_alt>
+        <class_name/>
+        <container_class_name/>
+        <name>riskmgmt home - Container 0</name>
+        <order>0</order>
+        <sp_page display_value="riskmgmt_home">f03d66acdb9a2b0054d8ff621f961981</sp_page>
+        <subheader>false</subheader>
+        <sys_class_name>sp_container</sys_class_name>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-05 14:40:00</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>223c8c481b22dc502701b913cc4bcb0d</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>riskmgmt home - Container 0</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sp_container_223c8c481b22dc502701b913cc4bcb0d</sys_update_name>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-05 14:40:44</sys_updated_on>
+        <title/>
+        <width>container</width>
+    </sp_container>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</application>
+        <file_path/>
+        <instance_id>802cf015dbabc0d0e7a54619329619ee</instance_id>
+        <instance_name>ncidev2</instance_name>
+        <name>sp_container_223c8c481b22dc502701b913cc4bcb0d</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container"><sp_container action="INSERT_OR_UPDATE"><background_color/><background_image/><background_style>default</background_style><bootstrap_alt>false</bootstrap_alt><class_name/><container_class_name/><name>riskmgmt home - Container 0</name><order>0</order><sp_page display_value="riskmgmt_home">f03d66acdb9a2b0054d8ff621f961981</sp_page><subheader>false</subheader><sys_class_name>sp_container</sys_class_name><sys_created_by>georgejc@nih.gov</sys_created_by><sys_created_on>2020-08-05 14:40:00</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>223c8c481b22dc502701b913cc4bcb0d</sys_id><sys_mod_count>1</sys_mod_count><sys_name>riskmgmt home - Container 0</sys_name><sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope><sys_update_name>sp_container_223c8c481b22dc502701b913cc4bcb0d</sys_update_name><sys_updated_by>georgejc@nih.gov</sys_updated_by><sys_updated_on>2020-08-05 14:40:44</sys_updated_on><title/><width>container</width></sp_container></record_update>]]></payload>
+        <payload_hash>-1496159706</payload_hash>
+        <record_name>riskmgmt home - Container 0</record_name>
+        <reverted_from/>
+        <source>9cf98cc41b22dc502701b913cc4bcb2b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-05 14:40:44</sys_created_on>
+        <sys_id>016c48881b22dc502701b913cc4bcbe6</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>173bf113afb0000001</sys_recorded_at>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-05 14:40:44</sys_updated_on>
+        <type>Container</type>
+        <update_guid>856c48881022dc50afbf49f7bca3d7e5</update_guid>
+        <update_guid_history>856c48881022dc50afbf49f7bca3d7e5:-1496159706,263c8c481f22dc50b87f370cc62d300f:2117029224</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Record deleted Aug 28, 2020 07:29:45">b33dbd5b1bf6dc106daea681f54bcb37</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>georgejc@nih.gov</sys_created_by>
+        <sys_created_on>2020-08-28 11:29:45</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_db_object display_value="" name="sp_container">sp_container</sys_db_object>
+        <sys_id>58ab100efaa142d0aeb7861cf80c8c40</sys_id>
+        <sys_metadata>223c8c481b22dc502701b913cc4bcb0d</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>riskmgmt home - Container 0</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_scope_delete display_value="">4e3677c5ae2347009da8075431590000</sys_scope_delete>
+        <sys_update_name>sp_container_223c8c481b22dc502701b913cc4bcb0d</sys_update_name>
+        <sys_update_version display_value="sp_container_223c8c481b22dc502701b913cc4bcb0d">016c48881b22dc502701b913cc4bcbe6</sys_update_version>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-28 11:29:45</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

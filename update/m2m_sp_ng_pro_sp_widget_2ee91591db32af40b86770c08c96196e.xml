@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="m2m_sp_ng_pro_sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_ng_pro_sp_widget">
     <m2m_sp_ng_pro_sp_widget action="INSERT_OR_UPDATE">
         <sp_angular_provider display_value="RiskMgmtUser">49e85151db32af40b86770c08c961963</sp_angular_provider>
         <sp_widget display_value="riskmgmt config">cfecdba4db5e2b0054d8ff621f9619fb</sp_widget>

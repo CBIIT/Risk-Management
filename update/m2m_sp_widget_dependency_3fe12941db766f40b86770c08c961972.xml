@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="m2m_sp_widget_dependency">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="m2m_sp_widget_dependency">
     <m2m_sp_widget_dependency action="INSERT_OR_UPDATE">
         <sp_dependency display_value="riskmgmt_tags">94c69d05db366f40b86770c08c9619e1</sp_dependency>
         <sp_widget display_value="riskmgmt config">cfecdba4db5e2b0054d8ff621f9619fb</sp_widget>

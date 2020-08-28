@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sysauto_script">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysauto_script">
     <sysauto_script action="INSERT_OR_UPDATE">
         <active>true</active>
+        <business_calendar/>
         <condition/>
         <conditional>false</conditional>
+        <entered_time/>
         <name>Email Reminder for Unclosed Risk</name>
         <run_as display_value="Wei Yu">183afe6cdb26fe00593e76721f9619a0</run_as>
         <run_as_tz/>
@@ -41,6 +42,7 @@ if(today.getMonthNoTZ() == 9){
         <sys_update_name>sysauto_script_82e4fa0edbcf2b00b86770c08c9619d7</sys_update_name>
         <sys_updated_by>yuw5@nih.gov</sys_updated_by>
         <sys_updated_on>2019-01-24 19:07:18</sys_updated_on>
+        <time_zone/>
         <upgrade_safe>false</upgrade_safe>
     </sysauto_script>
 </record_update>
