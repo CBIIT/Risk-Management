@@ -62,8 +62,8 @@
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sys_dictionary_x_naci_risk_manage_risk_management_manager_name</sys_update_name>
-        <sys_updated_by>razasa@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-07-02 16:05:11</sys_updated_on>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-08-28 13:40:10</sys_updated_on>
         <table_reference>false</table_reference>
         <text_index>false</text_index>
         <u_model_id/>
