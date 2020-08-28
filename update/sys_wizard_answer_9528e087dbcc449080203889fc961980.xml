@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_wizard_answer">
+    <sys_wizard_answer action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <answer>Cloud Object Storage</answer>
+        <button_label/>
+        <dependent_value/>
+        <element/>
+        <name>Cloud Object Storage</name>
+        <next_question/>
+        <order>100</order>
+        <payload_name/>
+        <question display_value="Base Configuration Item" name="Base Configuration Item">b3011cc06f0422002b0d58622e3ee4f1</question>
+        <roles/>
+        <script/>
+        <sys_class_name>sys_wizard_answer</sys_class_name>
+        <sys_created_by>yarraguntlas2@nih.gov</sys_created_by>
+        <sys_created_on>2019-09-26 21:35:37</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>9528e087dbcc449080203889fc961980</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Cloud Object Storage</sys_name>
+        <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+        <sys_update_name>sys_wizard_answer_9528e087dbcc449080203889fc961980</sys_update_name>
+        <sys_updated_by>yarraguntlas2@nih.gov</sys_updated_by>
+        <sys_updated_on>2019-09-26 21:35:37</sys_updated_on>
+        <table/>
+        <target_url>u_cmdb_ci_cloud_object_storage.do</target_url>
+        <type>1</type>
+    </sys_wizard_answer>
+</record_update>

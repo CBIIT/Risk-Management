@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_header_footer">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_header_footer">
     <sp_header_footer action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[function() {
@@ -32,18 +31,18 @@
         <sys_created_on>2018-12-07 16:45:12</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>a2bb6a6cdb9a2b0054d8ff621f9619a7</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>4</sys_mod_count>
         <sys_name>riskmgmt footer</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_header_footer_a2bb6a6cdb9a2b0054d8ff621f9619a7</sys_update_name>
-        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-01-17 20:21:11</sys_updated_on>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-03-25 17:58:33</sys_updated_on>
         <template><![CDATA[<div id="footer">
   <div class="footer-claim">
-    For questions, contact <a href="mailto:NCIRiskMgmtWebAdmin@mail.nih.gov ?subject=Risk Management Contact Us" role="link">NCIRiskMgmtWebAdmin@mail.nih.gov</a> .
+    For questions, contact <a href="mailto:nciriskmanagement@mail.nih.gov ?subject=Risk Management Contact Us" role="link">nciriskmanagement@mail.nih.gov</a> .
   </div>
   <div class="footer-box">
     <ul class="footer-nav">

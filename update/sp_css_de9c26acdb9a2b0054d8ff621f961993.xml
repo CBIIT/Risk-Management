@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_css">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_css">
     <sp_css action="INSERT_OR_UPDATE">
         <css>.body {&#13;
- font-family: "SourceSansPro", Helvetica, Arial, sans-serif; &#13;
+ font-family: "SourceSansPro", Helvetica, Arial, sans-serif;&#13;
 }&#13;
 b {&#13;
   font-weight:bold;&#13;
@@ -127,7 +126,7 @@ table{&#13;
   border-top: 0px;&#13;
   border-bottom-left-radius: 5px;&#13;
   border-bottom-right-radius: 5px;&#13;
-  min-height: 600px; &#13;
+  min-height: 600px;&#13;
 }&#13;
 .message-box{&#13;
   margin-top: 20px;&#13;
@@ -152,6 +151,7 @@ table{&#13;
 }&#13;
 .management-header{&#13;
   height: 45px;&#13;
+  margin-bottom: 10px;&#13;
 }&#13;
 .management-year{&#13;
   float: left;&#13;
@@ -159,7 +159,7 @@ table{&#13;
   margin-right: 20px;&#13;
   padding-top:5px;&#13;
   font-weight:bold;&#13;
-  font-size:16px;&#13;
+  font-size:18px;&#13;
 }&#13;
 .management-buttons{&#13;
   float: left;&#13;
@@ -216,6 +216,11 @@ table{&#13;
 .basic-info-section{&#13;
   float:left;&#13;
   width:100%;&#13;
+}&#13;
+.delete-icon{&#13;
+  padding: 0;&#13;
+  margin-left: 4px;&#13;
+  padding-bottom: 3px;&#13;
 }&#13;
 .risk-form-section{&#13;
   float:left;&#13;
@@ -282,7 +287,7 @@ table{&#13;
   width:100%;&#13;
 }&#13;
 .risk-section{&#13;
-  &#13;
+&#13;
 }&#13;
 .basic-info-header,.comment-header,.attachment-header{&#13;
  border: 1px solid lightgray;&#13;
@@ -416,6 +421,16 @@ table{&#13;
   border:1px solid transparent;&#13;
   margin-top: 5px;&#13;
 }&#13;
+.table-action-button{&#13;
+  color: white;&#13;
+  text-align: center;&#13;
+  border-radius: 5px;&#13;
+  padding: 5px 10px;&#13;
+  font-size: 13px;&#13;
+  border: 1px solid transparent;&#13;
+  margin-top: 10px;&#13;
+  width: 100%;&#13;
+}&#13;
 .td-right-line{&#13;
   border-right: 1px solid lightgray;&#13;
 }&#13;
@@ -504,14 +519,14 @@ tags-input .autocomplete .suggestion-item.selected, tags-input .autocomplete .su
         <sys_created_on>2018-12-07 16:48:45</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>de9c26acdb9a2b0054d8ff621f961993</sys_id>
-        <sys_mod_count>142</sys_mod_count>
+        <sys_mod_count>151</sys_mod_count>
         <sys_name>riskmgmt css</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_css_de9c26acdb9a2b0054d8ff621f961993</sys_update_name>
-        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-13 21:11:35</sys_updated_on>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-03-10 20:50:23</sys_updated_on>
     </sp_css>
 </record_update>

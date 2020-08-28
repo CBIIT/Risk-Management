@@ -1,24 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<record_update table="sp_widget">
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[function($scope,spModal, $location, $rootScope, RiskMgmtPOC, RiskMgmtUser, RiskMgmtRisk) {
   /* widget controller */
   var c = this;
 	var s = $location.search();
-	
+
 	var cb = null;
 	c.data.enterprise = "N/P";
 	c.data.response = "N/P";
 	c.data.au_recommend = 'N/P';
 	c.data.ompc_recommend = 'N/P';
 	c.data.eo_final_decision = 'N/P';
-	
+
 	c.data.saving = false;
 	c.data.save_text = 'Save';
-	
+
 	c.data.sharedRisk = false;
-	
+
 	c.data.tab_1 = {
 		isOpen:true
 	};
@@ -38,25 +37,27 @@
 		isOpen:false
 	};
 	
+	var prependedTitle = "(Shared) "
+
 	c.updateScore = function(){
 		if(c.data.inplace == "10"){
 			c.data.effective = "0";
 			c.data.include = "0.0";
 		}
-		c.data.impact_score = parseInt(c.data.impact) 
-			+ parseFloat(c.data.pub_impact) 
-			+ parseFloat(c.data.org_impact) 
-			+ parseFloat(c.data.financial_impact) 
+		c.data.impact_score = parseInt(c.data.impact)
+			+ parseFloat(c.data.pub_impact)
+			+ parseFloat(c.data.org_impact)
+			+ parseFloat(c.data.financial_impact)
 			+ parseFloat(c.data.overall_impact);
-		c.data.likelihood_score = parseFloat(c.data.inplace) 
-			+ parseFloat(c.data.effective) 
-			+ parseFloat(c.data.include) 
-			+ parseFloat(c.data.aware) 
+		c.data.likelihood_score = parseFloat(c.data.inplace)
+			+ parseFloat(c.data.effective)
+			+ parseFloat(c.data.include)
+			+ parseFloat(c.data.aware)
 			+ parseFloat(c.data.formal_action)
 			+ parseFloat(c.data.likelihood);
 		c.data.total_score = c.data.impact_score + c.data.likelihood_score;
 	}
-	
+
 	c.updateDoc = function(item){
 		if(item.selected){
 			c.data.selectedDocs.push(item.doc);
@@ -68,7 +69,7 @@
 			}
 		}
 	}
-	
+
 	c.gotoPage = function(page,sub){
 		s.xpage = page;
 		s.sub = sub;
@@ -76,7 +77,7 @@
 		s.next = null;
 		$location.search(s).replace();
 	}
-	
+
 	c.collapseAll = function(){
 		c.data.tab_1.isOpen = false;
 		c.data.tab_2.isOpen = false;
@@ -85,7 +86,7 @@
 		c.data.tab_5.isOpen = false;
 		c.data.tab_6.isOpen = false;
 	}
-	
+
 	c.expandAll = function(){
 		c.data.tab_1.isOpen = true;
 		c.data.tab_2.isOpen = true;
@@ -94,17 +95,48 @@
 		c.data.tab_5.isOpen = true;
 		c.data.tab_6.isOpen = true;
 	}
-	
+
 	c.goAhead = function(){
 		if(cb){
 			cb();
 		}
 	};
+
+	c.data.setPartialRiskTitleReadOnly = function() {
+			var readOnlyLength = prependedTitle.length;
+
+			$('#title').on('keypress, keydown', function(event) {
+				if(c.data.sharedRisk){
+					if((event.metaKey || event.ctrlKey) && event.which === 67) {
+						return true;
+					}
+					else if (((event.which < 37 || event.which > 39) && this.selectionStart < readOnlyLength) || 
+									(event.which === 8 && this.selectionStart === readOnlyLength) ||
+									(event.which === 8 && (event.metaKey || event.ctrlKey || event.altKey))) {
+						return false;
+					}
+				}
+			});
+	};
+	
+	 c.data.toggleSharedRiskTitle = function() {
+     var currentTitle = $("#title").val();
+
+     if(c.data.sharedRisk) {
+       if(currentTitle.indexOf('(Shared)') != 0) {
+         $('#title').val(prependedTitle + currentTitle);
+				 c.data.setPartialRiskTitleReadOnly();
+       }
+     }
+     else {
+       $('#title').val(currentTitle.slice(prependedTitle.length,currentTitle.length));
+     }
+   };
 	
 	c.cancelConfirm = function(){
 		$('#confirmDiv').modal('hide');
 	};
-	
+
 	c.saveRiskandNotify = function(notify){
 		var params = {};
 		params.fiscalYear = c.data.fiscalYear;
@@ -192,7 +224,8 @@
 			$scope.myForm.$setPristine();
 			var message = "";
 			if(notify){
-				message = "Risks have been successfully created and POC notified.";
+				message = "Risk has been successfully created, and the Risk " + 
+					((c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1) ? "POC" : "Team Member") + " has been notified.";
 			}
 			else{
 				message = "Risks have been successfully created.";
@@ -202,11 +235,11 @@
 			console.log(error);
 		});
 	};
-	
+
 	c.createRisks = function(){
 		//if Manager or POC create
 		if(c.data.sharedRisk){
-			
+
 				var params = {};
 				params.fiscalYear = c.data.fiscalYear;
 				params.docs = "";
@@ -216,10 +249,10 @@
 				params.poc_ids = "";
 				params.sharedRisk = c.data.sharedRisk;
 				params.docs = c.data.selectedDocs.join(",");
-				if(c.data.selectedDocs.length < 2){
-					window.showMessageBox("Please select at least 2 DOCs for Shared Risk.");
-					return;
-				}
+//				if(c.data.selectedDocs.length < 2){
+//					window.showMessageBox("Please select at least 2 DOCs for Shared Risk.");
+//					return;
+//				}
 				params.title = c.data.title;
 				params.section_1 = {};
 				params.section_1.enterprise = c.data.enterprise;
@@ -282,20 +315,33 @@
 			};
 			$('#confirmDiv').modal('show');
 		}
-		else{
+		else {
 			//if RC or RT create
 			c.data.confirmMessage = "Are you ready to create this new risk?";
-			//post to server
-			cb = function(){
-				c.saveRiskandNotify(c.data.notifyPOC);
-			};
-			$('#confirmDiv').modal('show');
-			c.data.notifyPOC = false;
-			c.data.notify_poc_create_email_content = "";
-		}
+			
+			cb = function() {
+				showNotificationDialog();
+		};
 		
+		$('#confirmDiv').modal('show');
+		}
 	}
 	
+	c.showNotificationDialog = function() {
+		c.data.confirmMessage = "<p>Would you like to notify the <b>Risk " + 
+			((c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1) ? "POC</b>?" : "Team Member</b>?") + "</p>";
+		cb = function() {
+			c.saveRiskandNotify(c.data.notifyPOC);
+		};
+		$('#notificationDialog').modal('show');
+	}
+	
+	c.createRiskNotifyPOC = function(notifyPOC) {
+		c.data.notifyPOC = notifyPOC;
+		c.goAhead();
+	}
+	
+
 	var pm = {};
 	c.data.displayType = "RC/RT";
 	c.data.role = $rootScope.user.role;
@@ -303,7 +349,7 @@
 		pm.doc = $rootScope.user.doc.join(",");
 		c.data.displayType = $rootScope.user.doc.length == 1 ? "POC" : "POC-M";
 	}
-	
+
 	RiskMgmtPOC.getList(pm,c.data.sessionId).then(function(rs){
 		var result = rs.data.result;
 		c.data.docs_list = [];
@@ -335,15 +381,15 @@
 	},function(error){
 		console.log(error);
 	});
-	
+
 	window.onbeforeunload = function(e){
 		if ($scope.myForm.$dirty) {
 			return "You RCF has unsaved changes, do you still want to leave this page?";
 		}
 	};
-	
+
 	var leaveFlag = true;
-	
+
 	$scope.$on('$locationChangeStart', function(event, next, current) {
 		if ($scope.myForm.$dirty && leaveFlag) {
 			var idx = next.indexOf('?');
@@ -351,7 +397,7 @@
 				.map(function(element){
 					return element.split('=');
 				})
-				.reduce(function(acc, curr) { 
+				.reduce(function(acc, curr) {
 				acc[curr[0]] = curr[1]; return acc; }, {});
 			event.preventDefault();
 			spModal.open({
@@ -366,7 +412,7 @@
 				  leaveFlag = false;
 				  c.gotoPage(dict.xpage,dict.sub);
         }, function() {
-          
+
         })
 		}
 	});
@@ -404,18 +450,18 @@
         <sys_created_on>2019-01-04 23:15:50</sys_created_on>
         <sys_customer_update>false</sys_customer_update>
         <sys_id>e5c19471db32238054d8ff621f961968</sys_id>
-        <sys_mod_count>429</sys_mod_count>
+        <sys_mod_count>517</sys_mod_count>
         <sys_name>riskmgmt new risk</sys_name>
         <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
         <sys_policy/>
         <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
         <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
         <sys_update_name>sp_widget_e5c19471db32238054d8ff621f961968</sys_update_name>
-        <sys_updated_by>yuw5@nih.gov</sys_updated_by>
-        <sys_updated_on>2019-06-25 16:48:22</sys_updated_on>
+        <sys_updated_by>georgejc@nih.gov</sys_updated_by>
+        <sys_updated_on>2020-04-20 12:28:31</sys_updated_on>
         <template><![CDATA[<div class="newrisk-content">
 	<div class="newrisk-nav">
-  	<a href="#" ng-click="c.gotoPage('management','board');">Risk Management</a>
+  	<a href="javascript:void(0)" ng-click="c.gotoPage('management','board');">Risk Management</a>
     <span><i class="fa fa-chevron-right" style="margin-left:10px;margin-right:10px;"></i>Create New Risk</span>
   </div>
   <form name="myForm" confirm-on-exit>
@@ -430,10 +476,10 @@
           <input type="text" ng-model="c.data.fiscalYear" id="doc" name="doc" value="{{c.data.fiscalYear}}" disabled="true" class="form-control">
         </div>
         <div class="col-md-8" style="line-height:35px;text-align:right;" ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
-          <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.sharedRisk" role="checkbox" aria-invalid="false">&nbsp;Mark as shared Risk
+          <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.sharedRisk" role="checkbox" ng-change="c.data.toggleSharedRiskTitle()" aria-invalid="false">&nbsp;Mark as shared Risk
         </div>
       </div>
-      <div class="form-section" style="display:flex;" ng-if="c.data.displayType == 'RC/RT' || c.data.displayType == 'POC-M'">
+      <div class="form-section" style="display:flex;" ng-if="!c.data.sharedRisk && (c.data.displayType == 'RC/RT' || c.data.displayType == 'POC-M')">
         <div class="col-md-1" style="text-align:right;"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> DOCs:</div>
         <div class="col-md-11 doc_list_block">
           <ul>
@@ -457,8 +503,8 @@
     </div>
     <div class="risk-form-section">
       <div class="risk-top-button">
-        <a href="#" ng-click="c.collapseAll();">Collapse All</a>
-        <a href="#" ng-click="c.expandAll();">Expand All</a>
+        <a href="javascript:void(0)" ng-click="c.collapseAll();">Collapse All</a>
+        <a href="javascript:void(0)" ng-click="c.expandAll();">Expand All</a>
       </div>
       <h4 style="text-align:center;font-weight:bold;">
         Risk Capture Form
@@ -474,7 +520,7 @@
             <div class="col-md-2" style="padding-left:0px;line-height:35px;text-align:right;"><i class="fa fa-asterisk" aria-hidden="true" style="font-size:8px;color:#B22222;"></i> Risk Title</div>
             <div class="col-md-10">
               <!-- <input type="text" ng-model="c.data.title" id="title" name="title" value="{{c.data.title}}" class="form-control"> -->
-              <textarea rows=1 ng-model="c.data.title" id="title" name="title" style="resize: vertical;"  value="{{c.data.title}}" class="form-control"></textarea>
+              <textarea rows=1 ng-model="c.data.title" id="title" name="title" style="resize: vertical;"  value="{{c.data.title}}"  class="form-control"></textarea>
             </div>
           </div>
           <div class="form-section" style="display:flex;">
@@ -498,7 +544,7 @@
               <textarea rows=1 ng-model="c.data.ownership" id="ownership" name="ownership" style="resize: vertical;"  value="{{c.data.ownership}}" class="form-control"></textarea>
             </div>
           </div>
-          <!-- 
+          <!--
           <div class="form-section" style="display:flex;">
             <div class="col-md-2" style="padding-left:0px;line-height:35px;text-align:right;">Risk Managers</div>
             <div class="col-md-10">
@@ -534,7 +580,7 @@
               <select class="form-control" ng-model="c.data.control" id="control" name="control" ng-init="c.data.control = 'N/P'">
                 <option value="N/P"></option>
                 <option value="handled by IC/OD">The risk can be handled by the IC/OD Office.</option>
-                <option value="can be managed by NIH">The risk can be handled by the IC/OD Office, but can be managed by the NIH.</option>
+                <option value="can be managed by NIH">The risk cannot be handled by the IC/OD Office, but can be managed by the NIH.</option>
                 <option value="cannot be directly managed">The risk is external to the NIH and cannot be directly managed.</option>
               </select>
             </div>
@@ -849,7 +895,7 @@
       </uib-accordion>
     </div>
     <div class="risk-button-section">
-      <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.createRisks()" ng-disabled="(c.data.displayType == 'POC' && (c.data.title == undefined || c.data.title.trim() == '' || c.data.saving) ) || (c.data.displayType !== 'POC' && (c.data.selectedDocs.length == 0 || c.data.title == undefined || c.data.title.trim() == '' || c.data.saving))">
+      <button type="button" class="table-button btn btn-primary" style="margin-right:20px;" ng-click="c.createRisks()" ng-disabled="(c.data.displayType == 'POC' && (c.data.title == undefined || c.data.title.trim() == '' || c.data.saving)) || (c.data.displayType !== 'POC' && ((!c.data.sharedRisk && c.data.selectedDocs.length == 0) || c.data.title == undefined || c.data.title.trim() == '' || c.data.saving))">
         {{c.data.save_text}}
       </button>
       <button type="button" class="table-button btn btn-primary" ng-click="c.gotoPage('management','board');">
@@ -859,36 +905,36 @@
   </div>
   </form>
 </div>
+
 <div id="confirmDiv" class="modal fade" data-keyborad="false" data-backdrop="static">
   <div class="modal-dialog modal-lg" style="width:25%;">
     <div class="modal-content" style="min-height:150px; overflow-y:auto; overflow-x: hidden;">
-      <div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage">
+      <div class="modal-header">
+        <h4  class="modal-title">Confirm</h4>
       </div>
-      <div class="col-md-12 message-box" style="margin-top:0px;" align="center"  ng-if="c.data.role.indexOf('RC') > -1 || c.data.role.indexOf('RT') > -1">
-        <input type="checkbox" class="chekbox-input ng-pristine ng-untouched ng-valid ng-empty" ng-model="c.data.notifyPOC" value="must" role="checkbox" aria-invalid="false" ng-checked="c.data.notifyPOC">&nbsp;Notify Risk POC
-        <div ng-show="c.data.notifyPOC" style="padding: 10px 10px 0px 10px;">
-          <span style="color:darkgray;">Please edit the content of this email in below.</span>
-          <div style="border: 1px solid #ddd;border-radius: 5px;text-align: left;font-size:13px;padding: 10px;margin-top: 10px;">
-            <p>
-              Dear Risk POC,
-              <br /><br />
-              A new risk has been initiated:
-              <br />Risk Title: {{c.data.title}}
-              <br /><br />
-              <textarea rows=3 placeholder="Additional message" ng-model="c.data.notify_poc_create_email_content" name="notify_poc_create_email_content" id="notify_poc_create_email_content" style="resize: vertical;"  value="" class="form-control"></textarea>
-              <br />
-              Please login to Risk Management Application to review.
-            </p>
-          </div>
-          
+      <div class="modal-body">
+        <div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage"></div>
+        <div class="col-md-12" style="margin-bottom:20px;"  align="center">
+          <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.showNotificationDialog();" data-dismiss="modal">Yes</button>
+          <button class="btn btn-primary" ng-click="c.cancelConfirm();" data-dismiss="modal">No</button>
         </div>
       </div>
-      <div class="col-md-12 message-box" style="margin-top:0px;" align="center"  ng-if="c.data.role.indexOf('RC') == -1 && c.data.role.indexOf('RT') == -1">
-        ** An email will be sent out to Risk Team Member if this risk is created.
+    </div>
+  </div>
+</div>
+
+<div id="notificationDialog" class="modal fade" data-keyborad="false" data-backdrop="static">
+  <div class="modal-dialog modal-lg" style="width:500px;">
+    <div class="modal-content" style="min-height:250px; overflow-y:hidden; overflow-x: hidden;">
+      <div class="modal-header">
+        <h4  class="modal-title">Notification</h4>
       </div>
-      <div class="col-md-12" style="margin-bottom:20px;"  align="center">
-        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.goAhead();" data-dismiss="modal">Yes</button>
-        <button class="btn btn-primary" ng-click="c.cancelConfirm();" data-dismiss="modal">No</button>
+      <div class="modal-body">
+				<div class="col-md-12 message-box" align="center" ng-bind-html="c.data.confirmMessage"></div>
+				<div class="col-md-12" style="margin-bottom:20px;"  align="center">
+	        <button class="btn btn-primary" style="margin-right: 20px;" ng-click="c.createRiskNotifyPOC(true);" data-dismiss="modal">Yes</button>
+	        <button class="btn btn-primary" ng-click="c.createRiskNotifyPOC(false);" data-dismiss="modal">No</button>
+	      </div>
       </div>
     </div>
   </div>

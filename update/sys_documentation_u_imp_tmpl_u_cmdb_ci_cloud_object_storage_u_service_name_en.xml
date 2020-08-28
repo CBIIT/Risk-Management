@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="u_service_name" label="Service Name" language="en" table="u_imp_tmpl_u_cmdb_ci_cloud_object_storage">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>u_service_name</element>
+            <help/>
+            <hint/>
+            <label>Service Name</label>
+            <language>en</language>
+            <name>u_imp_tmpl_u_cmdb_ci_cloud_object_storage</name>
+            <plural>Service Names</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>yarraguntlas2@nih.gov</sys_created_by>
+            <sys_created_on>2019-09-26 21:35:44</sys_created_on>
+            <sys_customer_update>false</sys_customer_update>
+            <sys_id>87286487dbcc449080203889fc9619dc</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Service Name</sys_name>
+            <sys_package display_value="Risk Management" source="x_naci_risk_manage">76bb7febdb82a70054d8ff621f961905</sys_package>
+            <sys_policy/>
+            <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+            <sys_scope display_value="Risk Management">76bb7febdb82a70054d8ff621f961905</sys_scope>
+            <sys_update_name>sys_documentation_u_imp_tmpl_u_cmdb_ci_cloud_object_storage_u_service_name_en</sys_update_name>
+            <sys_updated_by>yarraguntlas2@nih.gov</sys_updated_by>
+            <sys_updated_on>2019-09-26 21:35:44</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>
